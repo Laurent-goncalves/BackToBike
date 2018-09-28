@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">BackToBike</string>
+    <string name="title_activity_trace">Trace</string>
+    <string name="title_route">Title route</string>
+    <string name="cancel">CANCEL</string>
+    <string name="save">SAVE</string>
+</resources>

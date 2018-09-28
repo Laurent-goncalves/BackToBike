@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/view_trace_activity"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- BAR WITH BUTTONS -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- BUTTON ADD / CHANGE START POINT -->
+        <ImageButton
+            android:id="@+id/button_add_start_point"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/buttons_spaces"
+            android:layout_marginTop="@dimen/buttons_spaces"
+            android:layout_marginBottom="@dimen/buttons_spaces"
+            android:src="@drawable/baseline_place_black_24"/>
+
+        <!-- BUTTON ADD SEGMENT -->
+        <ImageButton
+            android:id="@+id/button_add_segment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/buttons_spaces"
+            android:layout_marginTop="@dimen/buttons_spaces"
+            android:layout_marginBottom="@dimen/buttons_spaces"
+            android:src="@drawable/baseline_linear_scale_black_24"/>
+
+        <!-- BUTTON ADD / CHANGE END POINT -->
+        <ImageButton
+            android:id="@+id/button_add_end_point"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/buttons_spaces"
+            android:layout_marginTop="@dimen/buttons_spaces"
+            android:layout_marginBottom="@dimen/buttons_spaces"
+            android:src="@drawable/baseline_flag_black_24"/>
+
+        <!-- BUTTON DELETE  -->
+        <ImageButton
+            android:id="@+id/button_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/buttons_spaces"
+            android:layout_marginTop="@dimen/buttons_spaces"
+            android:layout_marginBottom="@dimen/buttons_spaces"
+            android:src="@drawable/baseline_delete_black_24"/>
+
+        <!--  LINE SEPARATOR  -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#dfdfdf"/>
+
+        <!--  MILEAGE DISPLAYED  -->
+        <TextView
+            android:id="@+id/mileage_measured"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/buttons_spaces"
+            android:layout_marginTop="@dimen/buttons_spaces"
+            android:layout_marginBottom="@dimen/buttons_spaces"/>
+
+        <!--  LINE SEPARATOR  -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#dfdfdf"/>
+
+        <!--  TIME ROUTE DISPLAYED  -->
+        <TextView
+            android:id="@+id/time_estimated"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/buttons_spaces"
+            android:layout_marginTop="@dimen/buttons_spaces"
+            android:layout_marginBottom="@dimen/buttons_spaces"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- MAPS -->
+        <fragment
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:context=".Controllers.TraceActivity" />
+
+        <!-- BUTTON CANCEL  -->
+        <Button
+            android:id="@+id/button_cancel"
+            android:layout_width="@dimen/width_buttons_cancel_and_save"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="104dp"
+            android:layout_marginTop="@dimen/buttons_spaces"
+            android:layout_marginBottom="@dimen/buttons_spaces"
+            android:background="@android:color/white"
+            android:textColor="@color/colorPrimary"
+            android:text="@string/cancel"/>
+
+        <!-- BUTTON SAVE  -->
+        <Button
+            android:id="@+id/button_save"
+            android:layout_width="@dimen/width_buttons_cancel_and_save"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginStart="@dimen/buttons_spaces"
+            android:layout_marginEnd="@dimen/buttons_spaces"
+            android:layout_marginTop="@dimen/buttons_spaces"
+            android:layout_marginBottom="@dimen/buttons_spaces"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white"
+            android:text="@string/save"/>
+
+    </FrameLayout>
+
+
+</LinearLayout>
