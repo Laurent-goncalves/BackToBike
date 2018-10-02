@@ -1,31 +1,26 @@
 package com.g.laurent.backtobike.Utils;
 
-import android.content.Context;
-import android.graphics.BitmapFactory;
+import android.annotation.SuppressLint;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import com.g.laurent.backtobike.Controllers.TraceActivity;
 import com.g.laurent.backtobike.R;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
+@SuppressLint("ClickableViewAccessibility")
 public class ConfigureTraceActivity {
 
 
@@ -40,56 +35,128 @@ public class ConfigureTraceActivity {
     private static final String TAG_START_POINT = "tag_start_point";
     private static final String TAG_END_POINT = "tag_end_point";
     private GoogleMap map;
-    private LatLng lastPoint;
-    private int counter;
-    private TraceActivity traceActivity;
     private Boolean deleteMode;
-    private List<Polyline> route;
-    View view;
+    private GraphicsHandler graphicsHandler;
+
 
     public ConfigureTraceActivity(View view, TraceActivity traceActivity, final GoogleMap map) {
-        this.view = view;
+
         this.map = map;
-        this.traceActivity=traceActivity;
-        counter = 0;
-        ButterKnife.bind(this,view);
+
+        ButterKnife.bind(this, view);
+
+        graphicsHandler = new GraphicsHandler(this,view, map,traceActivity.getApplicationContext());
+        graphicsHandler.updateButtonsState();
+
+        configureMapListeners();
+    }
+
+    private void configureMapListeners(){
+
+        // LISTENERS FOR DRAGGING MARKERS (START AND END)
+        map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+            @Override
+            public void onMarkerDragStart(Marker marker) {}
+
+            @Override
+            public void onMarkerDrag(Marker marker) {
+                graphicsHandler.handleMarkerDragging(marker);
+            }
+
+            @Override
+            public void onMarkerDragEnd(Marker marker) {
+                graphicsHandler.setIndex(-1); // reset route point index
+                UtilsGoogleMaps.removeRouteMarker(graphicsHandler.getMarkers()); // Remove marker route
+            }
+        });
+
+        // LISTENERS FOR MARKER CLICKING
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if(deleteMode){
+                    if(marker.getTag()!=null){
+                        if(marker.getTag().equals(TAG_START_POINT)){
+                            graphicsHandler.removeStartPoint(marker);
+                        } else if(marker.getTag().equals(TAG_END_POINT)){
+                            graphicsHandler.removeEndPoint(marker);
+                        }
+                    }
+                }
+                return false;
+            }
+        });
+
+        // LISTENERS FOR CREATING / DRAGGING POINTS FROM POLYLINE AND ADD MARKERS
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+
+            //-----------------  If no button selected, add marker to move segment --------------------
+            /*if(areAllButtonNOTselected()){
+                graphicsHandler.addMarkerToMoveSegment(latLng);
+            }*/
+
+            //-------------------  Add a route marker on map OR add a polyline --------------------------
+            if(buttonAddSegment.isSelected()){
+                if(graphicsHandler.getRouteAlt()==null)
+                    graphicsHandler.addSegment(latLng);
+                else
+                    graphicsHandler.addAltSegment(latLng);
+            }
+
+            //-------------------------  Add a start point on map --------------------------------------
+            if(!graphicsHandler.getHasStartPoint() && buttonAddStartPoint.isSelected()) {
+                graphicsHandler.addStartPoint(latLng);
+            }
+
+            //-------------------------  Add an end point on map --------------------------------------
+            if(!graphicsHandler.getHasEndPoint() && buttonAddEndPoint.isSelected()) {
+                graphicsHandler.addEndPoint(latLng);
+            }
+
+            //----------------------------  Delete segment on map --------------------------------------
+            if(buttonDelete.isSelected()){
+                if(graphicsHandler.getSegmentsHandler()!=null){
+                    graphicsHandler.getSegmentsHandler().handleClickSegmentToDelete(latLng);
+                }
+            }
+            }
+        });
+    }
+
+    private Boolean areAllButtonNOTselected(){
+        return !buttonAddSegment.isSelected() && !buttonAddStartPoint.isSelected() && !buttonAddEndPoint.isSelected() && !buttonDelete.isSelected();
     }
 
     @OnClick(R.id.button_add_segment)
     public void addSegment(){
+        deleteMode = false;
+        graphicsHandler.setButtonPressed(buttonAddSegment);
 
-        // Button remain pressed
-        setButtonPressed(buttonAddSegment);
-
-        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        buttonAddSegment.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onMapClick(LatLng latLng) {
-                if(lastPoint!=null){
-                    drawLineOnMap(lastPoint, latLng);
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    graphicsHandler.setButtonPressed(buttonAddSegment);
                 }
-                lastPoint = latLng;
+                return true;
             }
         });
     }
 
     @OnClick(R.id.button_add_start_point)
     public void addStartPoint(){
+        deleteMode = false;
+        graphicsHandler.setButtonPressed(buttonAddStartPoint);
 
-        // Button remain pressed
-        setButtonPressed(buttonAddStartPoint);
-
-        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        buttonAddStartPoint.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onMapClick(LatLng latLng) {
-                // Add a marker on map
-                Marker marker = map.addMarker(new MarkerOptions().position(latLng));
-                marker.setTag(TAG_START_POINT);
-
-                // Change lastPoint
-                lastPoint = latLng;
-
-                // Disable button
-                buttonAddStartPoint.setEnabled(false);
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    graphicsHandler.setButtonPressed(buttonAddStartPoint);
+                }
+                return true;
             }
         });
     }
@@ -97,25 +164,17 @@ public class ConfigureTraceActivity {
     @OnClick(R.id.button_add_end_point)
     public void addEndPoint(){
 
+        deleteMode = false;
+        graphicsHandler.setButtonPressed(buttonAddEndPoint);
+
         // Button remain pressed
-        setButtonPressed(buttonAddEndPoint);
-
-        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        buttonAddEndPoint.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onMapClick(LatLng latLng) {
-                // Add a flag on map
-                Marker marker = map.addMarker(new MarkerOptions().position(latLng)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.baseline_flag_black_24)));
-                marker.setTag(TAG_END_POINT);
-
-                // Draw the final line
-                drawLineOnMap(lastPoint,latLng);
-
-                // Change lastPoint
-                lastPoint = latLng;
-
-                // Disable button
-                buttonAddEndPoint.setEnabled(false);
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    graphicsHandler.setButtonPressed(buttonAddEndPoint);
+                }
+                return true;
             }
         });
     }
@@ -123,101 +182,40 @@ public class ConfigureTraceActivity {
     @OnClick(R.id.button_delete)
     public void deleteAction(){
 
+        deleteMode = true;
+
         // Button remain pressed
-        setButtonPressed(buttonDelete);
-
-        // Configure a markerListener on the markers
-        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-
-                if(deleteMode){
-                    if(marker.getTag()!=null){
-                        if(marker.getTag().equals(TAG_START_POINT)){
-
-                            // Remove start point
-                            marker.remove();
-
-                            // Remove polyline from start point to second point
-                            // TODO : add method to remove polyline
-
-                        } else if(marker.getTag().equals(TAG_END_POINT)){
-
-                            // Remove end point
-                            marker.remove();
-
-                            // Remove polyline from start point to second point
-                            // TODO : add method to remove polyline
-
-                        }
-                    }
-                }
-
-                return false;
-            }
-        });
-
-        // Configure a clickListener on the polyline
-        map.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
-            @Override
-            public void onPolylineClick(Polyline polyline) {
-                if(deleteMode){
-                    polyline.remove();
-                    UtilsGoogleMaps.deletePolylineInTheList(polyline, route);
-                }
-            }
-        });
+        graphicsHandler.setButtonPressed(buttonDelete);
     }
 
-    private void setButtonPressed(ImageButton buttonSelected){
+    // ---------------------------- ESTIMATE MILEAGE AND TIME ---------------------------------------
 
-        if(buttonSelected.equals(buttonAddSegment)){
-            deleteMode = false;
-            buttonAddSegment.setSelected(true);
-            buttonAddStartPoint.setSelected(false);
-            buttonAddEndPoint.setSelected(false);
-            buttonDelete.setSelected(false);
-        } else if (buttonSelected.equals(buttonAddStartPoint)){
-            deleteMode = false;
-            buttonAddSegment.setSelected(false);
-            buttonAddStartPoint.setSelected(true);
-            buttonAddEndPoint.setSelected(false);
-            buttonDelete.setSelected(false);
-        } else if (buttonSelected.equals(buttonAddEndPoint)){
-            deleteMode = false;
-            buttonAddSegment.setSelected(false);
-            buttonAddStartPoint.setSelected(false);
-            buttonAddEndPoint.setSelected(true);
-            buttonDelete.setSelected(false);
-        } else if (buttonSelected.equals(buttonDelete)){
-            deleteMode = true;
-            buttonAddSegment.setSelected(false);
-            buttonAddStartPoint.setSelected(false);
-            buttonAddEndPoint.setSelected(false);
-            buttonDelete.setSelected(true);
-        }
-
-        // Desactivate on click and on marker click listeners
-        map.setOnMapClickListener(null);
-        map.setOnMarkerClickListener(null);
+    public void updateMileage(Polyline polyline){
+        String mileageEstimated = UtilsGoogleMaps.getMileageEstimated(polyline);
+        mileageView.setText(mileageEstimated);
     }
 
-    private void drawLineOnMap(LatLng start, LatLng end){
+    public void updateMileage(Polyline polyline1, Polyline polyline2){
+        String mileageEstimated = UtilsGoogleMaps.getMileageEstimated(polyline1, polyline2);
+        mileageView.setText(mileageEstimated);
+    }
 
-        // Instantiates a new Polyline object for the segment
-        PolylineOptions rectOptions = new PolylineOptions()
-                .add(start)
-                .add(end);
+    public void updateTimeEstimation(Polyline polyline){
+        String timeEstimated = UtilsGoogleMaps.getTimeRoute(UtilsGoogleMaps.getMileageRoute(polyline));
+        timeView.setText(timeEstimated);
+    }
 
-        // Create and add the polyline to the map
-        Polyline polyline = map.addPolyline(rectOptions);
-        polyline.setClickable(true);
-        polyline.setTag(counter);
+    public void updateTimeEstimation(Polyline polyline1, Polyline polyline2){
+        String timeEstimated = UtilsGoogleMaps.getTimeRoute(UtilsGoogleMaps.getMileageRoute(polyline1) +
+                UtilsGoogleMaps.getMileageRoute(polyline2));
+        timeView.setText(timeEstimated);
+    }
 
-        // Add the polyline to the list of polylines
-        route.add(polyline);
+    public ImageButton getButtonAddSegment() {
+        return buttonAddSegment;
+    }
 
-        // Increment counter
-        counter++;
+    public ImageButton getButtonDelete() {
+        return buttonDelete;
     }
 }
