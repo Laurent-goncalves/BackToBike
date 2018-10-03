@@ -12,10 +12,10 @@ import com.g.laurent.backtobike.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RouteFragment extends Fragment {
+public class FriendFragment extends Fragment {
 
 
-    public RouteFragment() {
+    public FriendFragment() {
         // Required empty public constructor
     }
 
@@ -24,18 +24,7 @@ public class RouteFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_route_event, container, false);
+        return inflater.inflate(R.layout.fragment_friend, container, false);
     }
 
 }
-
-/*
-
-TO COLOR BUTTONS
-
-Drawable[] drawables = textView.getCompoundDrawables();
-       if (drawables[0] != null) {  // left drawable
-           drawables[0].setColorFilter(color, Mode.MULTIPLY);
-       }
-
- */

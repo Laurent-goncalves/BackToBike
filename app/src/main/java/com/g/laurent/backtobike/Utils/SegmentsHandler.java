@@ -1,8 +1,12 @@
 package com.g.laurent.backtobike.Utils;
 
 
+import android.content.Context;
+import com.g.laurent.backtobike.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,37 +18,42 @@ public class SegmentsHandler {
     private GoogleMap map;
     private int index1;
     private int index2;
-    private int routeNumber;
+    private List<LatLng> route;
+    private List<LatLng> routeAlt;
+    private Polyline polyline;
+    private Polyline polylineAlt;
+    private Context context;
 
-    public SegmentsHandler(GraphicsHandler graphicsHandler, GoogleMap map) {
+    public SegmentsHandler(GraphicsHandler graphicsHandler, GoogleMap map, Context context) {
         this.graphicsHandler = graphicsHandler;
         this.map=map;
+        this.context=context;
     }
 
     public void handleClickSegmentToDelete(LatLng fingerPosition) {
 
-        if(graphicsHandler.getRouteAlt()!=null){ // ----------------- if a segment has already been deleted
+        route = graphicsHandler.getRoute();
+        routeAlt = graphicsHandler.getRouteAlt();
+
+        if(routeAlt!=null){ // ----------------- if a segment has already been deleted
 
             // find nearest point on route and delete it
-            if(UtilsGoogleMaps.isNearestPointOnMainRoute(fingerPosition,graphicsHandler.getRoute(),graphicsHandler.getRouteAlt(),map)){
-                if(graphicsHandler.getRoute().size()>=2)
-                    graphicsHandler.getRoute().remove(graphicsHandler.getRoute().size()-1); // remove last point of main route
+            if(UtilsGoogleMaps.isNearestPointOnMainRoute(fingerPosition,route,routeAlt,map)){
+                if(route.size()>=2)
+                    route.remove(route.size()-1); // remove last point of main route
             } else {
-                if(graphicsHandler.getRouteAlt().size()>=2)
-                    graphicsHandler.getRouteAlt().remove(0); // remove first point of routeAlt
+                if(routeAlt.size()>=2)
+                    routeAlt.remove(0); // remove first point of routeAlt
             }
 
-            // draw the 2 polylines
-            graphicsHandler.draw2PolyLines();
-
-            // set new last point
-            graphicsHandler.setLastPoint(graphicsHandler.getRoute().get(graphicsHandler.getRoute().size()-1));
+            graphicsHandler.setRoute(route);
+            graphicsHandler.setRouteAlt(routeAlt);
 
         } else { // ----------------------------------------- if it's the first segment to be deleted
 
-            if(graphicsHandler.getRoute().size()>3){ // there should be at least 3 segments in the route
+            if(route.size()>3){ // there should be at least 3 segments in the route
 
-                findSegmentToDelete(fingerPosition,graphicsHandler.getRoute(),map);
+                findSegmentToDelete(fingerPosition,route);
 
                 if(index1!=-1 && index2!=-1){ // if a segment has been found
 
@@ -52,24 +61,12 @@ public class SegmentsHandler {
 
                     // divide the polyline in 2
                     divideRoutes(index1,index2);
-
-                    // draw the 2 polylines
-                    graphicsHandler.draw2PolyLines();
-
-                    // set new last point
-                    graphicsHandler.setLastPoint(graphicsHandler.getRoute().get(index1));
-
-                    // Enable button Add segment
-                    if(graphicsHandler.getConfig()!=null){ // if a segment has been deleted, enable button add segment
-                        graphicsHandler.getConfig().getButtonAddSegment().setEnabled(true);
-                        graphicsHandler.setButtonPressed(graphicsHandler.getConfig().getButtonDelete()); // update button state
-                    }
                 }
             }
         }
     }
 
-    private void findSegmentToDelete(LatLng fingerPoint, List<LatLng> route, GoogleMap map){
+    private void findSegmentToDelete(LatLng fingerPoint, List<LatLng> route){
 
         index1 = -1;
         index2 = -1;
@@ -82,10 +79,9 @@ public class SegmentsHandler {
                 // get the orthogonal projection distance of finger position to each polyline segment
                 distanceTest = PolyUtil.distanceToLine(fingerPoint,route.get(i),route.get(i+1));
 
-                if( distanceTest < distanceMin && distanceTest < 10){
+                if(distanceTest < distanceMin && distanceTest < 10){
                     index1 = i;
                     index2 = i+1;
-                    routeNumber = 1; // routeNumber = 1 means " main route "
                     distanceMin = distanceTest;
                 }
             }
@@ -94,15 +90,18 @@ public class SegmentsHandler {
 
     private void divideRoutes(int index1, int index2){
 
+        route = graphicsHandler.getRoute();
+        routeAlt = graphicsHandler.getRouteAlt();
+
         List<LatLng> route1 = new ArrayList<>();
         List<LatLng> route2 = new ArrayList<>();
 
         for(int i = 0; i<= index1; i++){
-            route1.add(graphicsHandler.getRoute().get(i));
+            route1.add(route.get(i));
         }
 
-        for(int i = index2; i < graphicsHandler.getRoute().size(); i++){
-            route2.add(graphicsHandler.getRoute().get(i));
+        for(int i = index2; i < route.size(); i++){
+            route2.add(route.get(i));
         }
 
         graphicsHandler.setRoute(route1);
@@ -111,43 +110,54 @@ public class SegmentsHandler {
 
     public void closeRouteAlt() {
 
-        List<LatLng> route1 = new ArrayList<>();
-        route1.addAll(graphicsHandler.getRoute());
-        route1.addAll(graphicsHandler.getRouteAlt());
+        route = graphicsHandler.getRoute();
+        routeAlt = graphicsHandler.getRouteAlt();
+
+        List<LatLng> route1 = new ArrayList<>(route);
+
+        if(routeAlt!=null)
+            route1.addAll(routeAlt);
 
         graphicsHandler.setRoute(route1);
         graphicsHandler.setRouteAlt(null);
+    }
 
-        graphicsHandler.draw2PolyLines();
+    public void drawSegments(boolean routeFinished) {
 
+        route = graphicsHandler.getRoute();
+        routeAlt = graphicsHandler.getRouteAlt();
 
-        graphicsHandler.setStop(1);
-        graphicsHandler.setLastPoint(route1.get(route1.size()-1));
+        if(polyline!=null)
+            polyline.remove();
+        if(polylineAlt!=null)
+            polylineAlt.remove();
+
+        if(routeFinished){
+
+            PolylineOptions rectOptions = new PolylineOptions()
+                    .width(8)
+                    .color(context.getResources().getColor(R.color.colorPolylineComplete))
+                    .addAll(route);
+
+            polyline = map.addPolyline(rectOptions);
+
+        } else {
+
+            PolylineOptions rectOptions = new PolylineOptions()
+                    .width(8)
+                    .color(context.getResources().getColor(R.color.colorPolylineNotComplete))
+                    .addAll(route);
+
+            polyline = map.addPolyline(rectOptions);
+
+            if (routeAlt != null) {
+                PolylineOptions rectOptionsAlt = new PolylineOptions()
+                        .width(8)
+                        .color(context.getResources().getColor(R.color.colorPolylineNotComplete))
+                        .addAll(routeAlt);
+
+                polylineAlt = map.addPolyline(rectOptionsAlt);
+            }
+        }
     }
 }
-/*
-
-                // find nearest point to latlng
-                int index1 = UtilsGoogleMaps.findIndexNearestPolyLinePoint(latLng,graphicsHandler.getRoute(),graphicsHandler.getHasEndPoint(),map);
-
-
-
-                    // find the other extremity of the segment to be deleted
-                    int index2 = UtilsGoogleMaps.findSecondNearestPointOnPolyLine(latLng,index1,graphicsHandler.getRoute(),map);
-
-                    if(index2!=-1){
-                        // divide the polyline in 2
-                        divideRoutes(index1,index2);
-
-                        // draw the 2 polylines
-                        graphicsHandler.draw2PolyLines();
-
-                        // set new last point
-                        if(index1<index2)
-                            graphicsHandler.setLastPoint(graphicsHandler.getRoute().get(index1));
-                        else
-                            graphicsHandler.setLastPoint(graphicsHandler.getRoute().get(index2));
-                    }
-
-
- */

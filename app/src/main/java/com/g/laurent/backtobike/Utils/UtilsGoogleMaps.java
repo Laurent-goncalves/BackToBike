@@ -18,8 +18,6 @@ import java.util.TimeZone;
 
 public class UtilsGoogleMaps {
 
-    private static final String TAG_ROUTE_POINT = "tag_route_point";
-
     public static int findIndexNearestPolyLinePoint(LatLng pointSelect, Polyline route){
 
         int index=-1;
@@ -115,10 +113,85 @@ public class UtilsGoogleMaps {
         return selectPoint.distanceTo(infPoint) < selectPoint.distanceTo(supPoint);
     }
 
+    public static int extractRouteFromTag(String tag){
+
+        int answer = -1;
+
+        if(tag!=null){
+            if(tag.contains("ROUTE-"))
+                return 1;
+            else if (tag.contains("ROUTEALT-"))
+                return 2;
+        }
+
+        return answer;
+    }
+
+    public static int extractIndexFromTag(String tag){
+
+        int answer = -1;
+
+        if(tag!=null){
+
+            if(extractRouteFromTag(tag)==1){
+                return Integer.parseInt(tag.substring(6, tag.length()));
+            } else if(extractRouteFromTag(tag)==2){
+                return Integer.parseInt(tag.substring(9, tag.length()));
+            }
+        }
+
+        return answer;
+    }
+
+    public static Boolean isMarkerADragPoint(Marker marker){
+
+        if(marker.getTag()!=null)
+            return extractRouteFromTag(marker.getTag().toString())==1 || extractRouteFromTag(marker.getTag().toString())==2;
+        else
+            return false;
+    }
+
+    public static int findIndexOnRoute(LatLng point, List<LatLng> route){
+        int index = -1;
+
+        for(int i = 0; i < route.size(); i++){
+            if(arePositionsEquals(point,route.get(i)))
+                index = i;
+        }
+
+        return index;
+    }
+
+    public static Boolean arePositionsEquals(LatLng position1, LatLng position2){
+
+        Location locPosition1 = new Location("position1");
+        locPosition1.setLatitude(position1.latitude);
+        locPosition1.setLongitude(position1.longitude);
+
+        Location locPosition2 = new Location("position2");
+        locPosition2.setLatitude(position2.latitude);
+        locPosition2.setLongitude(position2.longitude);
+
+        System.out.println("eee distance = " + locPosition1.distanceTo(locPosition2) );
+
+        return locPosition1.distanceTo(locPosition2) <= 1;
+    }
+
+    public static int findIndexOnRouteAlt(LatLng point, List<LatLng> routeAlt){
+        int index = -1;
+
+        for(int i = 0; i < routeAlt.size(); i++){
+            if(arePositionsEquals(point,routeAlt.get(i)))
+                index = i;
+        }
+
+        return index;
+    }
+
     public static void removeRouteMarker(List<Marker> markers){
         for(Marker mark : markers){
             if(mark.getTag()!=null) {
-                if (mark.getTag().equals(TAG_ROUTE_POINT))
+                if (UtilsGoogleMaps.isMarkerADragPoint(mark))
                     mark.remove();
             }
         }
@@ -134,25 +207,23 @@ public class UtilsGoogleMaps {
         return Math.sqrt(Math.pow(screenRefPosition.x - screenTestPosition.x, 2) + Math.pow(screenRefPosition.y - screenTestPosition.y, 2)) < 40;
     }
 
-    public static double getMileageRoute(Polyline route){
+    public static double getMileageRoute(List<LatLng> route){
 
         double mileage = 0;
 
         if(route!=null) {
-            if (route.getPoints() != null) {
-                if (route.getPoints().size() >= 2) { // at least 2 points
+            if (route!= null) {
+                if (route.size() >= 2) { // at least 2 points
 
-                    List<LatLng> listPoints = route.getPoints();
-
-                    for (int i = 0; i < listPoints.size() - 1; i++) {
+                    for (int i = 0; i < route.size() - 1; i++) {
 
                         Location lastPoint = new Location("last_location");
-                        lastPoint.setLatitude(listPoints.get(i).latitude);
-                        lastPoint.setLongitude(listPoints.get(i).longitude);
+                        lastPoint.setLatitude(route.get(i).latitude);
+                        lastPoint.setLongitude(route.get(i).longitude);
 
                         Location nextPoint = new Location("next_location");
-                        nextPoint.setLatitude(listPoints.get(i + 1).latitude);
-                        nextPoint.setLongitude(listPoints.get(i + 1).longitude);
+                        nextPoint.setLatitude(route.get(i + 1).latitude);
+                        nextPoint.setLongitude(route.get(i + 1).longitude);
 
                         mileage = mileage + lastPoint.distanceTo(nextPoint);
                     }
@@ -162,10 +233,10 @@ public class UtilsGoogleMaps {
         return mileage;
     }
 
-    public static String getMileageEstimated(Polyline polyline){
+    public static String getMileageEstimated(List<LatLng> route){
 
         DecimalFormat df;
-        Double distance = UtilsGoogleMaps.getMileageRoute(polyline);
+        Double distance = UtilsGoogleMaps.getMileageRoute(route);
         String mileage;
 
         if(distance < 1000) {
@@ -180,10 +251,10 @@ public class UtilsGoogleMaps {
         return mileage;
     }
 
-    public static String getMileageEstimated(Polyline polyline1, Polyline polyline2){
+    public static String getMileageEstimated(List<LatLng> route1, List<LatLng> route2){
 
         DecimalFormat df;
-        Double distance = UtilsGoogleMaps.getMileageRoute(polyline1) + UtilsGoogleMaps.getMileageRoute(polyline2);
+        Double distance = UtilsGoogleMaps.getMileageRoute(route1) + UtilsGoogleMaps.getMileageRoute(route2);
         String mileage;
 
         if(distance < 1000) {
