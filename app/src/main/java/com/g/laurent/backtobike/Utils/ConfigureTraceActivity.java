@@ -1,21 +1,20 @@
 package com.g.laurent.backtobike.Utils;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.g.laurent.backtobike.Controllers.TraceActivity;
 import com.g.laurent.backtobike.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.Polyline;
-
-import java.util.ArrayList;
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -42,11 +41,12 @@ public class ConfigureTraceActivity {
     private int index;
     private int routeNumber;
     private GraphicsHandler graphicsHandler;
-
+    private Context context;
 
     public ConfigureTraceActivity(View view, TraceActivity traceActivity, final GoogleMap map) {
 
         this.map = map;
+        context = traceActivity.getApplicationContext();
 
         ButterKnife.bind(this, view);
 
@@ -95,11 +95,11 @@ public class ConfigureTraceActivity {
                     if(marker.getTag()!=null){
                         if(marker.getTag().equals(TAG_START_POINT)){
                             graphicsHandler.getMarkersHandler().removeStartPoint();
-                            graphicsHandler.drawMap(false);
+                            handleDrawMap();
                             graphicsHandler.updateButtonsState(TAG_DELETE);
                         } else if(marker.getTag().equals(TAG_END_POINT)){
                             graphicsHandler.getMarkersHandler().removeEndPoint();
-                            graphicsHandler.drawMap(false);
+                            handleDrawMap();
                             graphicsHandler.updateButtonsState(TAG_DELETE);
                         }
                     }
@@ -118,29 +118,21 @@ public class ConfigureTraceActivity {
                 //-------------------------  Add a start point on map --------------------------------------
                 if (buttonAddStartPoint.isSelected()) {
                     graphicsHandler.handleStartPointAdding(latLng);
-                    graphicsHandler.drawMap(false);
-                    graphicsHandler.updateButtonsState(TAG_START_POINT);
                 }
 
                 //-------------------  Add a route marker on map OR add a polyline --------------------------
                 if (buttonAddSegment.isSelected()) {
                     graphicsHandler.handleSegmentAdding(latLng);
-                    graphicsHandler.drawMap(true);
-                    graphicsHandler.updateButtonsState(TAG_ADD_SEGMENT);
                 }
 
                 //-------------------------  Add an end point on map --------------------------------------
                 if (buttonAddEndPoint.isSelected()) {
                     graphicsHandler.handleEndPointAdding(latLng);
-                    graphicsHandler.drawMap(false);
-                    graphicsHandler.updateButtonsState(TAG_END_POINT);
                 }
 
                 //----------------------------  Delete segment on map --------------------------------------
                 if (buttonDelete.isSelected()) {
                     graphicsHandler.handleSegmentDeleting(latLng);
-                    graphicsHandler.drawMap(false);
-                    graphicsHandler.updateButtonsState(TAG_DELETE);
                 }
             }
         });
@@ -148,67 +140,71 @@ public class ConfigureTraceActivity {
 
     @OnClick(R.id.button_add_segment)
     public void addSegment(){
-        deleteMode = false;
-
-        graphicsHandler.setButtonPressed(buttonAddSegment);
-
+        setButtonAsPressed(buttonAddSegment);
         graphicsHandler.drawMap(true);
-
-        buttonAddSegment.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    deleteMode = false;
-                    graphicsHandler.setButtonPressed(buttonAddSegment);
-                }
-                return true;
-            }
-        });
     }
 
     @OnClick(R.id.button_add_start_point)
     public void addStartPoint(){
-        deleteMode = false;
-        graphicsHandler.setButtonPressed(buttonAddStartPoint);
-
-        buttonAddStartPoint.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    deleteMode = false;
-                    graphicsHandler.setButtonPressed(buttonAddStartPoint);
-                }
-                return true;
-            }
-        });
+        setButtonAsPressed(buttonAddStartPoint);
     }
 
     @OnClick(R.id.button_add_end_point)
     public void addEndPoint(){
+        setButtonAsPressed(buttonAddEndPoint);
+    }
 
-        deleteMode = false;
-        graphicsHandler.setButtonPressed(buttonAddEndPoint);
+    @OnClick(R.id.button_delete)
+    public void deleteAction(){
+        setButtonAsPressed(buttonDelete);
+    }
+
+    private void setButtonAsPressed(final ImageButton button){
+
+        // set deleteMode value
+        deleteMode = button.equals(buttonDelete);
 
         // Button remain pressed
-        buttonAddEndPoint.setOnTouchListener(new View.OnTouchListener() {
+        graphicsHandler.setButtonPressed(button);
+
+        // Display instruction to user
+        displayMessageToUser(button);
+
+        // Draw map according to button selected
+        handleDrawMap();
+
+        // Button remain pressed
+        button.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN){
                     deleteMode = false;
-                    graphicsHandler.setButtonPressed(buttonAddEndPoint);
+                    button.setOnTouchListener(null);
+                    graphicsHandler.setButtonPressed(null);
                 }
                 return true;
             }
         });
     }
 
-    @OnClick(R.id.button_delete)
-    public void deleteAction(){
+    public void handleDrawMap(){
+        if(buttonDelete.isSelected() || buttonAddSegment.isSelected())
+            graphicsHandler.drawMap(true);
+        else
+            graphicsHandler.drawMap(false);
+    }
 
-        deleteMode = true;
+    private void displayMessageToUser(ImageButton button){
 
-        // Button remain pressed
-        graphicsHandler.setButtonPressed(buttonDelete);
+        if(button.equals(buttonAddStartPoint)){
+            Toast.makeText(context, context.getResources().getString(R.string.add_start_point_message),Toast.LENGTH_LONG).show();
+        } else if(button.equals(buttonAddSegment)) {
+            Toast.makeText(context, context.getResources().getString(R.string.add_segment_message),Toast.LENGTH_LONG).show();
+        } else if (button.equals(buttonAddEndPoint)){
+            Toast.makeText(context, context.getResources().getString(R.string.add_end_point_message),Toast.LENGTH_LONG).show();
+        } else if (button.equals(buttonDelete)){
+            Toast.makeText(context, context.getResources().getString(R.string.delete_message),Toast.LENGTH_LONG).show();
+        }
     }
 
     // ---------------------------- ESTIMATE MILEAGE AND TIME ---------------------------------------
@@ -241,16 +237,4 @@ public class ConfigureTraceActivity {
     // --------------------------------------------------------------------------------------------------------
     // ------------------------------------- GETTERS AND SETTERS ----------------------------------------------
     // --------------------------------------------------------------------------------------------------------
-
-    public ImageButton getButtonAddSegment() {
-        return buttonAddSegment;
-    }
-
-    public ImageButton getButtonDelete() {
-        return buttonDelete;
-    }
-
-    public Boolean getDeleteMode() {
-        return deleteMode;
-    }
 }

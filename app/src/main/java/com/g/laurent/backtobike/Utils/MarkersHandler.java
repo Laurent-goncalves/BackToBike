@@ -1,5 +1,13 @@
 package com.g.laurent.backtobike.Utils;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+
 import com.g.laurent.backtobike.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -35,18 +43,20 @@ public class MarkersHandler {
     public void addDragMarker(LatLng position, Boolean routeFinished, String tag){
 
         Marker marker;
+        Bitmap iconBitmap;
 
         if(routeFinished){ // Route finished
-            marker = map.addMarker(new MarkerOptions()
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.baseline_radio_button_checked_green_24))
-                .anchor(0.5f,0.5f)
-                .position(position).draggable(true));
+            iconBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(graphicsHandler.getContext().getResources(),
+                    R.drawable.baseline_radio_button_checked_green_18), 30, 30, false);
         } else { // Route not finished
-            marker = map.addMarker(new MarkerOptions()
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.baseline_radio_button_checked_blue_24))
+            iconBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(graphicsHandler.getContext().getResources(),
+                    R.drawable.baseline_radio_button_checked_blue_18), 30, 30, false);
+        }
+
+        marker = map.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromBitmap(iconBitmap))
                 .anchor(0.5f,0.5f)
                 .position(position).draggable(true));
-        }
 
         marker.setTag(tag);
         markers.add(marker);
@@ -214,7 +224,7 @@ public class MarkersHandler {
         if(routeAlt!=null){
             if(routeAlt.size()>=2) {
 
-                limitInf = 0;
+                limitInf = 1;
 
                 if(endPoint!=null)
                     limitSup = routeAlt.size()-2;

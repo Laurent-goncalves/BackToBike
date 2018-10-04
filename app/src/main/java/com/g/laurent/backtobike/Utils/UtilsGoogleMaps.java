@@ -103,12 +103,23 @@ public class UtilsGoogleMaps {
         selectPoint.setLongitude(latLng.longitude);
 
         Location infPoint = new Location("inf_point_location");
-        infPoint.setLatitude(route.get(route.size()-1).latitude);
-        infPoint.setLongitude(route.get(route.size()-1).longitude);
-
         Location supPoint = new Location("sup_point_location");
-        supPoint.setLatitude(routeAlt.get(0).latitude);
-        supPoint.setLongitude(routeAlt.get(0).longitude);
+
+        if(route.size()!=0) {
+            infPoint.setLatitude(route.get(route.size() - 1).latitude);
+            infPoint.setLongitude(route.get(route.size() - 1).longitude);
+        } else {
+            infPoint.setLatitude(0);
+            infPoint.setLongitude(0);
+        }
+
+        if(routeAlt.size()!=0) {
+            supPoint.setLatitude(routeAlt.get(0).latitude);
+            supPoint.setLongitude(routeAlt.get(0).longitude);
+        } else {
+            supPoint.setLatitude(0);
+            supPoint.setLongitude(0);
+        }
 
         return selectPoint.distanceTo(infPoint) < selectPoint.distanceTo(supPoint);
     }

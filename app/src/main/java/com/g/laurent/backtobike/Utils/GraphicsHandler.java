@@ -156,10 +156,14 @@ public class GraphicsHandler {
 
     public void handleStartPointAdding(LatLng latLng){
         getMarkersHandler().addStartPoint(latLng);
+        config.handleDrawMap();
+        updateButtonsState(TAG_START_POINT);
     }
 
     public void handleEndPointAdding(LatLng latLng){
         getMarkersHandler().addEndPoint(latLng);
+        config.handleDrawMap();
+        updateButtonsState(TAG_END_POINT);
     }
 
     // ----------------------------------- DRAG MARKERS --------------------------------------------------
@@ -216,23 +220,24 @@ public class GraphicsHandler {
                 route.add(latLng);
             }
         }
+
+        config.handleDrawMap();
+        updateButtonsState(TAG_ADD_SEGMENT);
     }
 
     // ----------------------------------- DELETE SEGMENT ---------------------------------------
 
     public void handleSegmentDeleting(LatLng latLng){
         segmentsHandler.handleClickSegmentToDelete(latLng);
+        config.handleDrawMap();
+        updateButtonsState(TAG_DELETE);
     }
 
     // ----------------------------------- DRAW MAP ---------------------------------------
 
     public void drawOnlySegments(){
 
-        Boolean hasStartPoint = (markersHandler.getStartPoint()!=null);
-        Boolean hasEndPoint = (markersHandler.getEndPoint()!=null);
-        Boolean isRouteFinished = (routeAlt==null);
-
-        segmentsHandler.drawSegments(hasStartPoint && hasEndPoint && isRouteFinished);
+        segmentsHandler.drawSegments(isRouteFinished());
 
         config.updateMileage(route, routeAlt);
         config.updateTimeEstimation(route, routeAlt);
@@ -242,12 +247,8 @@ public class GraphicsHandler {
 
         map.clear();
 
-        Boolean hasStartPoint = (markersHandler.getStartPoint()!=null);
-        Boolean hasEndPoint = (markersHandler.getEndPoint()!=null);
-        Boolean isRouteFinished = (routeAlt==null);
-
-        markersHandler.drawMarkers(hasStartPoint && hasEndPoint && isRouteFinished, drawDragPoints);
-        segmentsHandler.drawSegments(hasStartPoint && hasEndPoint && isRouteFinished);
+        markersHandler.drawMarkers(isRouteFinished(), drawDragPoints);
+        segmentsHandler.drawSegments(isRouteFinished());
 
         config.updateMileage(route, routeAlt);
         config.updateTimeEstimation(route, routeAlt);
@@ -279,6 +280,10 @@ public class GraphicsHandler {
 
     public MarkersHandler getMarkersHandler() {
         return markersHandler;
+    }
+
+    public Context getContext() {
+        return context;
     }
 
     public Boolean isRouteFinished(){

@@ -12,4 +12,17 @@
     <string name="reject">REJECT</string>
     <string name="accept">ACCEPT</string>
     <string name="add_a_new_friend">Add a new friend</string>
+    <string name="date">Date:</string>
+    <string name="time">Time:</string>
+    <string name="guests">Guests:</string>
+    <string name="send">SEND</string>
+    <string name="select_a_route">Select a route:</string>
+    <string name="enter_a_comment">Enter a comment:</string>
+
+    <!-- TRACEACTIVITY-->
+    <string name="add_segment_message">Please click on the map to create a new segment</string>
+    <string name="add_start_point_message">Please click on the map to add a start point</string>
+    <string name="add_end_point_message">Please click on the map to add a arrival point</string>
+    <string name="delete_message">Please click on segments or markers to delete</string>
+
 </resources>
