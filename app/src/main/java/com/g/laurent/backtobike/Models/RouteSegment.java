@@ -8,9 +8,6 @@ import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 
 @Entity(foreignKeys = @ForeignKey(entity = Route.class, parentColumns = "id", childColumns = "idRoute"),
         indices = {@Index("idRoute")})

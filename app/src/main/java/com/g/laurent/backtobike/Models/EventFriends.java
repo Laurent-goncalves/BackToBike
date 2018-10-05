@@ -2,12 +2,15 @@ package com.g.laurent.backtobike.Models;
 
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-@Entity
+
+@Entity(foreignKeys = {@ForeignKey(entity = BikeEvent.class,parentColumns = "id",childColumns = "idEvent"),
+        @ForeignKey(entity = Friend.class,parentColumns = "id",childColumns = "idFriend")})
 public class EventFriends {
 
     @PrimaryKey(autoGenerate = true)
@@ -87,9 +90,12 @@ public class EventFriends {
         final EventFriends eventFriends = new EventFriends();
 
         if(cursor!=null){
-            eventFriends.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
-            eventFriends.setIdEvent(cursor.getInt(cursor.getColumnIndexOrThrow("idEvent")));
-            eventFriends.setIdFriend(cursor.getInt(cursor.getColumnIndexOrThrow("idFriend")));
+            while (cursor.moveToNext()) {
+                eventFriends.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+                eventFriends.setIdEvent(cursor.getInt(cursor.getColumnIndexOrThrow("idEvent")));
+                eventFriends.setIdFriend(cursor.getInt(cursor.getColumnIndexOrThrow("idFriend")));
+            }
+            cursor.close();
         }
 
         return eventFriends;

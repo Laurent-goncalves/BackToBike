@@ -6,7 +6,7 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
 
-@Database(entities = {Route.class, RouteSegment.class, Friend.class, BikeEvent.class, EventFriends.class}, version = 3, exportSchema = false)
+@Database(entities = {Route.class, RouteSegment.class, Friend.class, BikeEvent.class, EventFriends.class}, version = 4, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase INSTANCE;
@@ -14,6 +14,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract FriendsDao friendsDao();
     public abstract BikeEventDao bikeEventDao();
     public abstract RouteSegmentDao routeSegmentDao();
+    public abstract EventFriendsDao eventFriendsDao();
 
     // Create a single instance of property database
     public static AppDatabase getInstance(Context context) {
