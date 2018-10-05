@@ -35,36 +35,6 @@ public class ExampleInstrumentedTest {
     public ActivityTestRule<TraceActivity> mActivityRule = new ActivityTestRule<>(TraceActivity.class);
 
     @Test
-    public void test_route_distance(){
-
-        LatLng point1 = new LatLng(48.858109, 2.339278);
-        LatLng point2 = new LatLng(48.800981, 2.520347);
-        LatLng point3 = new LatLng(48.800981, 2.520347);
-        LatLng point4 = new LatLng(48.615268, 2.473662);
-        LatLng point5 = new LatLng(48.615268, 2.473662);
-        LatLng point6 = new LatLng(48.587223, 2.445282);
-
-        final PolylineOptions rectOptions = new PolylineOptions()
-                .add(point1)
-                .add(point2)
-                .add(point3)
-                .add(point4)
-                .add(point5)
-                .add(point6);
-
-        final GoogleMap map = mActivityRule.getActivity().getMap();
-
-        mActivityRule.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Polyline route = map.addPolyline(rectOptions);
-
-                assertEquals((float) UtilsGoogleMaps.getMileageRoute(route),(float) 39426d, (float) 1);
-            }
-        });
-    }
-
-    @Test
     public void test_find_nearest_point_polyline(){
 
         LatLng point1 = new LatLng(48.858109, 2.339278);

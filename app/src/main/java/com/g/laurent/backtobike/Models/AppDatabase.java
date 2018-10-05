@@ -1,4 +1,4 @@
-package com.g.laurent.backtobike;
+package com.g.laurent.backtobike.Models;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
@@ -6,19 +6,20 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
 
-@Database(entities = {Route.class}, version = 1, exportSchema = false)
-public abstract class RoutesDatabase extends RoomDatabase {
+@Database(entities = {Route.class, RouteSegment.class, Friend.class, BikeEvent.class, EventFriends.class}, version = 3, exportSchema = false)
+public abstract class AppDatabase extends RoomDatabase {
 
-    private static volatile RoutesDatabase INSTANCE;
+    private static volatile AppDatabase INSTANCE;
     public abstract RoutesDao routesDao();
+    public abstract FriendsDao friendsDao();
 
     // Create a single instance of property database
-    public static RoutesDatabase getInstance(Context context) {
+    public static AppDatabase getInstance(Context context) {
         if (INSTANCE == null) {
-            synchronized (RoutesDatabase.class) {
+            synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            RoutesDatabase.class, "MyDatabase.db")
+                            AppDatabase.class, "MyDatabase.db")
                             .allowMainThreadQueries()
                             .fallbackToDestructiveMigration()
                             .build();

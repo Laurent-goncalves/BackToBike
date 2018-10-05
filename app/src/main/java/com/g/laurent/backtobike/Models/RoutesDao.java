@@ -1,4 +1,4 @@
-package com.g.laurent.backtobike;
+package com.g.laurent.backtobike.Models;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
@@ -20,6 +20,6 @@ public interface RoutesDao {
     int updateRoute(Route route);
 
     @Query("DELETE FROM Route WHERE id = :id")
-    int deletRoute(long id);
+    int deleteRoute(long id);
 
 }

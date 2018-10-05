@@ -27,6 +27,16 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <provider
+            android:name=".Models.RoutesContentProvider"
+            android:authorities="com.g.laurent.backtobike.provider"
+            android:exported="true" />
+
+        <provider
+            android:name=".Models.FriendContentProvider"
+            android:authorities="com.g.laurent.backtobike.provider"
+            android:exported="true" />
+
         <activity
             android:name=".Controllers.TraceActivity"
             android:label="@string/title_activity_trace">
