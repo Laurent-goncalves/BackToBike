@@ -12,6 +12,8 @@ public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;
     public abstract RoutesDao routesDao();
     public abstract FriendsDao friendsDao();
+    public abstract BikeEventDao bikeEventDao();
+    public abstract RouteSegmentDao routeSegmentDao();
 
     // Create a single instance of property database
     public static AppDatabase getInstance(Context context) {

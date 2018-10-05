@@ -37,6 +37,15 @@
             android:authorities="com.g.laurent.backtobike.provider"
             android:exported="true" />
 
+        <provider
+            android:name=".Models.BikeEventContentProvider"
+            android:authorities="com.g.laurent.backtobike.provider"
+            android:exported="true" />
+
+        <provider
+            android:name=".Models.RouteSegmentContentProvider"
+            android:authorities="com.g.laurent.backtobike.provider"
+            android:exported="true" />
         <activity
             android:name=".Controllers.TraceActivity"
             android:label="@string/title_activity_trace">

@@ -8,6 +8,9 @@ import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 
 @Entity(foreignKeys = @ForeignKey(entity = Route.class, parentColumns = "id", childColumns = "idRoute"),
         indices = {@Index("idRoute")})
@@ -89,9 +92,9 @@ public class RouteSegment {
 
         if (values.containsKey("id")) routeSegment.setId(values.getAsInteger("id"));
         if (values.containsKey("startPointlat")) routeSegment.setStartPointlat(values.getAsDouble("startPointlat"));
-        if (values.containsKey("startPointlng")) routeSegment.setStartPointlat(values.getAsDouble("startPointlng"));
-        if (values.containsKey("endPointlat")) routeSegment.setStartPointlat(values.getAsDouble("endPointlat"));
-        if (values.containsKey("endPointlng")) routeSegment.setStartPointlat(values.getAsDouble("endPointlng"));
+        if (values.containsKey("startPointlng")) routeSegment.setStartPointlng(values.getAsDouble("startPointlng"));
+        if (values.containsKey("endPointlat")) routeSegment.setEndPointlat(values.getAsDouble("endPointlat"));
+        if (values.containsKey("endPointlng")) routeSegment.setEndPointlng(values.getAsDouble("endPointlng"));
         if (values.containsKey("idRoute")) routeSegment.setIdRoute(values.getAsInteger("idRoute"));
 
         return routeSegment;
@@ -128,13 +131,16 @@ public class RouteSegment {
 
         final RouteSegment routeSegment = new RouteSegment();
 
-        if(cursor!=null){
-            routeSegment.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
-            routeSegment.setStartPointlat(cursor.getDouble(cursor.getColumnIndexOrThrow("startPointlat")));
-            routeSegment.setStartPointlng(cursor.getDouble(cursor.getColumnIndexOrThrow("startPointlng")));
-            routeSegment.setEndPointlat(cursor.getDouble(cursor.getColumnIndexOrThrow("endPointlat")));
-            routeSegment.setEndPointlng(cursor.getDouble(cursor.getColumnIndexOrThrow("endPointlng")));
-            routeSegment.setId(cursor.getInt(cursor.getColumnIndexOrThrow("idRoute")));
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                routeSegment.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+                routeSegment.setStartPointlat(cursor.getDouble(cursor.getColumnIndexOrThrow("startPointlat")));
+                routeSegment.setStartPointlng(cursor.getDouble(cursor.getColumnIndexOrThrow("startPointlng")));
+                routeSegment.setEndPointlat(cursor.getDouble(cursor.getColumnIndexOrThrow("endPointlat")));
+                routeSegment.setEndPointlng(cursor.getDouble(cursor.getColumnIndexOrThrow("endPointlng")));
+                routeSegment.setId(cursor.getInt(cursor.getColumnIndexOrThrow("idRoute")));
+            }
+            cursor.close();
         }
 
         return routeSegment;
