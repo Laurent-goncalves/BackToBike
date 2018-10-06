@@ -1,26 +1,21 @@
 package com.g.laurent.backtobike;
 
-import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-
 import com.g.laurent.backtobike.Controllers.TraceActivity;
 import com.g.laurent.backtobike.Utils.UtilsGoogleMaps;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.junit.Assert.*;
+
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -60,6 +55,23 @@ public class ExampleInstrumentedTest {
                 assertEquals(UtilsGoogleMaps.findIndexNearestPolyLinePoint(new LatLng(48.615268, 2.473662), route),2);
             }
         });
+    }
+
+    @Test
+    public void test_route_distance(){
+
+        LatLng point1 = new LatLng(48.858109, 2.339278);
+        LatLng point2 = new LatLng(48.800981, 2.520347);
+        LatLng point3 = new LatLng(48.615268, 2.473662);
+        LatLng point4 = new LatLng(48.587223, 2.445282);
+
+        List<LatLng> route = new ArrayList<>();
+        route.add(point1);
+        route.add(point2);
+        route.add(point3);
+        route.add(point4);
+
+        assertEquals((float) UtilsGoogleMaps.getMileageRoute(route),(float) 35670d, (float) 1);
     }
 
     private void waiting_time(int time){

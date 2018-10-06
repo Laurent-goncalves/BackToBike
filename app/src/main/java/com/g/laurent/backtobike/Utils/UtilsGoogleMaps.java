@@ -223,21 +223,19 @@ public class UtilsGoogleMaps {
         double mileage = 0;
 
         if(route!=null) {
-            if (route!= null) {
-                if (route.size() >= 2) { // at least 2 points
+            if (route.size() >= 2) { // at least 2 points
 
-                    for (int i = 0; i < route.size() - 1; i++) {
+                for (int i = 0; i < route.size() - 2; i++) {
 
-                        Location lastPoint = new Location("last_location");
-                        lastPoint.setLatitude(route.get(i).latitude);
-                        lastPoint.setLongitude(route.get(i).longitude);
+                    Location lastPoint = new Location("last_location");
+                    lastPoint.setLatitude(route.get(i).latitude);
+                    lastPoint.setLongitude(route.get(i).longitude);
 
-                        Location nextPoint = new Location("next_location");
-                        nextPoint.setLatitude(route.get(i + 1).latitude);
-                        nextPoint.setLongitude(route.get(i + 1).longitude);
+                    Location nextPoint = new Location("next_location");
+                    nextPoint.setLatitude(route.get(i + 1).latitude);
+                    nextPoint.setLongitude(route.get(i + 1).longitude);
 
-                        mileage = mileage + lastPoint.distanceTo(nextPoint);
-                    }
+                    mileage = mileage + lastPoint.distanceTo(nextPoint);
                 }
             }
         }

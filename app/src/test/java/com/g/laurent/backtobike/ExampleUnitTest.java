@@ -53,26 +53,7 @@ public class ExampleUnitTest {
 
     }
 
-    @Test
-    public void test_route_distance(){
 
-        LatLng point1 = new LatLng(48.858109, 2.339278);
-        LatLng point2 = new LatLng(48.800981, 2.520347);
-        LatLng point3 = new LatLng(48.800981, 2.520347);
-        LatLng point4 = new LatLng(48.615268, 2.473662);
-        LatLng point5 = new LatLng(48.615268, 2.473662);
-        LatLng point6 = new LatLng(48.587223, 2.445282);
-
-        List<LatLng> route = new ArrayList<>();
-        route.add(point1);
-        route.add(point2);
-        route.add(point3);
-        route.add(point4);
-        route.add(point5);
-        route.add(point6);
-
-        assertEquals((float) UtilsGoogleMaps.getMileageRoute(route),(float) 39426d, (float) 1);
-    }
 
     /*@Test
     public void test_equality_latlng(){
