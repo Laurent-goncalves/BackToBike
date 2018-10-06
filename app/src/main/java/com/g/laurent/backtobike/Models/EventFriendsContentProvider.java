@@ -29,8 +29,8 @@ public class EventFriendsContentProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         if (context != null){
-            long idEventFriends = ContentUris.parseId(uri);
-            return AppDatabase.getInstance(context).eventFriendsDao().getEventFriends(idEventFriends);
+            long idEvent = ContentUris.parseId(uri);
+            return AppDatabase.getInstance(context).eventFriendsDao().getEventFriends(idEvent);
         }
         throw new IllegalArgumentException("Failed to query row for uri " +  uri);
     }
@@ -56,8 +56,8 @@ public class EventFriendsContentProvider extends ContentProvider {
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         if (context!= null){
-            long idEventFriends = ContentUris.parseId(uri);
-            return AppDatabase.getInstance(context).eventFriendsDao().deleteEventFriends(idEventFriends);
+            long idEvent = ContentUris.parseId(uri);
+            return AppDatabase.getInstance(context).eventFriendsDao().deleteEventFriends(idEvent);
         }
         throw new IllegalArgumentException("Failed to delete row into " + uri);
     }

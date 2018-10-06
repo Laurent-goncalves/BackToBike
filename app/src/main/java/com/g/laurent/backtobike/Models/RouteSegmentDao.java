@@ -9,8 +9,8 @@ import android.database.Cursor;
 @Dao
 public interface RouteSegmentDao {
 
-    @Query("SELECT * FROM RouteSegment WHERE id = :id")
-    Cursor getRouteSegment(long id);
+    @Query("SELECT * FROM RouteSegment WHERE idRoute = :idRoute")
+    Cursor getRouteSegment(long idRoute);
 
     @Insert
     long insertRouteSegmentDao(RouteSegment routeSegment);
@@ -18,6 +18,9 @@ public interface RouteSegmentDao {
     @Update
     int updateRouteSegment(RouteSegment routeSegment);
 
-    @Query("DELETE FROM RouteSegment WHERE id = :id")
-    int deleteRouteSegment(long id);
+    @Query("DELETE FROM RouteSegment WHERE idRoute = :idRoute")
+    int deleteRouteSegment(long idRoute);
+
+    @Query("DELETE FROM RouteSegment")
+    int deleteRouteSegment();
 }

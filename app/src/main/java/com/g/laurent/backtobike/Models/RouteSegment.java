@@ -8,6 +8,9 @@ import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity(foreignKeys = @ForeignKey(entity = Route.class, parentColumns = "id", childColumns = "idRoute"),
         indices = {@Index("idRoute")})
@@ -124,23 +127,28 @@ public class RouteSegment {
         return values;
     }
 
-    public static RouteSegment getRouteSegmentFromCursor(Cursor cursor){
+    public static List<RouteSegment> getRouteSegmentFromCursor(Cursor cursor){
 
-        final RouteSegment routeSegment = new RouteSegment();
+        final List<RouteSegment> listSegments = new ArrayList<>();
 
         if (cursor != null) {
             while (cursor.moveToNext()) {
+
+                RouteSegment routeSegment = new RouteSegment();
+
                 routeSegment.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
                 routeSegment.setStartPointlat(cursor.getDouble(cursor.getColumnIndexOrThrow("startPointlat")));
                 routeSegment.setStartPointlng(cursor.getDouble(cursor.getColumnIndexOrThrow("startPointlng")));
                 routeSegment.setEndPointlat(cursor.getDouble(cursor.getColumnIndexOrThrow("endPointlat")));
                 routeSegment.setEndPointlng(cursor.getDouble(cursor.getColumnIndexOrThrow("endPointlng")));
-                routeSegment.setId(cursor.getInt(cursor.getColumnIndexOrThrow("idRoute")));
+                routeSegment.setIdRoute(cursor.getInt(cursor.getColumnIndexOrThrow("idRoute")));
+
+                listSegments.add(routeSegment);
             }
             cursor.close();
         }
 
-        return routeSegment;
+        return listSegments;
     }
 
 }

@@ -4,13 +4,17 @@ package com.g.laurent.backtobike.Models;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity(foreignKeys = {@ForeignKey(entity = BikeEvent.class,parentColumns = "id",childColumns = "idEvent"),
-        @ForeignKey(entity = Friend.class,parentColumns = "id",childColumns = "idFriend")})
+        @ForeignKey(entity = Friend.class,parentColumns = "id",childColumns = "idFriend")},indices = {@Index("idEvent"),@Index("idFriend")})
 public class EventFriends {
 
     @PrimaryKey(autoGenerate = true)
@@ -85,19 +89,24 @@ public class EventFriends {
         return values;
     }
 
-    public static EventFriends getEventFriendsFromCursor(Cursor cursor){
+    public static List<EventFriends> getEventFriendsFromCursor(Cursor cursor){
 
-        final EventFriends eventFriends = new EventFriends();
+        List<EventFriends> listEventFriends = new ArrayList<>();
 
         if(cursor!=null){
             while (cursor.moveToNext()) {
+
+                EventFriends eventFriends = new EventFriends();
+
                 eventFriends.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
                 eventFriends.setIdEvent(cursor.getInt(cursor.getColumnIndexOrThrow("idEvent")));
                 eventFriends.setIdFriend(cursor.getInt(cursor.getColumnIndexOrThrow("idFriend")));
+
+                listEventFriends.add(eventFriends);
             }
             cursor.close();
         }
 
-        return eventFriends;
+        return listEventFriends;
     }
 }

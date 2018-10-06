@@ -9,8 +9,8 @@ import android.database.Cursor;
 @Dao
 public interface EventFriendsDao {
 
-    @Query("SELECT * FROM EventFriends WHERE id = :id")
-    Cursor getEventFriends(long id);
+    @Query("SELECT * FROM EventFriends WHERE idEvent = :idEvent")
+    Cursor getEventFriends(long idEvent);
 
     @Insert
     long insertEventFriends(EventFriends eventFriends);
@@ -18,6 +18,6 @@ public interface EventFriendsDao {
     @Update
     int updateEventFriends(EventFriends eventFriends);
 
-    @Query("DELETE FROM EventFriends WHERE id = :id")
-    int deleteEventFriends(long id);
+    @Query("DELETE FROM EventFriends WHERE idEvent = :idEvent")
+    int deleteEventFriends(long idEvent);
 }
