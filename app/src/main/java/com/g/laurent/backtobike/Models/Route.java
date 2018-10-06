@@ -12,19 +12,11 @@ public class Route {
     @PrimaryKey(autoGenerate = true)
     private int id;
     private String name;
-    private Double startPointlat;
-    private Double startPointlng;
-    private Double endPointlat;
-    private Double endPointlng;
     private Boolean valid;
 
-    public Route(int id, String name, Double startPointlat, Double startPointlng, Double endPointlat, Double endPointlng, Boolean valid) {
+    public Route(int id, String name, Boolean valid) {
         this.id = id;
         this.name = name;
-        this.startPointlat = startPointlat;
-        this.startPointlng = startPointlng;
-        this.endPointlat = endPointlat;
-        this.endPointlng = endPointlng;
         this.valid = valid;
     }
 
@@ -48,38 +40,6 @@ public class Route {
         this.name = name;
     }
 
-    public Double getStartPointlat() {
-        return startPointlat;
-    }
-
-    public void setStartPointlat(Double startPointlat) {
-        this.startPointlat = startPointlat;
-    }
-
-    public Double getStartPointlng() {
-        return startPointlng;
-    }
-
-    public void setStartPointlng(Double startPointlng) {
-        this.startPointlng = startPointlng;
-    }
-
-    public Double getEndPointlat() {
-        return endPointlat;
-    }
-
-    public void setEndPointlat(Double endPointlat) {
-        this.endPointlat = endPointlat;
-    }
-
-    public Double getEndPointlng() {
-        return endPointlng;
-    }
-
-    public void setEndPointlng(Double endPointlng) {
-        this.endPointlng = endPointlng;
-    }
-
     public Boolean getValid() {
         return valid;
     }
@@ -95,10 +55,6 @@ public class Route {
 
         if (values.containsKey("id")) route.setId(values.getAsInteger("id"));
         if (values.containsKey("name")) route.setName(values.getAsString("name"));
-        if (values.containsKey("startPointlat")) route.setStartPointlat(values.getAsDouble("startPointlat"));
-        if (values.containsKey("startPointlng")) route.setStartPointlat(values.getAsDouble("startPointlng"));
-        if (values.containsKey("endPointlat")) route.setStartPointlat(values.getAsDouble("endPointlat"));
-        if (values.containsKey("endPointlng")) route.setStartPointlat(values.getAsDouble("endPointlng"));
         if (values.containsKey("valid")) route.setValid(values.getAsBoolean("valid"));
 
         return route;
@@ -109,10 +65,6 @@ public class Route {
         final ContentValues values = new ContentValues();
 
         values.put("name",route.getName());
-        values.put("startPointlat",route.getStartPointlat());
-        values.put("startPointlng",route.getStartPointlng());
-        values.put("endPointlat",route.getEndPointlat());
-        values.put("endPointlng",route.getEndPointlng());
         values.put("valid",route.getValid());
 
         return values;
@@ -124,10 +76,6 @@ public class Route {
 
         values.put("id",route.getId());
         values.put("name",route.getName());
-        values.put("startPointlat",route.getStartPointlat());
-        values.put("startPointlng",route.getStartPointlng());
-        values.put("endPointlat",route.getEndPointlat());
-        values.put("endPointlng",route.getEndPointlng());
         values.put("valid",route.getValid());
 
         return values;
@@ -138,13 +86,12 @@ public class Route {
         final Route route = new Route();
 
         if(cursor!=null){
-            route.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
-            route.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
-            route.setStartPointlat(cursor.getDouble(cursor.getColumnIndexOrThrow("startPointlat")));
-            route.setStartPointlng(cursor.getDouble(cursor.getColumnIndexOrThrow("startPointlng")));
-            route.setEndPointlat(cursor.getDouble(cursor.getColumnIndexOrThrow("endPointlat")));
-            route.setEndPointlng(cursor.getDouble(cursor.getColumnIndexOrThrow("endPointlng")));
-            route.setValid(cursor.getInt(cursor.getColumnIndexOrThrow("valid")) > 0);
+            while (cursor.moveToNext()) {
+                route.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+                route.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
+                route.setValid(cursor.getInt(cursor.getColumnIndexOrThrow("valid")) > 0);
+            }
+            cursor.close();
         }
 
         return route;

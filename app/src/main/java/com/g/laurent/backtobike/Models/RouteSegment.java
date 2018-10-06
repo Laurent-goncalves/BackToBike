@@ -18,18 +18,16 @@ public class RouteSegment {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private Double startPointlat;
-    private Double startPointlng;
-    private Double endPointlat;
-    private Double endPointlng;
+    private int number;
+    private Double lat;
+    private Double lng;
     private int idRoute;
 
-    public RouteSegment(int id, Double startPointlat, Double startPointlng, Double endPointlat, Double endPointlng, int idRoute) {
+    public RouteSegment(int id, int number, Double lat, Double lng, int idRoute) {
         this.id = id;
-        this.startPointlat = startPointlat;
-        this.startPointlng = startPointlng;
-        this.endPointlat = endPointlat;
-        this.endPointlng = endPointlng;
+        this.number = number;
+        this.lat = lat;
+        this.lng = lng;
         this.idRoute = idRoute;
     }
 
@@ -45,36 +43,28 @@ public class RouteSegment {
         this.id = id;
     }
 
-    public Double getStartPointlat() {
-        return startPointlat;
+    public int getNumber() {
+        return number;
     }
 
-    public void setStartPointlat(Double startPointlat) {
-        this.startPointlat = startPointlat;
+    public void setNumber(int number) {
+        this.number = number;
     }
 
-    public Double getStartPointlng() {
-        return startPointlng;
+    public Double getLat() {
+        return lat;
     }
 
-    public void setStartPointlng(Double startPointlng) {
-        this.startPointlng = startPointlng;
+    public void setLat(Double lat) {
+        this.lat = lat;
     }
 
-    public Double getEndPointlat() {
-        return endPointlat;
+    public Double getLng() {
+        return lng;
     }
 
-    public void setEndPointlat(Double endPointlat) {
-        this.endPointlat = endPointlat;
-    }
-
-    public Double getEndPointlng() {
-        return endPointlng;
-    }
-
-    public void setEndPointlng(Double endPointlng) {
-        this.endPointlng = endPointlng;
+    public void setLng(Double lng) {
+        this.lng = lng;
     }
 
     public int getIdRoute() {
@@ -91,10 +81,9 @@ public class RouteSegment {
         final RouteSegment routeSegment = new RouteSegment();
 
         if (values.containsKey("id")) routeSegment.setId(values.getAsInteger("id"));
-        if (values.containsKey("startPointlat")) routeSegment.setStartPointlat(values.getAsDouble("startPointlat"));
-        if (values.containsKey("startPointlng")) routeSegment.setStartPointlng(values.getAsDouble("startPointlng"));
-        if (values.containsKey("endPointlat")) routeSegment.setEndPointlat(values.getAsDouble("endPointlat"));
-        if (values.containsKey("endPointlng")) routeSegment.setEndPointlng(values.getAsDouble("endPointlng"));
+        if (values.containsKey("number")) routeSegment.setNumber(values.getAsInteger("number"));
+        if (values.containsKey("lat")) routeSegment.setLat(values.getAsDouble("lat"));
+        if (values.containsKey("lng")) routeSegment.setLng(values.getAsDouble("lng"));
         if (values.containsKey("idRoute")) routeSegment.setIdRoute(values.getAsInteger("idRoute"));
 
         return routeSegment;
@@ -104,10 +93,9 @@ public class RouteSegment {
 
         final ContentValues values = new ContentValues();
 
-        values.put("startPointlat",routeSegment.getStartPointlat());
-        values.put("startPointlng",routeSegment.getStartPointlng());
-        values.put("endPointlat",routeSegment.getEndPointlat());
-        values.put("endPointlng",routeSegment.getEndPointlng());
+        values.put("number",routeSegment.getNumber());
+        values.put("lat",routeSegment.getLat());
+        values.put("lng",routeSegment.getLng());
         values.put("idRoute",routeSegment.getIdRoute());
 
         return values;
@@ -118,10 +106,9 @@ public class RouteSegment {
         final ContentValues values = new ContentValues();
 
         values.put("id",routeSegment.getId());
-        values.put("startPointlat",routeSegment.getStartPointlat());
-        values.put("startPointlng",routeSegment.getStartPointlng());
-        values.put("endPointlat",routeSegment.getEndPointlat());
-        values.put("endPointlng",routeSegment.getEndPointlng());
+        values.put("number",routeSegment.getNumber());
+        values.put("lat",routeSegment.getLat());
+        values.put("lng",routeSegment.getLng());
         values.put("idRoute",routeSegment.getIdRoute());
 
         return values;
@@ -137,10 +124,9 @@ public class RouteSegment {
                 RouteSegment routeSegment = new RouteSegment();
 
                 routeSegment.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
-                routeSegment.setStartPointlat(cursor.getDouble(cursor.getColumnIndexOrThrow("startPointlat")));
-                routeSegment.setStartPointlng(cursor.getDouble(cursor.getColumnIndexOrThrow("startPointlng")));
-                routeSegment.setEndPointlat(cursor.getDouble(cursor.getColumnIndexOrThrow("endPointlat")));
-                routeSegment.setEndPointlng(cursor.getDouble(cursor.getColumnIndexOrThrow("endPointlng")));
+                routeSegment.setNumber(cursor.getInt(cursor.getColumnIndexOrThrow("number")));
+                routeSegment.setLat(cursor.getDouble(cursor.getColumnIndexOrThrow("lat")));
+                routeSegment.setLng(cursor.getDouble(cursor.getColumnIndexOrThrow("lng")));
                 routeSegment.setIdRoute(cursor.getInt(cursor.getColumnIndexOrThrow("idRoute")));
 
                 listSegments.add(routeSegment);

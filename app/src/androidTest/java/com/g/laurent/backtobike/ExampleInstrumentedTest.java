@@ -29,7 +29,7 @@ public class ExampleInstrumentedTest {
     @Rule
     public ActivityTestRule<TraceActivity> mActivityRule = new ActivityTestRule<>(TraceActivity.class);
 
-    @Test
+    /*@Test
     public void test_find_nearest_point_polyline(){
 
         LatLng point1 = new LatLng(48.858109, 2.339278);
@@ -55,7 +55,7 @@ public class ExampleInstrumentedTest {
                 assertEquals(UtilsGoogleMaps.findIndexNearestPolyLinePoint(new LatLng(48.615268, 2.473662), route),2);
             }
         });
-    }
+    }*/
 
     @Test
     public void test_route_distance(){

@@ -34,11 +34,11 @@ public class ContentProviderTest {
     private BikeEventContentProvider bikeEventContentProvider;
     private RouteSegmentContentProvider routeSegmentContentProvider;
     private EventFriendsContentProvider eventFriendsContentProvider;
-    private Route ROUTE_DEMO = new Route(0, "Trip around Paris", 48.819446, 2.344624, 48.897932, 2.343808, true);
+    private Route ROUTE_DEMO = new Route(0, "Trip around Paris", true);
     private Friend FRIEND_DEMO = new Friend(0,"Michel","photoURL");
     private BikeEvent BIKE_EVENT_DEMO = new BikeEvent(0,"05/08/2018","14:00",0,"Comments : take water","accepted");
-    private RouteSegment ROUTE_SEG1_DEMO = new RouteSegment(0,48.819446, 2.344624, 48.897932, 2.343808,0);
-    private RouteSegment ROUTE_SEG2_DEMO = new RouteSegment(0,48.897932, 2.343808, 48.885412, 2.336589,0);
+    private RouteSegment ROUTE_SEG1_DEMO = new RouteSegment(0,0,48.819446, 2.344624,0);
+    private RouteSegment ROUTE_SEG2_DEMO = new RouteSegment(0,1,48.885412, 2.336589,0);
     private EventFriends EVENT_FRIENDS_DEMO = new EventFriends(0,0,0);
 
     @Before
@@ -222,18 +222,18 @@ public class ContentProviderTest {
 
         List<RouteSegment> listRouteSegment = RouteSegment.getRouteSegmentFromCursor(cursor);
 
-        assertThat(listRouteSegment.get(0).getStartPointlat(), is(48.819446));
-        assertThat(listRouteSegment.get(1).getEndPointlng(), is(2.336589));
+        assertThat(listRouteSegment.get(0).getLat(), is(48.819446));
+        assertThat(listRouteSegment.get(1).getNumber(), is(1));
 
         // Update the values for these route segments
         Uri uriUpdate1 = ContentUris.withAppendedId(RouteSegmentContentProvider.URI_ITEM, ContentUris.parseId(uriInsert1));
         Uri uriUpdate2 = ContentUris.withAppendedId(RouteSegmentContentProvider.URI_ITEM, ContentUris.parseId(uriInsert2));
 
         listRouteSegment.get(0).setId((int) ContentUris.parseId(uriInsert1));
-        listRouteSegment.get(0).setStartPointlat(48.888888);
+        listRouteSegment.get(0).setLat(48.888888);
 
         listRouteSegment.get(1).setId((int) ContentUris.parseId(uriInsert2));
-        listRouteSegment.get(1).setEndPointlng(2.333333);
+        listRouteSegment.get(1).setNumber(2);
 
         routeSegmentContentProvider.update(uriUpdate1,RouteSegment.createContentValuesFromRouteSegmentUpdate(listRouteSegment.get(0)),null,null);
         routeSegmentContentProvider.update(uriUpdate2,RouteSegment.createContentValuesFromRouteSegmentUpdate(listRouteSegment.get(1)),null,null);
@@ -245,8 +245,8 @@ public class ContentProviderTest {
 
         listRouteSegment = RouteSegment.getRouteSegmentFromCursor(Newcursor);
 
-        assertThat(listRouteSegment.get(0).getStartPointlat(), is(48.888888));
-        assertThat(listRouteSegment.get(1).getEndPointlng(), is(2.333333));
+        assertThat(listRouteSegment.get(0).getLat(), is(48.888888));
+        assertThat(listRouteSegment.get(1).getNumber(), is(2));
 
         // Delete ROUTE_SEG1_DEMO and ROUTE_SEG2_DEMO
         Uri uriDelete = ContentUris.withAppendedId(RouteSegmentContentProvider.URI_ITEM, idRoute);
