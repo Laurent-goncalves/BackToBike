@@ -5,17 +5,19 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 
 
 @Entity
 public class Friend {
 
-    @PrimaryKey(autoGenerate = true)
-    private int id;
+    @NonNull
+    @PrimaryKey
+    private String id;
     private String name;
     private String photoUrl;
 
-    public Friend(int id, String name, String photoUrl) {
+    public Friend(String id, String name, String photoUrl) {
         this.id = id;
         this.name = name;
         this.photoUrl = photoUrl;
@@ -25,11 +27,11 @@ public class Friend {
     public Friend() {
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -55,24 +57,14 @@ public class Friend {
 
         final Friend friend = new Friend();
 
-        if (values.containsKey("id")) friend.setId(values.getAsInteger("id"));
+        if (values.containsKey("id")) friend.setId(values.getAsString("id"));
         if (values.containsKey("name")) friend.setName(values.getAsString("name"));
         if (values.containsKey("photoUrl")) friend.setPhotoUrl(values.getAsString("photoUrl"));
 
         return friend;
     }
 
-    public static ContentValues createContentValuesFromFriendInsert(Friend friend) {
-
-        final ContentValues values = new ContentValues();
-
-        values.put("name",friend.getName());
-        values.put("photoUrl",friend.getPhotoUrl());
-
-        return values;
-    }
-
-    public static ContentValues createContentValuesFromFriendUpdate(Friend friend) {
+    public static ContentValues createContentValuesFromFriend(Friend friend) {
 
         final ContentValues values = new ContentValues();
 
@@ -88,9 +80,12 @@ public class Friend {
         final Friend friend = new Friend();
 
         if(cursor!=null){
-            friend.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
-            friend.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
-            friend.setPhotoUrl(cursor.getString(cursor.getColumnIndexOrThrow("photoUrl")));
+            while (cursor.moveToNext()) {
+                friend.setId(cursor.getString(cursor.getColumnIndexOrThrow("id")));
+                friend.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
+                friend.setPhotoUrl(cursor.getString(cursor.getColumnIndexOrThrow("photoUrl")));
+            }
+            cursor.close();
         }
 
         return friend;

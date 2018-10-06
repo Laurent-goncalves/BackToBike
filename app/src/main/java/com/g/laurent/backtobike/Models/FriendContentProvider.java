@@ -1,7 +1,6 @@
 package com.g.laurent.backtobike.Models;
 
 import android.content.ContentProvider;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -30,8 +29,12 @@ public class FriendContentProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         if (context != null){
-            long idFriend = ContentUris.parseId(uri);
-            return AppDatabase.getInstance(context).friendsDao().getFriend(idFriend);
+            if(selectionArgs!=null){
+                if(selectionArgs.length>0){
+                    String idFriend = selectionArgs[0];
+                    return AppDatabase.getInstance(context).friendsDao().getFriend(idFriend);
+                }
+            }
         }
         throw new IllegalArgumentException("Failed to query row for uri " +  uri);
     }
@@ -46,19 +49,21 @@ public class FriendContentProvider extends ContentProvider {
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         if (context != null && values !=null){
-            final long id = AppDatabase.getInstance(context).friendsDao().insertFriend(Friend.fromContentValues(values));
-            if (id != 0){
-                return ContentUris.withAppendedId(uri, id);
-            }
-        }
-        throw new IllegalArgumentException("Failed to insert row into " + uri);
+            AppDatabase.getInstance(context).friendsDao().insertFriend(Friend.fromContentValues(values));
+        } else
+            throw new IllegalArgumentException("Failed to insert row into " + uri);
+        return null;
     }
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         if (context!= null){
-            long idFriend = ContentUris.parseId(uri);
-            return AppDatabase.getInstance(context).friendsDao().deleteFriend(idFriend);
+            if(selectionArgs!=null){
+                if(selectionArgs.length>0){
+                    String idFriend = selectionArgs[0];
+                    return AppDatabase.getInstance(context).friendsDao().deleteFriend(idFriend);
+                }
+            }
         }
         throw new IllegalArgumentException("Failed to delete row into " + uri);
     }

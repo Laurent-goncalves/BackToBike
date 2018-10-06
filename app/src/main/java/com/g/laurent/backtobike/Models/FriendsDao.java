@@ -2,6 +2,7 @@ package com.g.laurent.backtobike.Models;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 import android.database.Cursor;
@@ -10,16 +11,14 @@ import android.database.Cursor;
 public interface FriendsDao {
 
     @Query("SELECT * FROM Friend WHERE id = :id")
-    Cursor getFriend(long id);
+    Cursor getFriend(String id);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertFriend(Friend friend);
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     int updateFriend(Friend friend);
 
     @Query("DELETE FROM Friend WHERE id = :id")
-    int deleteFriend(long id);
-
-
+    int deleteFriend(String id);
 }

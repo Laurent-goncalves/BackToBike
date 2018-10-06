@@ -15,10 +15,6 @@ import java.util.List;
 
 public class RouteHandler {
 
-    private static Route buildRoute(int idRoute, String routeTitle, Boolean valid) {
-        return new Route(idRoute, routeTitle, valid);
-    }
-
     private static List<RouteSegment> buildListRouteSegments(int idRoute, List<LatLng> listPoints) {
 
         List<RouteSegment> listRouteSegments = new ArrayList<>();
@@ -40,7 +36,7 @@ public class RouteHandler {
     public static int insertNewRoute(Context context, List<LatLng> listPoints, String routeTitle, Boolean valid){
 
         // Build new route
-        Route route = buildRoute(0,routeTitle,valid);
+        Route route = new Route(0, routeTitle, valid);
 
         // Insert route in database
         RoutesContentProvider routesContentProvider = new RoutesContentProvider();
@@ -75,7 +71,7 @@ public class RouteHandler {
     public static void updateRoute(Context context,int idRoute, List<LatLng> listPoints, String routeTitle, Boolean valid){
 
         // Build new route
-        Route route = buildRoute(idRoute,routeTitle,valid);
+        Route route = new Route(idRoute, routeTitle, valid);
 
         // Update route in database
         RoutesContentProvider routesContentProvider = new RoutesContentProvider();

@@ -125,12 +125,15 @@ public class BikeEvent {
         final BikeEvent bikeEvent = new BikeEvent();
 
         if(cursor!=null){
-            bikeEvent.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
-            bikeEvent.setDate(cursor.getString(cursor.getColumnIndexOrThrow("date")));
-            bikeEvent.setTime(cursor.getString(cursor.getColumnIndexOrThrow("time")));
-            bikeEvent.setIdRoute(cursor.getInt(cursor.getColumnIndexOrThrow("idRoute")));
-            bikeEvent.setComments(cursor.getString(cursor.getColumnIndexOrThrow("comments")));
-            bikeEvent.setStatus(cursor.getString(cursor.getColumnIndexOrThrow("status")));
+            while (cursor.moveToNext()) {
+                bikeEvent.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+                bikeEvent.setDate(cursor.getString(cursor.getColumnIndexOrThrow("date")));
+                bikeEvent.setTime(cursor.getString(cursor.getColumnIndexOrThrow("time")));
+                bikeEvent.setIdRoute(cursor.getInt(cursor.getColumnIndexOrThrow("idRoute")));
+                bikeEvent.setComments(cursor.getString(cursor.getColumnIndexOrThrow("comments")));
+                bikeEvent.setStatus(cursor.getString(cursor.getColumnIndexOrThrow("status")));
+            }
+            cursor.close();
         }
 
         return bikeEvent;

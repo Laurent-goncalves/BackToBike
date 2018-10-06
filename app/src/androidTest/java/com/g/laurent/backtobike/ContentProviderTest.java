@@ -35,11 +35,11 @@ public class ContentProviderTest {
     private RouteSegmentContentProvider routeSegmentContentProvider;
     private EventFriendsContentProvider eventFriendsContentProvider;
     private Route ROUTE_DEMO = new Route(0, "Trip around Paris", true);
-    private Friend FRIEND_DEMO = new Friend(0,"Michel","photoURL");
+    private Friend FRIEND_DEMO = new Friend("id1","Michel","photoURL");
     private BikeEvent BIKE_EVENT_DEMO = new BikeEvent(0,"05/08/2018","14:00",0,"Comments : take water","accepted");
     private RouteSegment ROUTE_SEG1_DEMO = new RouteSegment(0,0,48.819446, 2.344624,0);
     private RouteSegment ROUTE_SEG2_DEMO = new RouteSegment(0,1,48.885412, 2.336589,0);
-    private EventFriends EVENT_FRIENDS_DEMO = new EventFriends(0,0,0);
+    private EventFriends EVENT_FRIENDS_DEMO = new EventFriends(0,0,"id1");
 
     @Before
     public void setUp() {
@@ -112,11 +112,12 @@ public class ContentProviderTest {
     public void addUpdateDeleteFriendInDatabase() {
 
         // Insert new friend in database
-        Uri uriInsert = friendContentProvider.insert(FriendContentProvider.URI_ITEM, Friend.createContentValuesFromFriendInsert(FRIEND_DEMO));
+        friendContentProvider.insert(FriendContentProvider.URI_ITEM, Friend.createContentValuesFromFriend(FRIEND_DEMO));
 
         // Recover the friend details just inserted
-        Uri uriQuery = ContentUris.withAppendedId(FriendContentProvider.URI_ITEM, ContentUris.parseId(uriInsert));
-        final Cursor cursor = friendContentProvider.query(uriQuery, null, null, null, null);
+        String[] selectionArgs = new String[1];
+        selectionArgs[0] = FRIEND_DEMO.getId();
+        final Cursor cursor = friendContentProvider.query(null, null, null, selectionArgs, null);
 
         // check that name is the same as initially
         if (cursor != null) {
@@ -127,16 +128,11 @@ public class ContentProviderTest {
         }
 
         // Update the name for this friend
-        Uri uriUpdate = ContentUris.withAppendedId(FriendContentProvider.URI_ITEM, ContentUris.parseId(uriInsert));
-
-        FRIEND_DEMO.setId((int) ContentUris.parseId(uriInsert));
         FRIEND_DEMO.setName("Paul");
-
-        friendContentProvider.update(uriUpdate,Friend.createContentValuesFromFriendUpdate(FRIEND_DEMO),null,null);
+        friendContentProvider.update(null,Friend.createContentValuesFromFriend(FRIEND_DEMO),null,selectionArgs);
 
         // Check that the name of the friend is well updated
-        uriQuery = ContentUris.withAppendedId(FriendContentProvider.URI_ITEM, ContentUris.parseId(uriInsert));
-        final Cursor Newcursor = friendContentProvider.query(uriQuery, null, null, null, null);
+        final Cursor Newcursor = friendContentProvider.query(null, null, null, selectionArgs, null);
 
         if (Newcursor != null) {
             while (Newcursor.moveToNext()) {
@@ -146,8 +142,7 @@ public class ContentProviderTest {
         }
 
         // Delete friend_demo
-        Uri uriDelete = ContentUris.withAppendedId(FriendContentProvider.URI_ITEM, ContentUris.parseId(uriInsert));
-        friendContentProvider.delete(uriDelete,null,null);
+        friendContentProvider.delete(null,null,selectionArgs);
     }
 
     @Test
@@ -270,18 +265,17 @@ public class ContentProviderTest {
         Uri uriRouteInsert = routesContentProvider.insert(RoutesContentProvider.URI_ITEM, Route.createContentValuesFromRouteInsert(ROUTE_DEMO));
         int idRoute = (int) ContentUris.parseId(uriRouteInsert);
 
-        Uri uriFriendInsert = friendContentProvider.insert(FriendContentProvider.URI_ITEM, Friend.createContentValuesFromFriendInsert(FRIEND_DEMO));
-        int idFriend = (int) ContentUris.parseId(uriFriendInsert);
+        friendContentProvider.insert(FriendContentProvider.URI_ITEM, Friend.createContentValuesFromFriend(FRIEND_DEMO));
 
         BIKE_EVENT_DEMO.setIdRoute(idRoute);
         Uri uriEventInsert = bikeEventContentProvider.insert(BikeEventContentProvider.URI_ITEM, BikeEvent.createContentValuesFromBikeEventInsert(BIKE_EVENT_DEMO));
         int idEvent = (int) ContentUris.parseId(uriEventInsert);
 
-        EVENT_FRIENDS_DEMO.setIdFriend(idFriend);
+        EVENT_FRIENDS_DEMO.setIdFriend(FRIEND_DEMO.getId());
         EVENT_FRIENDS_DEMO.setIdEvent(idEvent);
 
         // Insert new Event Friends in database
-        Uri uriInsert = eventFriendsContentProvider.insert(EventFriendsContentProvider.URI_ITEM, EventFriends.createContentValuesFromEventFriendsInsert(EVENT_FRIENDS_DEMO));
+        eventFriendsContentProvider.insert(EventFriendsContentProvider.URI_ITEM, EventFriends.createContentValuesFromEventFriendsInsert(EVENT_FRIENDS_DEMO));
 
         // Recover the Event Friends just inserted
         Uri uriQuery = ContentUris.withAppendedId(EventFriendsContentProvider.URI_ITEM, idEvent);
@@ -289,7 +283,7 @@ public class ContentProviderTest {
 
         List<EventFriends> listEventFriends = EventFriends.getEventFriendsFromCursor(cursor);
         assertThat(listEventFriends.get(0).getIdEvent(), is(idEvent));
-        assertThat(listEventFriends.get(0).getIdFriend(), is(idFriend));
+        assertThat(listEventFriends.get(0).getIdFriend(), is(FRIEND_DEMO.getId()));
 
         // Delete EVENT_FRIENDS_DEMO
         Uri uriDelete = ContentUris.withAppendedId(EventFriendsContentProvider.URI_ITEM, idEvent);
@@ -307,8 +301,9 @@ public class ContentProviderTest {
         bikeEventContentProvider.delete(uriBikeEventDelete,null,null);
 
         // Delete FRIEND_DEMO
-        Uri uriFriendDelete = ContentUris.withAppendedId(FriendContentProvider.URI_ITEM, idFriend);
-        friendContentProvider.delete(uriFriendDelete,null,null);
+        String[] selectionArgs = new String[1];
+        selectionArgs[0] = FRIEND_DEMO.getId();
+        friendContentProvider.delete(null,null,selectionArgs);
 
         // Delete ROUTE_DEMO
         Uri uriRouteDelete = ContentUris.withAppendedId(RoutesContentProvider.URI_ITEM, idRoute);

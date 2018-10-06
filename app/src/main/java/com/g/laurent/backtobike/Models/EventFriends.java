@@ -20,9 +20,9 @@ public class EventFriends {
     @PrimaryKey(autoGenerate = true)
     private int id;
     private int idEvent;
-    private int idFriend;
+    private String idFriend;
 
-    public EventFriends(int id, int idEvent, int idFriend) {
+    public EventFriends(int id, int idEvent, String idFriend) {
         this.id = id;
         this.idEvent = idEvent;
         this.idFriend = idFriend;
@@ -48,11 +48,11 @@ public class EventFriends {
         this.idEvent = idEvent;
     }
 
-    public int getIdFriend() {
+    public String getIdFriend() {
         return idFriend;
     }
 
-    public void setIdFriend(int idFriend) {
+    public void setIdFriend(String idFriend) {
         this.idFriend = idFriend;
     }
 
@@ -63,7 +63,7 @@ public class EventFriends {
 
         if (values.containsKey("id")) eventFriends.setId(values.getAsInteger("id"));
         if (values.containsKey("idEvent")) eventFriends.setIdEvent(values.getAsInteger("idEvent"));
-        if (values.containsKey("idFriend")) eventFriends.setIdFriend(values.getAsInteger("idFriend"));
+        if (values.containsKey("idFriend")) eventFriends.setIdFriend(values.getAsString("idFriend"));
 
         return eventFriends;
     }
@@ -100,7 +100,7 @@ public class EventFriends {
 
                 eventFriends.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
                 eventFriends.setIdEvent(cursor.getInt(cursor.getColumnIndexOrThrow("idEvent")));
-                eventFriends.setIdFriend(cursor.getInt(cursor.getColumnIndexOrThrow("idFriend")));
+                eventFriends.setIdFriend(cursor.getString(cursor.getColumnIndexOrThrow("idFriend")));
 
                 listEventFriends.add(eventFriends);
             }
