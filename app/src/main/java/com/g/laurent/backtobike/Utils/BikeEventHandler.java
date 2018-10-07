@@ -27,7 +27,7 @@ public class BikeEventHandler {
         if(listFriends!=null){
             if(listFriends.size()>0){ // if at least 1 friend
                 for(Friend friend : listFriends){
-                    listEventFriends.add(new EventFriends(0, idEvent, friend.getId()));
+                    listEventFriends.add(new EventFriends(0, idEvent, friend.getId(),true));
                 }
             }
         }

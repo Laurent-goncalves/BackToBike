@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "565197728833",
+    "firebase_url": "https://backtobike-23166.firebaseio.com",
+    "project_id": "backtobike-23166",
+    "storage_bucket": "backtobike-23166.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:565197728833:android:b494df96370772c1",
+        "android_client_info": {
+          "package_name": "com.g.laurent.backtobike"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "565197728833-1nvltf5hnl4863s7gn8ikqk98pd1k9ih.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.g.laurent.backtobike",
+            "certificate_hash": "c0331d1e0732008ca58ce49b16ab285f7f08b34c"
+          }
+        },
+        {
+          "client_id": "565197728833-9o6lj1asngog880dcf07r6m04iq10dj4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9OMnKhexLo2pa42FeXb_jicq5WamC4gU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "565197728833-9o6lj1asngog880dcf07r6m04iq10dj4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

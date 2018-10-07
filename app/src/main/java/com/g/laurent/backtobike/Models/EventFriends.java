@@ -21,11 +21,13 @@ public class EventFriends {
     private int id;
     private int idEvent;
     private String idFriend;
+    private Boolean accepted;
 
-    public EventFriends(int id, int idEvent, String idFriend) {
+    public EventFriends(int id, int idEvent, String idFriend, Boolean accepted) {
         this.id = id;
         this.idEvent = idEvent;
         this.idFriend = idFriend;
+        this.accepted = accepted;
     }
 
     @Ignore
@@ -56,6 +58,14 @@ public class EventFriends {
         this.idFriend = idFriend;
     }
 
+    public Boolean getAccepted() {
+        return accepted;
+    }
+
+    public void setAccepted(Boolean accepted) {
+        this.accepted = accepted;
+    }
+
     // --- UTILS ---
     public static EventFriends fromContentValues(ContentValues values) {
 
@@ -64,6 +74,7 @@ public class EventFriends {
         if (values.containsKey("id")) eventFriends.setId(values.getAsInteger("id"));
         if (values.containsKey("idEvent")) eventFriends.setIdEvent(values.getAsInteger("idEvent"));
         if (values.containsKey("idFriend")) eventFriends.setIdFriend(values.getAsString("idFriend"));
+        if (values.containsKey("accepted")) eventFriends.setAccepted(values.getAsBoolean("accepted"));
 
         return eventFriends;
     }
@@ -74,6 +85,7 @@ public class EventFriends {
 
         values.put("idEvent",eventFriends.getIdEvent());
         values.put("idFriend",eventFriends.getIdFriend());
+        values.put("accepted",eventFriends.getAccepted());
 
         return values;
     }
@@ -85,6 +97,7 @@ public class EventFriends {
         values.put("id",eventFriends.getId());
         values.put("idEvent",eventFriends.getIdEvent());
         values.put("idFriend",eventFriends.getIdFriend());
+        values.put("accepted",eventFriends.getAccepted());
 
         return values;
     }
@@ -101,6 +114,7 @@ public class EventFriends {
                 eventFriends.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
                 eventFriends.setIdEvent(cursor.getInt(cursor.getColumnIndexOrThrow("idEvent")));
                 eventFriends.setIdFriend(cursor.getString(cursor.getColumnIndexOrThrow("idFriend")));
+                eventFriends.setAccepted(cursor.getInt(cursor.getColumnIndexOrThrow("accepted"))>0);
 
                 listEventFriends.add(eventFriends);
             }

@@ -25,4 +25,8 @@
     <string name="add_end_point_message">Please click on the map to add a arrival point</string>
     <string name="delete_message">Please click on segments or markers to delete</string>
 
+    <!-- AUTHACTIVITY-->
+    <string name="facebook_app_id">291137544820428</string>
+    <string name="fb_login_protocol_scheme">fb291137544820428</string>
+
 </resources>
