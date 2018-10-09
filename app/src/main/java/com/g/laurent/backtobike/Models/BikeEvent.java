@@ -5,25 +5,43 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
 import android.database.Cursor;
+import java.util.List;
+
 
 @Entity
 public class BikeEvent {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
+    private String organizerId;
     private String date;
     private String time;
     private int idRoute;
     private String comments;
     private String status;
+    private transient List<EventFriends> listEventFriends;
+    private transient Route route;
 
-    public BikeEvent(int id, String date, String time, int idRoute, String comments, String status) {
+    public BikeEvent(int id, String organizerId, String date, String time, int idRoute, String comments, String status) {
         this.id = id;
+        this.organizerId = organizerId;
         this.date = date;
         this.time = time;
         this.idRoute = idRoute;
         this.comments = comments;
         this.status = status;
+    }
+
+    @Ignore
+    public BikeEvent(int id, String organizerId, String date, String time, int idRoute, String comments, String status, List<EventFriends> listEventFriends) {
+        this.id = id;
+        this.organizerId = organizerId;
+        this.date = date;
+        this.time = time;
+        this.idRoute = idRoute;
+        this.comments = comments;
+        this.status = status;
+        this.listEventFriends=listEventFriends;
     }
 
     @Ignore
@@ -36,6 +54,14 @@ public class BikeEvent {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getOrganizerId() {
+        return organizerId;
+    }
+
+    public void setOrganizerId(String organizerId) {
+        this.organizerId = organizerId;
     }
 
     public String getDate() {
@@ -78,12 +104,29 @@ public class BikeEvent {
         this.status = status;
     }
 
+    public List<EventFriends> getListEventFriends() {
+        return listEventFriends;
+    }
+
+    public void setListEventFriends(List<EventFriends> listEventFriends) {
+        this.listEventFriends = listEventFriends;
+    }
+
+    public Route getRoute() {
+        return route;
+    }
+
+    public void setRoute(Route route) {
+        this.route = route;
+    }
+
     // --- UTILS ---
     public static BikeEvent fromContentValues(ContentValues values) {
 
         final BikeEvent bikeEvent = new BikeEvent();
 
         if (values.containsKey("id")) bikeEvent.setId(values.getAsInteger("id"));
+        if (values.containsKey("organizerId")) bikeEvent.setOrganizerId(values.getAsString("id"));
         if (values.containsKey("date")) bikeEvent.setDate(values.getAsString("date"));
         if (values.containsKey("time")) bikeEvent.setTime(values.getAsString("time"));
         if (values.containsKey("idRoute")) bikeEvent.setIdRoute(values.getAsInteger("idRoute"));
@@ -97,6 +140,7 @@ public class BikeEvent {
 
         final ContentValues values = new ContentValues();
 
+        values.put("organizerId",bikeEvent.getOrganizerId());
         values.put("date",bikeEvent.getDate());
         values.put("time",bikeEvent.getTime());
         values.put("idRoute",bikeEvent.getIdRoute());
@@ -111,6 +155,7 @@ public class BikeEvent {
         final ContentValues values = new ContentValues();
 
         values.put("id",bikeEvent.getId());
+        values.put("organizerId",bikeEvent.getOrganizerId());
         values.put("date",bikeEvent.getDate());
         values.put("time",bikeEvent.getTime());
         values.put("idRoute",bikeEvent.getIdRoute());
@@ -127,6 +172,7 @@ public class BikeEvent {
         if(cursor!=null){
             while (cursor.moveToNext()) {
                 bikeEvent.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+                bikeEvent.setOrganizerId(cursor.getString(cursor.getColumnIndexOrThrow("organizerId")));
                 bikeEvent.setDate(cursor.getString(cursor.getColumnIndexOrThrow("date")));
                 bikeEvent.setTime(cursor.getString(cursor.getColumnIndexOrThrow("time")));
                 bikeEvent.setIdRoute(cursor.getInt(cursor.getColumnIndexOrThrow("idRoute")));

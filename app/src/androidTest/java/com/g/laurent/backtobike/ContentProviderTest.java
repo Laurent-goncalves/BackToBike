@@ -36,10 +36,10 @@ public class ContentProviderTest {
     private EventFriendsContentProvider eventFriendsContentProvider;
     private Route ROUTE_DEMO = new Route(0, "Trip around Paris", true);
     private Friend FRIEND_DEMO = new Friend("id1","Michel","photoURL");
-    private BikeEvent BIKE_EVENT_DEMO = new BikeEvent(0,"05/08/2018","14:00",0,"Comments : take water","accepted");
+    private BikeEvent BIKE_EVENT_DEMO = new BikeEvent(0,"idOrganizer","05/08/2018","14:00",0,"Comments : take water","accepted");
     private RouteSegment ROUTE_SEG1_DEMO = new RouteSegment(0,0,48.819446, 2.344624,0);
     private RouteSegment ROUTE_SEG2_DEMO = new RouteSegment(0,1,48.885412, 2.336589,0);
-    private EventFriends EVENT_FRIENDS_DEMO = new EventFriends(0,0,"id1");
+    private EventFriends EVENT_FRIENDS_DEMO = new EventFriends(0,0,"id1",true);
 
     @Before
     public void setUp() {

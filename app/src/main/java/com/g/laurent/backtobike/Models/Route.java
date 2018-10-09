@@ -6,6 +6,8 @@ import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import java.util.List;
+
 @Entity
 public class Route {
 
@@ -13,11 +15,20 @@ public class Route {
     private int id;
     private String name;
     private Boolean valid;
+    private transient List<RouteSegment> listRouteSegment;
 
     public Route(int id, String name, Boolean valid) {
         this.id = id;
         this.name = name;
         this.valid = valid;
+    }
+
+    @Ignore
+    public Route(int id, String name, Boolean valid, List<RouteSegment> listRouteSegment) {
+        this.id = id;
+        this.name = name;
+        this.valid = valid;
+        this.listRouteSegment=listRouteSegment;
     }
 
     @Ignore
@@ -46,6 +57,14 @@ public class Route {
 
     public void setValid(Boolean valid) {
         this.valid = valid;
+    }
+
+    public List<RouteSegment> getListRouteSegment() {
+        return listRouteSegment;
+    }
+
+    public void setListRouteSegment(List<RouteSegment> listRouteSegment) {
+        this.listRouteSegment = listRouteSegment;
     }
 
     // --- UTILS ---

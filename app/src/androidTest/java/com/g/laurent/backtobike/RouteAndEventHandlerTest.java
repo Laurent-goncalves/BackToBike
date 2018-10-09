@@ -67,10 +67,10 @@ public class RouteAndEventHandlerTest {
         FriendsHandler.insertNewFriend(context,"id5","Bob","photoUrl");
 
         // insertion
-        int idEvent = BikeEventHandler.insertNewBikeEvent(context,"03/03/2018","14:00", idRoute,"Comments : take a hat",getListFriends(),"accepted");
+        int idEvent = BikeEventHandler.insertNewBikeEvent(context,"organizerId","03/03/2018","14:00", idRoute,"Comments : take a hat",getListFriends(),"accepted");
 
         // update
-        BikeEventHandler.updateBikeEvent(context,idEvent,"04/03/2018","14:00",idRoute,"Comments : don't take a hat" ,getUpdatedListFriends(),"cancelled");
+        BikeEventHandler.updateBikeEvent(context,idEvent,"organizerId","04/03/2018","14:00",idRoute,"Comments : don't take a hat" ,getUpdatedListFriends(),"cancelled");
 
         // get
         BikeEvent bikeEvent = BikeEventHandler.getBikeEvent(context,idEvent);

@@ -39,9 +39,9 @@ public class BikeEventHandler {
     // --------------------------------------------- INSERT ---------------------------------------------------------
     // --------------------------------------------------------------------------------------------------------------
 
-    public static int insertNewBikeEvent(Context context, String date, String time, int idRoute, String comments, List<Friend> listFriends, String status){
+    public static int insertNewBikeEvent(Context context, String organizerId, String date, String time, int idRoute, String comments, List<Friend> listFriends, String status){
 
-        BikeEvent bikeEvent = new BikeEvent(0, date, time, idRoute, comments, status);
+        BikeEvent bikeEvent = new BikeEvent(0, organizerId, date, time, idRoute, comments, status);
 
         // Insert bikeEvent in database
         BikeEventContentProvider bikeEventContentProvider = new BikeEventContentProvider();
@@ -71,10 +71,10 @@ public class BikeEventHandler {
     // --------------------------------------------- UPDATE ---------------------------------------------------------
     // --------------------------------------------------------------------------------------------------------------
 
-    public static void updateBikeEvent(Context context, int idEvent, String date, String time, int idRoute, String comments, List<Friend> listFriends, String status){
+    public static void updateBikeEvent(Context context, int idEvent, String organizerId, String date, String time, int idRoute, String comments, List<Friend> listFriends, String status){
 
         // Build bikeEvent
-        BikeEvent bikeEvent = new BikeEvent(idEvent, date, time, idRoute, comments, status);
+        BikeEvent bikeEvent = new BikeEvent(idEvent, organizerId, date, time, idRoute, comments, status);
 
         // Update bikeEvent in database
         BikeEventContentProvider bikeEventContentProvider = new BikeEventContentProvider();
