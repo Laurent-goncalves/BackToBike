@@ -28,7 +28,7 @@ public class TestFirebase extends AndroidTestCase {
 
     @Override
     public void setUp() throws InterruptedException {
-        authSignal = new CountDownLatch(10);
+        authSignal = new CountDownLatch(200);
 
         auth = FirebaseAuth.getInstance();
         if(auth.getCurrentUser() == null) {

@@ -1,4 +1,4 @@
-package com.g.laurent.backtobike.Controllers;
+package com.g.laurent.backtobike.Controllers.Activities;
 
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -33,7 +33,6 @@ public class TraceActivity extends FragmentActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
 
         route = new ArrayList<>();
-
     }
 
     @Override

@@ -3,12 +3,10 @@ package com.g.laurent.backtobike;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import com.g.laurent.backtobike.Controllers.TraceActivity;
+import com.g.laurent.backtobike.Controllers.Activities.TraceActivity;
 import com.g.laurent.backtobike.Utils.UtilsGoogleMaps;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;

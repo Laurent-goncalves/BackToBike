@@ -30,4 +30,28 @@ public class UtilsApp {
         idInvitation = idInvitation.replace("/","_");
         return idInvitation;
     }
+
+    public static String createStringDate(int year, int month, int dayOfMonth){
+
+        String Day;
+        int Month = month + 1;
+        String new_month;
+
+        if(dayOfMonth<10)
+            Day = "0" + dayOfMonth;
+        else
+            Day = String.valueOf(dayOfMonth);
+
+        if(Month<10)
+            new_month = "0" + Month;
+        else
+            new_month = String.valueOf(Month);
+
+        return Day + "/" + new_month + "/" + year;
+    }
+
+    public static String createStringTime(int hourOfDay, int minute){
+        return hourOfDay + ":" + minute;
+    }
+
 }

@@ -9,7 +9,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.g.laurent.backtobike.Controllers.TraceActivity;
+import com.g.laurent.backtobike.Controllers.Activities.TraceActivity;
 import com.g.laurent.backtobike.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Controllers.RouteFragment">
+    tools:context=".Controllers.Fragments.RouteFragment">
 
     <!-- DATE PLANNED -->
     <LinearLayout
@@ -84,7 +84,7 @@
                 android:id="@+id/map_route"
                 android:layout_width="match_parent"
                 android:layout_height="175dp"
-                tools:context=".Controllers.TraceActivity" />
+                tools:context=".Controllers.Activities.TraceActivity" />
 
             <!-- MILEAGE AND TIME ESTIMATED -->
             <LinearLayout

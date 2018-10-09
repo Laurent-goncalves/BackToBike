@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.g.laurent.backtobike.Controllers.TraceActivity;
+import com.g.laurent.backtobike.Controllers.Activities.TraceActivity;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;

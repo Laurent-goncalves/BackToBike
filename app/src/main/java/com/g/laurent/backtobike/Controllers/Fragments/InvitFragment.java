@@ -1,8 +1,9 @@
-package com.g.laurent.backtobike.Controllers;
+package com.g.laurent.backtobike.Controllers.Fragments;
 
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +15,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.g.laurent.backtobike.R;
+import com.g.laurent.backtobike.Utils.ConfigureInvitFragment;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,7 +46,17 @@ public class InvitFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_invit, container, false);
+        View view = inflater.inflate(R.layout.fragment_invit, container, false);
+        ButterKnife.bind(this, view);
+        ConfigureInvitFragment config = new ConfigureInvitFragment(view,this);
+        return view;
     }
 
+    public TextView getDateView() {
+        return dateView;
+    }
+
+    public TextView getTimeView() {
+        return timeView;
+    }
 }

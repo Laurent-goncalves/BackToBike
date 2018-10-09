@@ -1,4 +1,4 @@
-package com.g.laurent.backtobike.Controllers;
+package com.g.laurent.backtobike.Controllers.Fragments;
 
 
 import android.os.Bundle;
@@ -12,10 +12,10 @@ import com.g.laurent.backtobike.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FriendFragment extends Fragment {
+public class RouteFragment extends Fragment {
 
 
-    public FriendFragment() {
+    public RouteFragment() {
         // Required empty public constructor
     }
 
@@ -24,7 +24,18 @@ public class FriendFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_friend, container, false);
+        return inflater.inflate(R.layout.fragment_route_event, container, false);
     }
 
 }
+
+/*
+
+TO COLOR BUTTONS
+
+Drawable[] drawables = textView.getCompoundDrawables();
+       if (drawables[0] != null) {  // left drawable
+           drawables[0].setColorFilter(color, Mode.MULTIPLY);
+       }
+
+ */
