@@ -11,13 +11,22 @@
     <string name="arrow_back_image">arrow_back_image</string>
     <string name="reject">REJECT</string>
     <string name="accept">ACCEPT</string>
-    <string name="add_a_new_friend">Add a new friend</string>
+    <string name="add_a_new_friend">Add a friend</string>
     <string name="date">Date:</string>
     <string name="time">Time:</string>
     <string name="guests">Guests:</string>
     <string name="send">SEND</string>
     <string name="select_a_route">Select a route:</string>
     <string name="enter_a_comment">Enter a comment:</string>
+
+
+    <!-- FRIENDSACTIVITY-->
+    <string name="image_friend">image friend</string>
+    <string name="title_add_a_friend">Add a friend</string>
+    <string name="enter_a_login">Enter a login: </string>
+    <string name="login_not_known">Login doesn\'t exists. Please check the login provided.</string>
+    <string name="login_already_among_friends">This person is already among your friends.</string>
+    <string name="error_check_login">An error occurred during login checking. Please check following issue :</string>
 
     <!-- TRACEACTIVITY-->
     <string name="add_segment_message">Please click on the map to create a new segment</string>
@@ -28,5 +37,6 @@
     <!-- AUTHACTIVITY-->
     <string name="facebook_app_id">291137544820428</string>
     <string name="fb_login_protocol_scheme">fb291137544820428</string>
+
 
 </resources>

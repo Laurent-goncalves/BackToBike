@@ -29,12 +29,7 @@ public class FriendContentProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         if (context != null){
-            if(selectionArgs!=null){
-                if(selectionArgs.length>0){
-                    String idFriend = selectionArgs[0];
-                    return AppDatabase.getInstance(context).friendsDao().getFriend(idFriend);
-                }
-            }
+            return AppDatabase.getInstance(context).friendsDao().getAllFriends();
         }
         throw new IllegalArgumentException("Failed to query row for uri " +  uri);
     }

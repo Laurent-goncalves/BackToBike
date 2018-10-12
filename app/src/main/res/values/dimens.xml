@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="buttons_spaces">2dp</dimen>
-    <dimen name="width_buttons_cancel_and_save">100dp</dimen>
+    <dimen name="width_buttons_cancel_and_save">90dp</dimen>
     <dimen name="width_button_trace_map">50dp</dimen>
     <dimen name="height_button_trace_map">40dp</dimen>
 

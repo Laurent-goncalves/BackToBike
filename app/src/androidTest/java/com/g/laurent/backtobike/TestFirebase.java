@@ -28,7 +28,7 @@ public class TestFirebase extends AndroidTestCase {
 
     @Override
     public void setUp() throws InterruptedException {
-        authSignal = new CountDownLatch(200);
+        authSignal = new CountDownLatch(5);
 
         auth = FirebaseAuth.getInstance();
         if(auth.getCurrentUser() == null) {
@@ -236,6 +236,39 @@ public class TestFirebase extends AndroidTestCase {
         readSignal.await(10, TimeUnit.SECONDS);
     }
 
+    @Test
+    public void testFirebase_LoginValidity() throws InterruptedException {
+
+        // WRITE
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
+
+        databaseReference.child("id1").child("login").setValue("id1");
+        databaseReference.child("id2").child("login").setValue("id2");
+        databaseReference.child("id2").child("my_friends").child("id1").child("login").setValue("id1");
+        databaseReference.child("id3").child("login").setValue("id3");
+
+        // READ
+        CountDownLatch readSignal = new CountDownLatch(5);
+        readSignal.countDown();
+
+        FirebaseRecover firebaseRecover = new FirebaseRecover(databaseReference);
+
+        String login1 = "id1";
+        String login2 = "id4";
+        String login3 = "id1";
+
+        Boolean isLogin1OK = firebaseRecover.isLoginNotAmongUserFriends(login1,"id3") && firebaseRecover.isLoginOnFirebase(login1);
+        Boolean isLogin2NOK = firebaseRecover.isLoginNotAmongUserFriends(login2,"id3") && firebaseRecover.isLoginOnFirebase(login2);
+        Boolean isLogin3NOK = firebaseRecover.isLoginNotAmongUserFriends(login3,"id2") && firebaseRecover.isLoginOnFirebase(login3);
+
+        Assert.assertTrue(isLogin1OK);
+        Assert.assertFalse(isLogin2NOK);
+        Assert.assertFalse(isLogin3NOK);
+
+        readSignal.await(10, TimeUnit.SECONDS);
+    }
+
+
     // -------------------------------------------- UTILS ---------------------------------------------------------
 
     private Boolean checkIfBikeEventExistsAmongMyEvents(int idEvent, List<BikeEvent> listBikeEvent){
@@ -328,11 +361,11 @@ public class TestFirebase extends AndroidTestCase {
 
         List<Friend> listFriends = new ArrayList<>();
 
-        Friend friend1 = new Friend("xs87z5d68gyf87tr1ff1","Michel","photoUrl");
-        Friend friend2 = new Friend("dr87e46f13dssfsd321g","Seb","photoUrl");
-        Friend friend3 = new Friend("rtj178ojc23fdqf5456g","Mathieu","photoUrl");
-        Friend friend4 = new Friend("rer6484txd21h8ioil45","Cyril","photoUrl");
-        Friend friend5 = new Friend("mioe16547ez15cft84z1","Luc","photoUrl");
+        Friend friend1 = new Friend("xs87z5d68gyf87tr1ff1","michel77","Michel","photoUrl",true);
+        Friend friend2 = new Friend("dr87e46f13dssfsd321g","seb_77","Seb","photoUrl",true);
+        Friend friend3 = new Friend("rtj178ojc23fdqf5456g","mat_91","Mathieu","photoUrl",false);
+        Friend friend4 = new Friend("rer6484txd21h8ioil45","cyril1988","Cyril","photoUrl",true);
+        Friend friend5 = new Friend("mioe16547ez15cft84z1","luke99","Luc","photoUrl",false);
 
         listFriends.add(friend1);
         listFriends.add(friend2);

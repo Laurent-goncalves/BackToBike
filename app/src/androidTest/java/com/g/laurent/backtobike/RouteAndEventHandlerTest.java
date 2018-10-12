@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,11 +61,12 @@ public class RouteAndEventHandlerTest {
         int idRoute = RouteHandler.insertNewRoute(context, getListPoints(),"Trip around Paris",true);
 
         // insert friends:
-        FriendsHandler.insertNewFriend(context,"id1","Paul","photoUrl");
-        FriendsHandler.insertNewFriend(context,"id2","Michel","photoUrl");
-        FriendsHandler.insertNewFriend(context,"id3","José","photoUrl");
-        FriendsHandler.insertNewFriend(context,"id4","Seb","photoUrl");
-        FriendsHandler.insertNewFriend(context,"id5","Bob","photoUrl");
+        List<Friend> listFriends = getListFriends();
+        FriendsHandler.insertNewFriend(context,listFriends.get(0));
+        FriendsHandler.insertNewFriend(context,listFriends.get(1));
+        FriendsHandler.insertNewFriend(context,listFriends.get(2));
+        FriendsHandler.insertNewFriend(context,listFriends.get(3));
+        FriendsHandler.insertNewFriend(context,listFriends.get(4));
 
         // insertion
         int idEvent = BikeEventHandler.insertNewBikeEvent(context,"organizerId","03/03/2018","14:00", idRoute,"Comments : take a hat",getListFriends(),"accepted");
@@ -79,8 +81,6 @@ public class RouteAndEventHandlerTest {
         Assert.assertEquals("04/03/2018", bikeEvent.getDate());
         Assert.assertEquals("cancelled", bikeEvent.getStatus());
         Assert.assertEquals(4, listEventFriends.size());
-        Assert.assertEquals("id2", listEventFriends.get(0).getIdFriend());
-        Assert.assertEquals("id5", listEventFriends.get(3).getIdFriend());
     }
 
     private List<LatLng> getListPoints(){
@@ -123,9 +123,9 @@ public class RouteAndEventHandlerTest {
 
     private List<Friend> getListFriends(){
 
-        Friend friend1 = new Friend("id1","Paul","photoUrl");
-        Friend friend2 = new Friend("id2","Michel","photoUrl");
-        Friend friend3 = new Friend("id3","José","photoUrl");
+        Friend friend1 = new Friend("id1","paul88","Paul","photoUrl",true);
+        Friend friend2 = new Friend("id2","michel88","Michel","photoUrl",false);
+        Friend friend3 = new Friend("id3","joseeee88","José","photoUrl",true);
 
         List<Friend> listFriends = new ArrayList<>();
         listFriends.add(friend1);
@@ -137,10 +137,10 @@ public class RouteAndEventHandlerTest {
 
     private List<Friend> getUpdatedListFriends(){
 
-        Friend friend2 = new Friend("id2","Michel","photoUrl");
-        Friend friend3 = new Friend("id3","José","photoUrl");
-        Friend friend4 = new Friend("id4","Seb","photoUrl");
-        Friend friend5 = new Friend("id5","Bob","photoUrl");
+        Friend friend2 = new Friend("id2","michel88","Michel","photoUrl",false);
+        Friend friend3 = new Friend("id3","joseeee88","José","photoUrl",true);
+        Friend friend4 = new Friend("id4","seb990","Seb","photoUrl",false);
+        Friend friend5 = new Friend("id5","bob99","Bob","photoUrl",true);
 
         List<Friend> listFriends = new ArrayList<>();
         listFriends.add(friend2);

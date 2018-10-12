@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="300dp"
+    android:layout_height="150dp">
+
+    <TextView
+        android:id="@+id/title_add_friend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:text="@string/title_add_a_friend"
+        android:textStyle="italic|bold"
+        android:textAlignment="textStart"
+        android:textSize="@dimen/textsize_invitfragment"
+        android:paddingBottom="5dp"
+        android:paddingStart="10dp"
+        android:paddingTop="5dp"
+        android:textColor="@color/colorWhite"
+        tools:ignore="RtlSymmetry" />
+
+    <TextView
+        android:id="@+id/title_enter_login"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_margin="20dp"
+        android:gravity="center"
+        android:layout_below="@+id/title_add_friend"
+        android:text="@string/enter_a_login"/>
+
+    <EditText
+        android:id="@+id/edittext_login"
+        android:layout_width="120dp"
+        android:layout_height="30dp"
+        android:layout_below="@+id/title_add_friend"
+        android:layout_toEndOf="@+id/title_enter_login"
+        android:background="@drawable/border_friend_pic"
+        android:layout_marginTop="20dp" />
+
+    <!-- BUTTONS -->
+    <RelativeLayout
+        android:layout_below="@+id/title_enter_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- BUTTON CANCEL  -->
+        <Button
+            android:id="@+id/button_cancel"
+            android:layout_width="@dimen/width_buttons_cancel_and_save"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@+id/button_save"
+            android:layout_marginTop="@dimen/buttons_spaces"
+            android:layout_marginBottom="@dimen/buttons_spaces"
+            android:background="@android:color/white"
+            android:textColor="@color/colorPrimary"
+            android:text="@string/cancel"/>
+
+        <!-- BUTTON SAVE  -->
+        <Button
+            android:id="@+id/button_save"
+            android:layout_width="@dimen/width_buttons_cancel_and_save"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="@dimen/buttons_spaces"
+            android:layout_marginEnd="@dimen/buttons_spaces"
+            android:layout_marginTop="@dimen/buttons_spaces"
+            android:layout_marginBottom="@dimen/buttons_spaces"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white"
+            android:text="@string/send"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

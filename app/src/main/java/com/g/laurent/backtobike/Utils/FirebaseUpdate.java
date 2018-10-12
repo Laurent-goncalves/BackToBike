@@ -35,6 +35,7 @@ public class FirebaseUpdate {
     private static final String ID_EVENT = "id_event";
     private static final String ID_FRIEND = "id_friend";
     private static final String ID_ORGANIZER = "id_organizer";
+    private static final String LOGIN = "login";
     private static final String ID = "id";
     private static final String DATE = "date";
     private static final String TIME = "time";
@@ -53,9 +54,10 @@ public class FirebaseUpdate {
         this.databaseReferenceUsers = databaseReferenceUsers;
     }
 
-    public void updateUserData(String user_id, String name, String photoUrl){
+    public void updateUserData(String user_id, String name, String photoUrl, String login){
         databaseReferenceUsers.child(user_id).child(NAME).setValue(name);
         databaseReferenceUsers.child(user_id).child(PHOTO_URL).setValue(photoUrl);
+        databaseReferenceUsers.child(user_id).child(LOGIN).setValue(login);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -194,13 +196,15 @@ public class FirebaseUpdate {
     }
 
     // ------------------------------------------------------------------------------------------------
-    // -------------------------- CREATE / UPDATE / DELETE FRIEND -------------------------------------
+    // ---------------------- CREATE / UPDATE / DELETE FRIEND or USER ---------------------------------
     // ------------------------------------------------------------------------------------------------
 
     public void updateFriend(String user_id, Friend friend){
         DatabaseReference databaseReferenceFriend = databaseReferenceUsers.child(user_id).child(MY_FRIENDS).child(friend.getId());
         databaseReferenceFriend.child(NAME).setValue(friend.getName());
         databaseReferenceFriend.child(PHOTO_URL).setValue(friend.getPhotoUrl());
+        databaseReferenceFriend.child(LOGIN).setValue(friend.getLogin());
+        databaseReferenceFriend.child(ACCEPTED).setValue(friend.getAccepted());
     }
 
     public void deleteFriend(String user_id, Friend friend){

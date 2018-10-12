@@ -2,22 +2,26 @@ package com.g.laurent.backtobike.Utils;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.EventLog;
 
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
+import com.g.laurent.backtobike.Models.OnDataGetListener;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 public class FirebaseRecover {
@@ -38,6 +42,7 @@ public class FirebaseRecover {
     private static final String ACCEPTED = "accepted";
     private static final String REJECTED = "rejected";
     private static final String PHOTO_URL = "photoUrl";
+    private static final String LOGIN = "login";
     private static final String ID_ROUTE = "id_route";
     private static final String ID_EVENT = "id_event";
     private static final String ID_FRIEND = "id_friend";
@@ -122,8 +127,86 @@ public class FirebaseRecover {
     }
 
     // ----------------------------------------------------------------------------------------------
-    // -------------------------- RECOVER ALL FRIENDS FROM USER -------------------------------------
+    // -------------------------------- RECOVER FRIENDS ---------------------------------------------
     // ----------------------------------------------------------------------------------------------
+
+    public void isLoginNotAmongUserFriends(String login, String user_id, final OnDataGetListener onDataGetListener) {
+
+        List<Boolean> answer = new ArrayList<>();
+        answer.add(0,true);
+
+        DatabaseReference databaseReferenceFriends = databaseReferenceUsers.child(user_id).child(MY_FRIENDS);
+
+        databaseReferenceFriends.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                // check data
+                if(dataSnapshot.getChildren()!=null){
+                    for (DataSnapshot datas : dataSnapshot.getChildren()) {
+                        if(datas.child(LOGIN).getValue()!=null){
+                            if(datas.child(LOGIN).getValue().toString().equals(login)){
+                                answer.add(0,false);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // next steps
+                if(answer.get(0)){
+                    isLoginOnFirebase(login,user_id,onDataGetListener); // check if login exists on firebase
+                } else {
+                    onDataGetListener.onFailure("friend already in your list");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                onDataGetListener.onFailure("Error to access data " + "\n" + databaseError);
+            }
+        });
+    }
+
+    public void isLoginOnFirebase(String login, String user_id, final OnDataGetListener onDataGetListener) {
+
+        List<Boolean> answer = new ArrayList<>();
+        answer.add(0,false);
+
+        databaseReferenceUsers.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                Friend friend = null;
+
+                if(dataSnapshot.getChildren()!=null){
+                    for (DataSnapshot datas : dataSnapshot.getChildren()) {
+                        if(datas.child(LOGIN).getValue()!=null){
+                            if(datas.child(LOGIN).getValue().toString().equals(login) && !datas.getKey().equals(user_id) ){
+                                answer.add(0,true);
+                                friend = buildFriend(datas, login); // create Friend
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // next steps
+                if(answer.get(0)){
+                    onDataGetListener.onSuccess(friend);
+                } else {
+                    onDataGetListener.onFailure("login doesn't exists on Firebase. Please check login provided.");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                onDataGetListener.onFailure("Error to access data " + "\n" + databaseError);
+            }
+        });
+
+
+    }
 
     public List<Friend> recoverFriendsUser(String user_id) throws InterruptedException {
 
@@ -138,8 +221,10 @@ public class FirebaseRecover {
                 if(dataSnapshot.getChildren()!=null){
                     for (DataSnapshot datas : dataSnapshot.getChildren()) {
                         listFriend.add(new Friend(datas.getKey(),
+                                (String) datas.child(LOGIN).getValue(),
                                 (String) datas.child(NAME).getValue(),
-                                (String) datas.child(PHOTO_URL).getValue()));
+                                (String) datas.child(PHOTO_URL).getValue(),
+                                (Boolean) datas.child(ACCEPTED).getValue()));
                     }
                 }
                 writeSignal.countDown();
@@ -291,5 +376,15 @@ public class FirebaseRecover {
         }
 
         return listEventFriends;
+    }
+
+    private Friend buildFriend(DataSnapshot datas, String login){
+
+        Friend friend = new Friend(datas.getKey(),login,
+                (String) datas.child(NAME).getValue(),
+                (String) datas.child(PHOTO_URL).getValue(),
+                false);
+
+        return friend;
     }
 }

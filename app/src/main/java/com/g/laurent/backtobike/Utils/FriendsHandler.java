@@ -5,6 +5,8 @@ import android.database.Cursor;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.FriendContentProvider;
 
+import java.util.List;
+
 
 public class FriendsHandler {
 
@@ -12,9 +14,7 @@ public class FriendsHandler {
     // --------------------------------------------- INSERT ---------------------------------------------------------
     // --------------------------------------------------------------------------------------------------------------
 
-    public static void insertNewFriend(Context context, String idFriend, String name, String photoUrl){
-
-        Friend friend = new Friend(idFriend, name, photoUrl);
+    public static void insertNewFriend(Context context, Friend friend){
 
         // Insert friend in database
         FriendContentProvider friendContentProvider = new FriendContentProvider();
@@ -27,16 +27,14 @@ public class FriendsHandler {
     // --------------------------------------------- UPDATE ---------------------------------------------------------
     // --------------------------------------------------------------------------------------------------------------
 
-    public static void updateFriend(Context context, String idFriend, String name, String photoUrl){
-
-        Friend friend = new Friend(idFriend, name, photoUrl);
+    public static void updateFriend(Context context, Friend friend){
 
         // Update friend in database
         FriendContentProvider friendContentProvider = new FriendContentProvider();
         friendContentProvider.setUtils(context);
 
         String[] selectionArgs = new String[0];
-        selectionArgs[0] = idFriend;
+        selectionArgs[0] = friend.getId();
         friendContentProvider.update(null, Friend.createContentValuesFromFriend(friend),null,selectionArgs);
     }
 
@@ -59,16 +57,14 @@ public class FriendsHandler {
     // ----------------------------------------------- GET ----------------------------------------------------------
     // --------------------------------------------------------------------------------------------------------------
 
-    public static Friend getFriend(Context context, String idFriend){
+    public static List<Friend> getListFriends(Context context){
 
         FriendContentProvider friendContentProvider = new FriendContentProvider();
         friendContentProvider.setUtils(context);
 
-        String[] selectionArgs = new String[0];
-        selectionArgs[0] = idFriend;
-        final Cursor cursor = friendContentProvider.query(null, null, null, selectionArgs, null);
+        final Cursor cursor = friendContentProvider.query(null, null, null, null, null);
 
-        return Friend.getRouteFromCursor(cursor);
+        return Friend.getListFriendsFromCursor(cursor);
     }
 
 }

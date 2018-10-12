@@ -10,8 +10,8 @@ import android.database.Cursor;
 @Dao
 public interface FriendsDao {
 
-    @Query("SELECT * FROM Friend WHERE id = :id")
-    Cursor getFriend(String id);
+    @Query("SELECT * FROM Friend")
+    Cursor getAllFriends();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertFriend(Friend friend);
