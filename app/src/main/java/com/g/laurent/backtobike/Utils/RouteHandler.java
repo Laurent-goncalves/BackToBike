@@ -4,6 +4,8 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+
+import com.g.laurent.backtobike.Models.AppDatabase;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
 import com.g.laurent.backtobike.Models.RouteSegmentContentProvider;
@@ -112,6 +114,16 @@ public class RouteHandler {
         final Cursor cursor = routesContentProvider.query(uriQuery, null, null, null, null);
 
         return Route.getRouteFromCursor(cursor);
+    }
+
+    public static List<Route> getAllRoutes(Context context){
+
+        RoutesContentProvider routesContentProvider = new RoutesContentProvider();
+        routesContentProvider.setUtils(context);
+
+        final Cursor cursor = AppDatabase.getInstance(context).routesDao().getAllRoutes();
+
+        return Route.getListRoutesFromCursor(cursor);
     }
 
     public static List<RouteSegment> getRouteSegments(Context context,int idRoute){

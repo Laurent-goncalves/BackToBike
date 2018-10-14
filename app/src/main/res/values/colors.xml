@@ -11,4 +11,7 @@
     <color name="colorWhite">#fffffe</color>
     <color name="colorPolylineNotComplete">#2E9AFE</color>
     <color name="colorPolylineComplete">#6b9b37</color>
+    <color name="colorButtonDelete">#ff0066</color>
+
+
 </resources>

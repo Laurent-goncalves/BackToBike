@@ -36,7 +36,9 @@
         android:layout_below="@+id/title_add_friend"
         android:layout_toEndOf="@+id/title_enter_login"
         android:background="@drawable/border_friend_pic"
-        android:layout_marginTop="20dp" />
+        android:paddingStart="10dp"
+        android:layout_marginTop="20dp"
+        tools:ignore="RtlSymmetry" />
 
     <!-- BUTTONS -->
     <RelativeLayout

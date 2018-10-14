@@ -75,7 +75,7 @@ public class FirebaseUpdate {
         setRouteSegment(databaseReferenceRoute, listRouteSegment);
     }
 
-    public void updateMyBikeEvent(String user_id, BikeEvent bikeEvent, List<EventFriends> listEventFriends){
+    public void updateMyBikeEvent(String user_id, BikeEvent bikeEvent){
 
         // set route data
         DatabaseReference databaseReferenceBikeEvent =
@@ -84,7 +84,7 @@ public class FirebaseUpdate {
         setBikeEvent(databaseReferenceBikeEvent, bikeEvent);
 
         // set event friends data
-        setEventFriends(databaseReferenceBikeEvent, user_id, listEventFriends);
+        setEventFriends(databaseReferenceBikeEvent, user_id, bikeEvent.getListEventFriends());
     }
 
     public void updateAcceptanceEventFriend(String guestId, BikeEvent bikeEvent, String idEventFriend, Boolean accepted){
@@ -218,7 +218,6 @@ public class FirebaseUpdate {
 
     private void setRoute(DatabaseReference databaseReference, Route route){
         databaseReference.child(NAME).setValue(route.getName());
-        databaseReference.child(VALID).setValue(route.getValid());
     }
 
     private void setRouteSegment(DatabaseReference databaseReference, List<RouteSegment> routeSegmentList){
@@ -256,10 +255,7 @@ public class FirebaseUpdate {
             if(listEventFriends.size()>0){
                 for(EventFriends eventFriends : listEventFriends){
                     if(!eventFriends.getIdFriend().equals(guests_id)){
-                        String id = String.valueOf(eventFriends.getId());
-                        databaseReferenceEventFriends.child(id).child(ID_EVENT).setValue(eventFriends.getIdEvent());
-                        databaseReferenceEventFriends.child(id).child(ID_FRIEND).setValue(eventFriends.getIdFriend());
-                        databaseReferenceEventFriends.child(id).child(ACCEPTED).setValue(eventFriends.getAccepted());
+                        databaseReferenceEventFriends.child(eventFriends.getIdFriend()).child(ACCEPTED).setValue(eventFriends.getAccepted());
                     }
                 }
             }

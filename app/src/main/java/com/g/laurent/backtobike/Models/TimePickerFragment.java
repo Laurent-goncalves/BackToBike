@@ -37,7 +37,7 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         String time = UtilsApp.createStringTime(hourOfDay, minute);
-        //InvitFragment invitFragment = (InvitFragment) getTargetFragment();
-        invitFragment.getTimeView().setText(time); // change date selec
+        invitFragment.getConfig().getTimeView().setText(time); // change time selected
+        invitFragment.getCallbackInvitActivity().getInvitation().setTime(time);
     }
 }

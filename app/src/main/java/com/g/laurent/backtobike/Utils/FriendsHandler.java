@@ -1,9 +1,14 @@
 package com.g.laurent.backtobike.Utils;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
+
+import com.g.laurent.backtobike.Models.AppDatabase;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.FriendContentProvider;
+import com.g.laurent.backtobike.Models.RoutesContentProvider;
 
 import java.util.List;
 
@@ -67,4 +72,15 @@ public class FriendsHandler {
         return Friend.getListFriendsFromCursor(cursor);
     }
 
+    public static Friend getFriend(Context context, String idFriend){
+
+        /*FriendContentProvider friendContentProvider = new FriendContentProvider();
+        friendContentProvider.setUtils(context);*/
+
+        final Cursor cursor = AppDatabase.getInstance(context).friendsDao().getFriend(idFriend);
+
+        //final Cursor cursor = friendContentProvider.query(null, null, null, null, null);
+
+        return Friend.getFriendFromCursor(cursor);
+    }
 }

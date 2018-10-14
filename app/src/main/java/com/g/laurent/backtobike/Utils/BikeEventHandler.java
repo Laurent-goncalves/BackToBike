@@ -39,9 +39,7 @@ public class BikeEventHandler {
     // --------------------------------------------- INSERT ---------------------------------------------------------
     // --------------------------------------------------------------------------------------------------------------
 
-    public static int insertNewBikeEvent(Context context, String organizerId, String date, String time, int idRoute, String comments, List<Friend> listFriends, String status){
-
-        BikeEvent bikeEvent = new BikeEvent(0, organizerId, date, time, idRoute, comments, status);
+    public static int insertNewBikeEvent(Context context, BikeEvent bikeEvent){
 
         // Insert bikeEvent in database
         BikeEventContentProvider bikeEventContentProvider = new BikeEventContentProvider();
@@ -51,7 +49,7 @@ public class BikeEventHandler {
         int idEvent = (int) ContentUris.parseId(uriInsert);
 
         // Build list event Friends
-        List<EventFriends> listEventFriends = buildListEventFriends(idEvent,listFriends);
+        List<EventFriends> listEventFriends = bikeEvent.getListEventFriends();
 
         EventFriendsContentProvider eventFriendsContentProvider = new EventFriendsContentProvider();
         eventFriendsContentProvider.setUtils(context);

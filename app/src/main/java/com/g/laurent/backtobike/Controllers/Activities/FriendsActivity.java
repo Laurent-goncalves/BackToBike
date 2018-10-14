@@ -28,6 +28,8 @@ import java.util.concurrent.TimeUnit;
 
 public class FriendsActivity extends AppCompatActivity implements CallbackFriendActivity {
 
+    private final static String BUNDLE_SELECT_MODE = "bundle_select_mode";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +41,11 @@ public class FriendsActivity extends AppCompatActivity implements CallbackFriend
 
         // Initialize variables
         FriendFragment friendFragment = new FriendFragment();
+
+        // add a bundle
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(BUNDLE_SELECT_MODE, false); // to open fragment NOT in select mode
+        friendFragment.setArguments(bundle);
 
         // configure and show the invitFragment
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -130,7 +131,7 @@
                 android:id="@+id/guests_views"
                 android:layout_below="@+id/layout_guests"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:orientation="horizontal">
             </LinearLayout>
 
@@ -141,7 +142,7 @@
                 android:layout_height="wrap_content"
                 android:focusableInTouchMode="true"
                 android:layout_marginTop="10dp"
-                android:layout_below="@+id/layout_guests">
+                android:layout_below="@+id/guests_views">
 
                 <!-- TEXT SELECT A ROUTE -->
                 <TextView
@@ -160,13 +161,13 @@
                     android:layout_toEndOf="@+id/text_select_route">
 
                     <View
-                        android:layout_width="160dp"
+                        android:layout_width="210dp"
                         android:layout_height="30dp"
                         android:background="@drawable/border_friend_pic"/>
 
                     <Spinner
                         android:id="@+id/spinner_list_routes"
-                        android:layout_width="150dp"
+                        android:layout_width="200dp"
                         android:layout_marginStart="10dp"
                         android:layout_gravity="center_vertical"
                         android:layout_height="wrap_content"/>
@@ -175,24 +176,71 @@
 
                 <!-- MAPS -->
                 <FrameLayout
+                    android:id="@+id/map_layout"
                     android:layout_width="match_parent"
                     android:layout_below="@+id/frame_list_routes"
                     android:layout_marginTop="10dp"
                     android:layout_height="200dp">
 
-                    <!--
-                    <fragment
+                    <View
+                        android:id="@+id/placeholder_map"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/colorGray"/>
+
+                    <com.google.android.gms.maps.MapView
                         android:id="@+id/map"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
--->
 
-                    <TextView
-                        android:id="@+id/mileage_time_estimation"
+                    <RelativeLayout
+                        android:id="@+id/layout_time_mileage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:layout_gravity="top|end"/>
+                        android:layout_gravity="top|end"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="10dp">
+
+                        <ImageView
+                            android:id="@+id/mileage_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@color/fui_transparent"
+                            android:layout_alignParentStart="true"
+                            android:layout_marginEnd="10dp"
+                            android:src="@drawable/baseline_directions_bike_black_24"/>
+
+                        <TextView
+                            android:id="@+id/mileage_estimation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toEndOf="@+id/mileage_image"
+                            android:layout_alignParentTop="true"
+                            android:textStyle="bold"
+                            android:textSize="16sp"/>
+
+                        <ImageView
+                            android:id="@+id/time_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@color/fui_transparent"
+                            android:layout_below="@+id/mileage_image"
+                            android:layout_alignParentStart="true"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginEnd="10dp"
+                            android:src="@drawable/baseline_access_time_black_24"/>
+
+                        <TextView
+                            android:id="@+id/time_estimation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toEndOf="@+id/time_image"
+                            android:layout_marginTop="5dp"
+                            android:textStyle="bold"
+                            android:layout_below="@+id/mileage_image"
+                            android:textSize="16sp"/>
+
+                    </RelativeLayout>
 
                 </FrameLayout>
 
@@ -260,6 +308,7 @@
             </RelativeLayout>
 
         </RelativeLayout>
+
 
     </ScrollView>
 

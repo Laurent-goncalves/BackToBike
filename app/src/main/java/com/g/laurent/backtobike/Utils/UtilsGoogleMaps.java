@@ -2,6 +2,8 @@ package com.g.laurent.backtobike.Utils;
 
 import android.graphics.Point;
 import android.location.Location;
+
+import com.g.laurent.backtobike.Models.RouteSegment;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.LatLng;
@@ -10,6 +12,7 @@ import com.google.android.gms.maps.model.Polyline;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -290,5 +293,19 @@ public class UtilsGoogleMaps {
             formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
             return formatter.format(date);
         }
+    }
+
+    public static List<LatLng> extractListPointsFromListRouteSegments(List<RouteSegment> listRouteSegments){
+
+        List<LatLng> listPoints = new ArrayList<>();
+        if(listRouteSegments!=null){
+            if(listRouteSegments.size()>0){
+                for(RouteSegment segment : listRouteSegments){
+                    listPoints.add(new LatLng(segment.getLat(),segment.getLng()));
+                }
+            }
+        }
+
+        return listPoints;
     }
 }

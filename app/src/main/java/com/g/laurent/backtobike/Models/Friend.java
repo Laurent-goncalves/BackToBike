@@ -123,4 +123,20 @@ public class Friend {
         return listFriend;
     }
 
+    public static Friend getFriendFromCursor(Cursor cursor){
+
+        Friend friend = new Friend();
+
+        if(cursor!=null){
+            while (cursor.moveToNext()) {
+                friend.setId(cursor.getString(cursor.getColumnIndexOrThrow("id")));
+                friend.setLogin(cursor.getString(cursor.getColumnIndexOrThrow("login")));
+                friend.setAccepted(cursor.getInt(cursor.getColumnIndexOrThrow("accepted"))>0);
+                friend.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
+                friend.setPhotoUrl(cursor.getString(cursor.getColumnIndexOrThrow("photoUrl")));
+            }
+            cursor.close();
+        }
+        return friend;
+    }
 }

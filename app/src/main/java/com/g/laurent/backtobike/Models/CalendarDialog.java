@@ -41,7 +41,8 @@ public class CalendarDialog extends DialogFragment {
             String date = UtilsApp.createStringDate(year, month, dayOfMonth);
 
             InvitFragment invitFragment = (InvitFragment) getTargetFragment();
-            invitFragment.getDateView().setText(date); // change date selected into string
+            invitFragment.getConfig().getDateView().setText(date); // change date selected into string
+            invitFragment.getCallbackInvitActivity().getInvitation().setDate(date);
 
             this.dismiss();
         }));

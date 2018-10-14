@@ -104,8 +104,8 @@ public class ContentProviderTest {
         }
 
         // Delete ROUTE_DEMO
-        Uri uriDelete = ContentUris.withAppendedId(RoutesContentProvider.URI_ITEM, ContentUris.parseId(uriInsert));
-        routesContentProvider.delete(uriDelete,null,null);
+        //Uri uriDelete = ContentUris.withAppendedId(RoutesContentProvider.URI_ITEM, ContentUris.parseId(uriInsert));
+        //routesContentProvider.delete(uriDelete,null,null);
     }
 
     @Test

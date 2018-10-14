@@ -1,22 +1,17 @@
 package com.g.laurent.backtobike.Controllers.Fragments;
 
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.g.laurent.backtobike.Controllers.Activities.FriendsActivity;
 import com.g.laurent.backtobike.Models.CallbackFriendActivity;
+import com.g.laurent.backtobike.Models.CallbackInvitActivity;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.OnDataGetListener;
 import com.g.laurent.backtobike.R;
@@ -27,10 +22,8 @@ import com.g.laurent.backtobike.Views.FriendsAdapter;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -39,14 +32,17 @@ import butterknife.ButterKnife;
  */
 public class FriendFragment extends Fragment {
 
+    private final static String BUNDLE_SELECT_MODE = "bundle_select_mode";
     @BindView(R.id.gridview_check_box) GridView gridView;
     @BindView(R.id.my_id_view) TextView myIdView;
-    private FriendsActivity friendsActivity;
     private Context context;
     private List<Friend> listFriends;
+    private ArrayList<String> listFriendsSelected;
     private CallbackFriendActivity callbackFriendActivity;
+    private CallbackInvitActivity callbackInvitActivity;
     private FirebaseUser firebaseUser;
     private String myLogin;
+    private Boolean SelectMode;
 
     public FriendFragment() {
         // Required empty public constructor
@@ -58,9 +54,8 @@ public class FriendFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_friend, container, false);
         ButterKnife.bind(this, view);
+        defineMode();
 
-        friendsActivity = (FriendsActivity) getActivity();
-        context = friendsActivity.getApplicationContext();
         myLogin = "lolo91";
 
         FirebaseApp.initializeApp(context);
@@ -74,22 +69,37 @@ public class FriendFragment extends Fragment {
         return view;
     }
 
+    private void defineMode(){
+        if(getArguments()!=null)
+            SelectMode = getArguments().getBoolean(BUNDLE_SELECT_MODE);
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        this.context = context;
 
         if(context instanceof CallbackFriendActivity){
             callbackFriendActivity = (CallbackFriendActivity) context;
+            listFriendsSelected = new ArrayList<>();
+        }
+
+        if(context instanceof CallbackInvitActivity){
+            callbackInvitActivity = (CallbackInvitActivity) context;
+            listFriendsSelected = callbackInvitActivity.getInvitation().getListIdFriends();
+            if(listFriendsSelected==null)
+                listFriendsSelected = new ArrayList<>();
         }
     }
 
     private void configureViews(){
 
         // configure gridView
-        gridView.setAdapter(new FriendsAdapter(context, listFriends, this));
+        gridView.setAdapter(new FriendsAdapter(context, listFriends, SelectMode, this));
 
         // configure login view
-        myIdView.setText("My login : " + myLogin);
+        String myLoginText = context.getResources().getString(R.string.my_login_is) + " " + myLogin;
+        myIdView.setText(myLoginText);
     }
 
     public void showDialogFriendAdd() {
@@ -131,5 +141,13 @@ public class FriendFragment extends Fragment {
         // Update layout
         listFriends.add(listFriends.size()-1, friend); // add new friend before the last item
         configureViews();
+    }
+
+    public ArrayList<String> getListFriendsSelected() {
+        return listFriendsSelected;
+    }
+
+    public CallbackInvitActivity getCallbackInvitActivity() {
+        return callbackInvitActivity;
     }
 }
