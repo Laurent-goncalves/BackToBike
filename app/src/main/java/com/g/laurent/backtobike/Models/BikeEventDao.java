@@ -12,6 +12,12 @@ public interface BikeEventDao {
     @Query("SELECT * FROM BikeEvent WHERE id = :id")
     Cursor getBikeEvent(long id);
 
+    @Query("SELECT * FROM BikeEvent WHERE organizerId = :organizerId AND status = :status")
+    Cursor getMyBikeEvents(String organizerId, String status);
+
+    @Query("SELECT * FROM BikeEvent WHERE organizerId != :user_id  AND status = :status")
+    Cursor getMyInvitiations(String user_id, String status);
+
     @Insert
     long insertBikeEvent(BikeEvent bikeEvent);
 

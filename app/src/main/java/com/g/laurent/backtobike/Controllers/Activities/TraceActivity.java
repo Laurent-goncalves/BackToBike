@@ -40,10 +40,6 @@ public class TraceActivity extends FragmentActivity implements OnMapReadyCallbac
         mMap = googleMap;
 
         new ConfigureTraceActivity(findViewById(R.id.view_trace_activity),this,mMap);
-
-        // Add a marker in Sydney and move the camera
-        /*LatLng position = new LatLng(48.866298, 2.383746);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));*/
     }
 
     // ---------------------------------------------------------------------------------------------------

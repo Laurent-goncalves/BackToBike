@@ -35,10 +35,7 @@ public class RouteHandler {
     // --------------------------------------------- INSERT ---------------------------------------------------------
     // --------------------------------------------------------------------------------------------------------------
 
-    public static int insertNewRoute(Context context, List<LatLng> listPoints, String routeTitle, Boolean valid){
-
-        // Build new route
-        Route route = new Route(0, routeTitle, valid);
+    public static int insertNewRoute(Context context, Route route){
 
         // Insert route in database
         RoutesContentProvider routesContentProvider = new RoutesContentProvider();
@@ -49,17 +46,15 @@ public class RouteHandler {
         // Recover idRoute just created
         int idRoute = (int) ContentUris.parseId(uriRouteInsert);
 
-        // Build list route segments
-        List<RouteSegment> listRouteSegments = buildListRouteSegments(idRoute,listPoints);
-
+        // Add route segments to database
         RouteSegmentContentProvider routeSegmentContentProvider = new RouteSegmentContentProvider();
         routeSegmentContentProvider.setUtils(context);
-
-        // Add route segments to database
-        if(listRouteSegments.size()>0){
-            for(RouteSegment segment : listRouteSegments){
-                segment.setIdRoute(idRoute);
-                routeSegmentContentProvider.insert(RouteSegmentContentProvider.URI_ITEM, RouteSegment.createContentValuesFromRouteSegmentInsert(segment));
+        if(route.getListRouteSegment()!=null){
+            if(route.getListRouteSegment().size()>0){
+                for(RouteSegment segment : route.getListRouteSegment()){
+                    segment.setIdRoute(idRoute);
+                    routeSegmentContentProvider.insert(RouteSegmentContentProvider.URI_ITEM, RouteSegment.createContentValuesFromRouteSegmentInsert(segment));
+                }
             }
         }
 
@@ -70,33 +65,29 @@ public class RouteHandler {
     // --------------------------------------------- UPDATE ---------------------------------------------------------
     // --------------------------------------------------------------------------------------------------------------
 
-    public static void updateRoute(Context context,int idRoute, List<LatLng> listPoints, String routeTitle, Boolean valid){
-
-        // Build new route
-        Route route = new Route(idRoute, routeTitle, valid);
+    public static void updateRoute(Context context, Route route){
 
         // Update route in database
         RoutesContentProvider routesContentProvider = new RoutesContentProvider();
         routesContentProvider.setUtils(context);
 
-        Uri uriUpdate = ContentUris.withAppendedId(RoutesContentProvider.URI_ITEM, idRoute);
+        Uri uriUpdate = ContentUris.withAppendedId(RoutesContentProvider.URI_ITEM, route.getId());
         routesContentProvider.update(uriUpdate,Route.createContentValuesFromRouteUpdate(route),null,null);
-
-        // Build list route segments
-        List<RouteSegment> listRouteSegments = buildListRouteSegments(idRoute,listPoints);
 
         RouteSegmentContentProvider routeSegmentContentProvider = new RouteSegmentContentProvider();
         routeSegmentContentProvider.setUtils(context);
 
         // Delete routes segments related to this idRoute
-        Uri uriDelete = ContentUris.withAppendedId(RouteSegmentContentProvider.URI_ITEM, idRoute);
+        Uri uriDelete = ContentUris.withAppendedId(RouteSegmentContentProvider.URI_ITEM, route.getId());
         routeSegmentContentProvider.delete(uriDelete,null,null);
 
         // Add route segments to database
-        if(listRouteSegments.size()>0){
-            for(RouteSegment segment : listRouteSegments){
-                segment.setIdRoute(idRoute);
-                routeSegmentContentProvider.insert(RouteSegmentContentProvider.URI_ITEM, RouteSegment.createContentValuesFromRouteSegmentInsert(segment));
+        if(route.getListRouteSegment()!=null){
+            if(route.getListRouteSegment().size()>0){
+                for(RouteSegment segment : route.getListRouteSegment()){
+                    segment.setIdRoute(route.getId());
+                    routeSegmentContentProvider.insert(RouteSegmentContentProvider.URI_ITEM, RouteSegment.createContentValuesFromRouteSegmentInsert(segment));
+                }
             }
         }
     }

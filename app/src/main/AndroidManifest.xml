@@ -77,13 +77,17 @@
             android:name=".Controllers.Activities.TraceActivity"
             android:label="@string/title_activity_trace" />
         <activity android:name=".Controllers.Activities.AuthActivity">
+
+        </activity>
+        <activity android:name=".Controllers.Activities.InvitActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
-        <activity android:name=".Controllers.Activities.InvitActivity"></activity>
         <activity android:name=".Controllers.Activities.FriendsActivity" />
         <activity
             android:name=".Controllers.Activities.DisplayActivity"

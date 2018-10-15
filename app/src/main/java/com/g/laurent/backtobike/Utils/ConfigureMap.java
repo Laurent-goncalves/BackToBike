@@ -23,19 +23,18 @@ import butterknife.ButterKnife;
 
 public class ConfigureMap implements OnMapReadyCallback {
 
-    @BindView(R.id.map) MapView mapView;
-    @BindView(R.id.layout_time_mileage) RelativeLayout timeMileageLayout;
-    @BindView(R.id.mileage_estimation) TextView mileageView;
-    @BindView(R.id.time_estimation) TextView timeView;
-    @BindView(R.id.placeholder_map) View mapPlaceholder;
+    private MapView mapView;
+    private TextView mileageView;
+    private TextView timeView;
     private Context context;
     private GoogleMap googleMap;
     private List<RouteSegment> listRouteSegments;
 
-
     public ConfigureMap(Context context,View view) {
         this.context = context;
-        ButterKnife.bind(this, view);
+        mapView = view.findViewById(R.id.map);
+        mileageView = view.findViewById(R.id.mileage_estimation);
+        timeView = view.findViewById(R.id.time_estimation);
     }
 
     public void configureMapLayout(Route route){

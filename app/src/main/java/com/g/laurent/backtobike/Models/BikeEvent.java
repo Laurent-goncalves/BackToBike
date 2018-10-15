@@ -5,6 +5,8 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
 import android.database.Cursor;
+
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -183,6 +185,31 @@ public class BikeEvent {
         }
 
         return bikeEvent;
+    }
+
+    public static List<BikeEvent> getListBikeEventsFromCursor(Cursor cursor){
+
+        List<BikeEvent> listEvents = new ArrayList<>();
+
+        if(cursor!=null){
+            while (cursor.moveToNext()) {
+
+                BikeEvent bikeEvent = new BikeEvent();
+
+                bikeEvent.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+                bikeEvent.setOrganizerId(cursor.getString(cursor.getColumnIndexOrThrow("organizerId")));
+                bikeEvent.setDate(cursor.getString(cursor.getColumnIndexOrThrow("date")));
+                bikeEvent.setTime(cursor.getString(cursor.getColumnIndexOrThrow("time")));
+                bikeEvent.setIdRoute(cursor.getInt(cursor.getColumnIndexOrThrow("idRoute")));
+                bikeEvent.setComments(cursor.getString(cursor.getColumnIndexOrThrow("comments")));
+                bikeEvent.setStatus(cursor.getString(cursor.getColumnIndexOrThrow("status")));
+
+                listEvents.add(bikeEvent);
+            }
+            cursor.close();
+        }
+
+        return listEvents;
     }
 
 }

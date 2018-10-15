@@ -6,20 +6,16 @@
     <string name="save">SAVE</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="at">at</string>
     <string name="arrow_back_image">arrow_back_image</string>
-    <string name="reject">REJECT</string>
-    <string name="accept">ACCEPT</string>
-    <string name="add_a_new_friend">Add a friend</string>
+
+    <!-- INVITACTIVITY -->
     <string name="date">Date:</string>
     <string name="time">Time:</string>
     <string name="guests">Guests:</string>
     <string name="send">SEND</string>
+    <string name="add_a_new_friend">Add a friend</string>
     <string name="select_a_route">Select a route:</string>
     <string name="enter_a_comment">Enter a comment:</string>
-
-    <!-- INVITACTIVITY -->
     <string name="invitation_send">Your invitation has been sent!</string>
     <string name="bike_event_saved">Your bike event has been saved!</string>
     <string name="ok">OK</string>
@@ -43,6 +39,13 @@
     <string name="facebook_app_id">291137544820428</string>
     <string name="fb_login_protocol_scheme">fb291137544820428</string>
     <string name="title_activity_display">DisplayActivity</string>
+
+    <!-- DISPLAYACTIVITY -->
+    <string name="at">at</string>
+    <string name="reject">REJECT</string>
+    <string name="accept">ACCEPT</string>
+    <string name="change">CHANGE</string>
+    <string name="delete">DELETE</string>
 
 
 </resources>

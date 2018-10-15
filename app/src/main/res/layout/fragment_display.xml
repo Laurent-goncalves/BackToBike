@@ -74,58 +74,12 @@
             android:contentDescription="@string/arrow_back_image" />
 
         <!-- MAPS -->
-        <RelativeLayout
+        <include
+            android:id="@+id/map_layout"
+            layout="@layout/map_layout"
             android:layout_width="0dp"
             android:layout_weight="70"
-            android:layout_height="200dp">
-
-            <fragment
-                android:id="@+id/map_route"
-                android:layout_width="match_parent"
-                android:layout_height="175dp"
-                tools:context=".Controllers.Activities.TraceActivity" />
-
-            <!-- MILEAGE AND TIME ESTIMATED -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:layout_marginTop="5dp"
-                android:layout_below="@+id/map_route"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/baseline_directions_bike_black_24"/>
-
-                <TextView
-                    android:id="@+id/mileage_route"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:textSize="16sp"
-                    android:layout_marginStart="5dp"
-                    android:gravity="center_vertical"
-                    android:text="55 km"/>
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="25dp"
-                    android:src="@drawable/baseline_access_time_black_24"/>
-
-                <TextView
-                    android:id="@+id/time_route"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:textSize="16sp"
-                    android:layout_marginStart="5dp"
-                    android:gravity="center_vertical"
-                    android:text="22 min"/>
-
-            </LinearLayout>
-
-        </RelativeLayout>
+            android:layout_height="200dp"/>
 
         <!-- ARROW RIGHT -->
         <ImageView
@@ -151,9 +105,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- BUTTON REJECT / CANCEL -->
+        <!-- BUTTON LEFT / RIGHT -->
         <Button
-            android:id="@+id/reject_button"
+            android:id="@+id/left_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
@@ -165,7 +119,7 @@
 
         <!-- BUTTON ACCEPT -->
         <Button
-            android:id="@+id/accept_button"
+            android:id="@+id/right_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="30dp"

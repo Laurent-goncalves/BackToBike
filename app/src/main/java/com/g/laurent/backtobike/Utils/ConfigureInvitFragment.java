@@ -57,10 +57,7 @@ public class ConfigureInvitFragment {
     @BindView(R.id.comments_edit_text) EditText commentsView;
     @BindView(R.id.button_cancel) Button buttonCancel;
     @BindView(R.id.button_send) Button buttonSend;
-    @BindView(R.id.map_layout) FrameLayout mapLayout;
-    @BindView(R.id.map) MapView mapView;
-    @BindView(R.id.layout_time_mileage) RelativeLayout timeMileageLayout;
-    @BindView(R.id.placeholder_map) View mapPlaceholder;
+    @BindView(R.id.map_layout) View mapLayout;
     private InvitFragment invitFragment;
     private Context context;
     private View view;
@@ -74,7 +71,7 @@ public class ConfigureInvitFragment {
         this.invitFragment=invitFragment;
         this.callbackInvitActivity=callbackInvitActivity;
         context = invitFragment.getContext();
-        configMap = new ConfigureMap(context, view);
+        configMap = new ConfigureMap(context, mapLayout);
     }
 
     public void configureViews(Invitation invitation){
@@ -106,16 +103,13 @@ public class ConfigureInvitFragment {
             int index = UtilsApp.findIndexRouteInList(idRoute,listRoutes);
 
             if(index!=-1){
-                displayMap(true);
                 listRoutesView.setSelection(index);
                 configMap.configureMapLayout(listRoutes.get(index));
             } else {
                 listRoutesView.setSelection(0);
-                displayMap(false);
             }
         } else { // if no route selected
             listRoutesView.setSelection(0);
-            displayMap(false);
         }
     }
 
@@ -136,23 +130,8 @@ public class ConfigureInvitFragment {
         int position = listRoutesView.getSelectedItemPosition();
 
         if(position!=0){
-            displayMap(true);
             callbackInvitActivity.getInvitation().setIdRoute(listRoutes.get(position).getId());
             configMap.configureMapLayout(listRoutes.get(position));
-        } else {
-            displayMap(false);
-        }
-    }
-
-    private void displayMap(Boolean display){
-        if(display){
-            mapView.setVisibility(View.VISIBLE);
-            mapPlaceholder.setVisibility(View.GONE);
-            timeMileageLayout.setVisibility(View.VISIBLE);
-        } else {
-            mapView.setVisibility(View.GONE);
-            mapPlaceholder.setVisibility(View.VISIBLE);
-            timeMileageLayout.setVisibility(View.GONE);
         }
     }
 

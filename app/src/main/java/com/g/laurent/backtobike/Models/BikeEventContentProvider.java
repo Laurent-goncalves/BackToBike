@@ -11,13 +11,21 @@ import android.support.annotation.Nullable;
 
 public class BikeEventContentProvider extends ContentProvider {
 
+    private static final String ONGOING ="ongoing";
+    private static final String TYPE_MY_EVENTS ="type_my_events";
+    private static final String TYPE_MY_INVITS ="type_my_invits";
+    private static final String TYPE_SINGLE_EVENT ="type_single_event";
     public static final String AUTHORITY = "com.g.laurent.backtobike.Models";
     public static final String TABLE_NAME = BikeEvent.class.getSimpleName();
     public static final Uri URI_ITEM = Uri.parse("content://" + AUTHORITY + "/" + TABLE_NAME);
     private Context context;
+    private String typeEvent;
+    private String organizerId;
 
-    public void setUtils(Context context){
+    public void setUtils(Context context, String typeEvent, String organizerId){
         this.context=context;
+        this.typeEvent=typeEvent;
+        this.organizerId=organizerId;
     }
 
     @Override
@@ -29,8 +37,16 @@ public class BikeEventContentProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         if (context != null){
-            long idBikeEvent = ContentUris.parseId(uri);
-            return AppDatabase.getInstance(context).bikeEventDao().getBikeEvent(idBikeEvent);
+
+            switch(typeEvent){
+                case TYPE_MY_EVENTS:
+                    return AppDatabase.getInstance(context).bikeEventDao().getMyBikeEvents(organizerId,ONGOING);
+                case TYPE_MY_INVITS:
+                    return AppDatabase.getInstance(context).bikeEventDao().getMyInvitiations(organizerId,ONGOING);
+                case TYPE_SINGLE_EVENT:
+                    long idBikeEvent = ContentUris.parseId(uri);
+                    return AppDatabase.getInstance(context).bikeEventDao().getBikeEvent(idBikeEvent);
+            }
         }
         throw new IllegalArgumentException("Failed to query row for uri " +  uri);
     }

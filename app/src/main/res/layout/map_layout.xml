@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="200dp">
+
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorGray"/>
+
+    <RelativeLayout
+        android:id="@+id/layout_time_mileage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="10dp">
+
+        <ImageView
+            android:id="@+id/mileage_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/fui_transparent"
+            android:layout_alignParentStart="true"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/baseline_directions_bike_black_24"/>
+
+        <TextView
+            android:id="@+id/mileage_estimation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/mileage_image"
+            android:layout_alignParentTop="true"
+            android:textStyle="bold"
+            android:textSize="16sp"/>
+
+        <ImageView
+            android:id="@+id/time_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/fui_transparent"
+            android:layout_below="@+id/mileage_image"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/baseline_access_time_black_24"/>
+
+        <TextView
+            android:id="@+id/time_estimation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/time_image"
+            android:layout_marginTop="5dp"
+            android:textStyle="bold"
+            android:layout_below="@+id/mileage_image"
+            android:textSize="16sp"/>
+
+    </RelativeLayout>
+
+</FrameLayout>

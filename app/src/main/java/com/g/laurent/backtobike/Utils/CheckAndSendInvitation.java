@@ -57,7 +57,7 @@ public class CheckAndSendInvitation {
 
             bikeEvent.setRoute(route);
 
-            firebaseUpdate.setInvitationToGuests(route, bikeEvent);
+            firebaseUpdate.addInvitationGuests(bikeEvent);
 
             // Display message to user
             if(bikeEvent.getListEventFriends().size()>0)

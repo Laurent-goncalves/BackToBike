@@ -12,6 +12,6 @@
     <color name="colorPolylineNotComplete">#2E9AFE</color>
     <color name="colorPolylineComplete">#6b9b37</color>
     <color name="colorButtonDelete">#ff0066</color>
-
-
+    <color name="colorReject">#cc0000</color>
+    <color name="colorValid">#669900</color>
 </resources>

@@ -1,5 +1,10 @@
 package com.g.laurent.backtobike.Utils;
 
+import android.content.Context;
+import android.view.View;
+import android.widget.ImageView;
+
+import com.g.laurent.backtobike.Controllers.Fragments.DisplayFragment;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
@@ -150,5 +155,53 @@ public class UtilsApp {
         }
 
         return listRoutesNames;
+    }
+
+    public static List<Friend> getListFriendsFromEventFriends(List<EventFriends> listEventFriends, Context context){
+
+        List<Friend> listFriends = new ArrayList<>();
+
+        if(listEventFriends!=null){
+            if(listEventFriends.size()!=0){
+                for(EventFriends eventFriends : listEventFriends){
+                    listFriends.add(FriendsHandler.getFriend(context, eventFriends.getIdFriend()));
+                }
+            }
+        }
+
+        return listFriends;
+    }
+
+    private static Boolean needLeftArrow(int position, int sizeList){
+
+        if(sizeList==0)
+            return false;
+        else {
+            return position != 0;
+        }
+    }
+
+    private static Boolean needRightArrow(int position, int sizeList){
+
+        if(sizeList==0)
+            return false;
+        else {
+            return position != sizeList-1;
+        }
+    }
+
+    public static void configureArrows(int position, int sizeList, ImageView arrowLeft, ImageView arrowRight, DisplayFragment fragment){
+
+        if(needLeftArrow(position,sizeList)) {
+            arrowLeft.setVisibility(View.VISIBLE);
+            arrowLeft.setOnClickListener(v -> fragment.getCallbackInvitActivity().getPager().setCurrentItem(position-1));
+        } else
+            arrowLeft.setVisibility(View.INVISIBLE);
+
+        if(needRightArrow(position,sizeList)) {
+            arrowRight.setVisibility(View.VISIBLE);
+            arrowRight.setOnClickListener(v -> fragment.getCallbackInvitActivity().getPager().setCurrentItem(position+1));
+        } else
+            arrowRight.setVisibility(View.INVISIBLE);
     }
 }
