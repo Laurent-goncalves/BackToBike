@@ -2,9 +2,7 @@ package com.g.laurent.backtobike.Utils;
 
 import android.os.Bundle;
 
-import com.g.laurent.backtobike.Controllers.Activities.InvitActivity;
-import com.g.laurent.backtobike.Controllers.Fragments.InvitFragment;
-import com.g.laurent.backtobike.Models.CallbackInvitActivity;
+import com.g.laurent.backtobike.Controllers.Activities.EventActivity;
 import com.g.laurent.backtobike.Models.Invitation;
 
 import java.util.ArrayList;
@@ -34,10 +32,10 @@ public class SaveAndRestoreDataInvitActivity {
     }
 
     // ----------------------------------- SAVE DATA
-    public static void saveData(Bundle bundle, InvitActivity invitActivity){
-        if(bundle!=null && invitActivity!=null) {
+    public static void saveData(Bundle bundle, EventActivity eventActivity){
+        if(bundle!=null && eventActivity !=null) {
 
-            Invitation invit = invitActivity.getInvitation();
+            Invitation invit = eventActivity.getInvitation();
 
             bundle.putString(BUNDLE_DATE, invit.getDate());
             bundle.putString(BUNDLE_TIME, invit.getTime());
@@ -48,9 +46,9 @@ public class SaveAndRestoreDataInvitActivity {
     }
 
     // ----------------------------------- RESTORE DATA
-    public static void restoreData(Bundle saveInstantState, InvitActivity invitActivity){
+    public static void restoreData(Bundle saveInstantState, EventActivity eventActivity){
 
-        if(saveInstantState!=null && invitActivity!=null){
+        if(saveInstantState!=null && eventActivity !=null){
 
             String date = saveInstantState.getString(BUNDLE_DATE);
             String time = saveInstantState.getString(BUNDLE_TIME);
@@ -58,11 +56,11 @@ public class SaveAndRestoreDataInvitActivity {
             ArrayList<String> listGuestsId = saveInstantState.getStringArrayList(BUNDLE_LIST_FRIENDS_ID);
             String comments = saveInstantState.getString(BUNDLE_COMMENTS);
 
-            invitActivity.getInvitation().setDate(date);
-            invitActivity.getInvitation().setTime(time);
-            invitActivity.getInvitation().setIdRoute(idRoute);
-            invitActivity.getInvitation().setListIdFriends(listGuestsId);
-            invitActivity.getInvitation().setComments(comments);
+            eventActivity.getInvitation().setDate(date);
+            eventActivity.getInvitation().setTime(time);
+            eventActivity.getInvitation().setIdRoute(idRoute);
+            eventActivity.getInvitation().setListIdFriends(listGuestsId);
+            eventActivity.getInvitation().setComments(comments);
         }
     }
 

@@ -47,5 +47,21 @@
     <string name="change">CHANGE</string>
     <string name="delete">DELETE</string>
 
+    <!-- MENUS NAVIGATION DRAWER AND TOOLBAR-->
+    <string name="my_friends_menu">My friends</string>
+    <string name="my_bikeevents_menu">My next bike trips</string>
+    <string name="my_invit_menu">My invitations</string>
+    <string name="my_routes_menu">My routes</string>
+    <string name="back_to_main_menu">Back to main page</string>
+    <string name="sign_out_menu">Sign out</string>
+
+    <string name="title_my_friends">My Friends</string>
+    <string name="title_my_events">My next bike trips</string>
+    <string name="title_create_event">Create a new bike trip</string>
+    <string name="title_my_invits">My invitations</string>
+    <string name="title_my_routes">My routes</string>
+    <string name="title_trace_route">Trace a route</string>
+    <string name="title_main_page">Back To Bike</string>
+    <string name="title_activity_main">MainActivity</string>
 
 </resources>

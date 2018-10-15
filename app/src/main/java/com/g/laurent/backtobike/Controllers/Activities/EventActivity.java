@@ -12,13 +12,12 @@ import com.g.laurent.backtobike.Models.ToolbarManager;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.SaveAndRestoreDataInvitActivity;
 
-public class InvitActivity extends AppCompatActivity implements CallbackInvitActivity {
+public class EventActivity extends BaseActivity implements CallbackInvitActivity {
 
     private final static String TAG_INVIT_FRAGMENT = "tag_invit_fragment";
     private final static String TAG_FRIEND_FRAGMENT = "tag_friend_fragment";
     private final static String BUNDLE_SELECT_MODE = "bundle_select_mode";
     private InvitFragment invitFragment;
-    private ToolbarManager toolbarManager;
     private FriendFragment friendFragment;
     private Invitation invitation;
 
@@ -28,8 +27,7 @@ public class InvitActivity extends AppCompatActivity implements CallbackInvitAct
         setContentView(R.layout.activity_invit);
         invitation = new Invitation();
         SaveAndRestoreDataInvitActivity.restoreData(savedInstanceState,this);
-        toolbarManager = new ToolbarManager();
-        toolbarManager.configureToolbar(this);
+        toolbarManager.configureToolbar(this, MENU_CREATE_EVENT);
         configureAndShowInvitFragment();
     }
 
