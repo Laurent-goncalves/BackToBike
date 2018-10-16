@@ -238,7 +238,11 @@ public class FirebaseUpdate {
         updateFriend(firebaseUser.getUid(), friend);
 
         // Add user in friend Firebase "my_friends" with status "null" as accepted
-        Friend user = new Friend(firebaseUser.getUid(), login, firebaseUser.getDisplayName(),firebaseUser.getPhotoUrl().toString(),null);
+        String photoUrl = null;
+        if(firebaseUser.getPhotoUrl()!=null)
+            photoUrl = firebaseUser.getPhotoUrl().toString();
+
+        Friend user = new Friend(firebaseUser.getUid(), login, firebaseUser.getDisplayName(), photoUrl,null);
         updateFriend(friend.getId(),user);
     }
 
@@ -271,6 +275,7 @@ public class FirebaseUpdate {
 
     private void setRoute(DatabaseReference databaseReference, Route route){
         databaseReference.child(NAME).setValue(route.getName());
+        databaseReference.child(VALID).setValue(route.getValid());
     }
 
     private void setRouteSegment(DatabaseReference databaseReference, List<RouteSegment> routeSegmentList){

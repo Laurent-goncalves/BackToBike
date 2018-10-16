@@ -1,15 +1,9 @@
 package com.g.laurent.backtobike.Utils;
 
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
-
-import com.g.laurent.backtobike.Models.AppDatabase;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.FriendContentProvider;
-import com.g.laurent.backtobike.Models.RoutesContentProvider;
-
 import java.util.List;
 
 
@@ -38,9 +32,7 @@ public class FriendsHandler {
         FriendContentProvider friendContentProvider = new FriendContentProvider();
         friendContentProvider.setUtils(context);
 
-        String[] selectionArgs = new String[0];
-        selectionArgs[0] = friend.getId();
-        friendContentProvider.update(null, Friend.createContentValuesFromFriend(friend),null,selectionArgs);
+        friendContentProvider.update(null, Friend.createContentValuesFromFriend(friend),null,null);
     }
 
     // --------------------------------------------------------------------------------------------------------------
@@ -52,10 +44,9 @@ public class FriendsHandler {
         // Delete friend in database
         FriendContentProvider friendContentProvider = new FriendContentProvider();
         friendContentProvider.setUtils(context);
+        friendContentProvider.setIdFriend(idFriend);
 
-        String[] selectionArgs = new String[0];
-        selectionArgs[0] = idFriend;
-        friendContentProvider.delete(null,null,selectionArgs);
+        friendContentProvider.delete(null,null,null);
     }
 
     // --------------------------------------------------------------------------------------------------------------
@@ -74,12 +65,11 @@ public class FriendsHandler {
 
     public static Friend getFriend(Context context, String idFriend){
 
-        /*FriendContentProvider friendContentProvider = new FriendContentProvider();
-        friendContentProvider.setUtils(context);*/
+        FriendContentProvider friendContentProvider = new FriendContentProvider();
+        friendContentProvider.setUtils(context);
+        friendContentProvider.setIdFriend(idFriend);
 
-        final Cursor cursor = AppDatabase.getInstance(context).friendsDao().getFriend(idFriend);
-
-        //final Cursor cursor = friendContentProvider.query(null, null, null, null, null);
+        final Cursor cursor = friendContentProvider.query(null, null, null, null, null);
 
         return Friend.getFriendFromCursor(cursor);
     }

@@ -28,6 +28,7 @@ public class EventActivity extends BaseActivity implements CallbackInvitActivity
         invitation = new Invitation();
         SaveAndRestoreDataInvitActivity.restoreData(savedInstanceState,this);
         toolbarManager.configureToolbar(this, MENU_CREATE_EVENT);
+
         configureAndShowInvitFragment();
     }
 

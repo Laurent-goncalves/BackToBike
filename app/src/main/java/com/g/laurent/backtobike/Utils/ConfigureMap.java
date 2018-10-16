@@ -30,7 +30,7 @@ public class ConfigureMap implements OnMapReadyCallback {
     private GoogleMap googleMap;
     private List<RouteSegment> listRouteSegments;
 
-    public ConfigureMap(Context context,View view) {
+    public ConfigureMap(Context context, View view) {
         this.context = context;
         mapView = view.findViewById(R.id.map);
         mileageView = view.findViewById(R.id.mileage_estimation);

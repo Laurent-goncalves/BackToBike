@@ -17,7 +17,7 @@ import com.google.android.gms.maps.model.Polyline;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TraceActivity extends FragmentActivity implements OnMapReadyCallback {
+public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private Boolean deleteMode;
@@ -27,6 +27,7 @@ public class TraceActivity extends FragmentActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trace);
+        toolbarManager.configureToolbar(this, MENU_TRACE_ROUTE);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);

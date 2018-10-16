@@ -16,25 +16,26 @@ import java.util.List;
 
 
 
-public class DisplayActivity extends AppCompatActivity implements CallbackDisplayActivity {
+public class DisplayActivity extends BaseActivity implements CallbackDisplayActivity {
 
-    private static final String BUNDLE_ROUTE_ID ="bundle_route_id";
+
     private List<Route> listRoutes;
     private List<BikeEvent> listEvents;
     private List<BikeEvent> listInvitations;
     private String typeDisplay;
-    private String user_id;
     private ViewPager pager;
     private PageAdapter adapter;
     private int position;
+    private int count;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display);
-        user_id = FirebaseAuth.getInstance().getUid();
+        userId = FirebaseAuth.getInstance().getUid();
         Bundle extras = getIntent().getExtras();
-        SaveAndRestoreDisplayActivity.restoreData(extras,user_id,this);
+        SaveAndRestoreDisplayActivity.restoreData(extras, userId,this);
+        toolbarManager.configureToolbar(this, typeDisplay);
         configureAndShowDisplayFragmentsInViewPager();
     }
 
@@ -47,15 +48,8 @@ public class DisplayActivity extends AppCompatActivity implements CallbackDispla
     public void configureAndShowDisplayFragmentsInViewPager(){
 
         pager = findViewById(R.id.activity_display_viewpager);
-        adapter = new PageAdapter(getSupportFragmentManager(), typeDisplay);
+        adapter = new PageAdapter(getSupportFragmentManager(), typeDisplay, count);
         pager.setAdapter(adapter);
-    }
-
-    public void launchTraceActivity(Route route){
-
-        Intent intent = new Intent(this, TraceActivity.class);
-        intent.getExtras().putInt(BUNDLE_ROUTE_ID, route.getId());
-        startActivity(intent);
     }
 
     public String getTypeDisplay() {
@@ -106,5 +100,7 @@ public class DisplayActivity extends AppCompatActivity implements CallbackDispla
         return adapter;
     }
 
-
+    public void setCount(int count) {
+        this.count = count;
+    }
 }

@@ -4,9 +4,16 @@
     <string name="title_route">Title route</string>
     <string name="cancel">CANCEL</string>
     <string name="save">SAVE</string>
+    <string name="sharedpreferences">backtobike_sharedpreferences</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="arrow_back_image">arrow_back_image</string>
+
+    <!-- MAINACTIVITY -->
+    <string name="login_creation">Creation of login</string>
+    <string name="error_login">Please give a login</string>
+    <string name="login_already_on_firebase">The login provided is already taken. Please give another login.</string>
+
 
     <!-- INVITACTIVITY -->
     <string name="date">Date:</string>

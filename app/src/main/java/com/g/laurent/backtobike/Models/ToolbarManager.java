@@ -24,9 +24,9 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
 
     private final static String MENU_MAIN_PAGE = "menu_main_page";
     private final static String MENU_MY_FRIENDS = "menu_my_friends";
-    private final static String MENU_MY_EVENTS = "menu_my_events";
-    private final static String MENU_MY_INVITS = "menu_my_invits";
-    private final static String MENU_MY_ROUTES = "menu_my_routes";
+    private static final String DISPLAY_MY_ROUTES ="display_my_routes";
+    private static final String DISPLAY_MY_EVENTS ="display_my_events";
+    private static final String DISPLAY_MY_INVITS ="display_my_invits";
     private final static String MENU_TRACE_ROUTE = "menu_trace_route";
     private final static String MENU_CREATE_EVENT = "menu_create_event";
     private final static String MENU_SIGN_OUT= "menu_sign_out";
@@ -53,7 +53,7 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
         navigationView = baseActivity.findViewById(R.id.activity_nav_view);
 
         finalizeToolbarConfiguration(currentMenu);
-        configureButtonToolbar(baseActivity, currentMenu);
+        //configureButtonToolbar(baseActivity, currentMenu);
         configureNavigationDrawerMenus(currentMenu);
     }
 
@@ -87,7 +87,7 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
                 title.setText(context.getResources().getString(R.string.title_my_friends));
                 break;
 
-            case MENU_MY_EVENTS:
+            case DISPLAY_MY_EVENTS:
                 title.setText(context.getResources().getString(R.string.title_my_events));
                 break;
 
@@ -95,11 +95,11 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
                 title.setText(context.getResources().getString(R.string.title_create_event));
                 break;
 
-            case MENU_MY_INVITS:
+            case DISPLAY_MY_INVITS:
                 title.setText(context.getResources().getString(R.string.title_my_invits));
                 break;
 
-            case MENU_MY_ROUTES:
+            case DISPLAY_MY_ROUTES:
                 title.setText(context.getResources().getString(R.string.title_my_routes));
                 break;
 
@@ -114,11 +114,6 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
     // ------------------------------------------------------------------------------------------------
     // ---------------------------------- RIGHT BUTTON ------------------------------------------------
     // ------------------------------------------------------------------------------------------------
-
-    public void configureButtonToolbar(BaseActivity baseActivity, String currentMenu){
-
-
-    }
 
     public void configureButtonToolbar(Boolean buttonVisible, EventActivity eventActivity){
 
@@ -135,6 +130,25 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
                 eventActivity.backToInvitFragment();
             });
         }
+
+    }
+
+    public void configureButtonToolbar(Boolean buttonVisible, BaseActivity baseActivity, String currentMenu){
+
+        if(!buttonVisible){ // if no button needed, remove it
+            buttonToolbar.setVisibility(View.GONE);
+        } else { // if button needed, make it visible and configure click
+
+            buttonToolbar.setText(context.getResources().getString(R.string.ok));
+            buttonToolbar.setVisibility(View.VISIBLE);
+
+            buttonToolbar.setOnClickListener(v -> {
+                // Display invitfragment and configure guests selected
+                /*eventActivity.getInvitation().setListIdFriends(eventActivity.getFriendFragment().getListFriendsSelected());
+                eventActivity.backToInvitFragment();*/
+            });
+        }
+
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -144,9 +158,9 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
     public void configureNavigationDrawerMenus(String currentMenu){
 
         navigationView.getMenu().findItem(R.id.my_friends_menu_item).setVisible(!currentMenu.equals(MENU_MY_FRIENDS));
-        navigationView.getMenu().findItem(R.id.my_events_menu_item).setVisible(!currentMenu.equals(MENU_MY_EVENTS));
-        navigationView.getMenu().findItem(R.id.my_invitations_menu_item).setVisible(!currentMenu.equals(MENU_MY_INVITS));
-        navigationView.getMenu().findItem(R.id.my_routes_menu_item).setVisible(!currentMenu.equals(MENU_MY_ROUTES) && !currentMenu.equals(MENU_TRACE_ROUTE));
+        navigationView.getMenu().findItem(R.id.my_events_menu_item).setVisible(!currentMenu.equals(DISPLAY_MY_EVENTS));
+        navigationView.getMenu().findItem(R.id.my_invitations_menu_item).setVisible(!currentMenu.equals(DISPLAY_MY_INVITS));
+        navigationView.getMenu().findItem(R.id.my_routes_menu_item).setVisible(!currentMenu.equals(DISPLAY_MY_ROUTES) && !currentMenu.equals(MENU_TRACE_ROUTE));
         navigationView.getMenu().findItem(R.id.back_to_main_page_menu_item).setVisible(!currentMenu.equals(MENU_MAIN_PAGE));
         navigationView.getMenu().findItem(R.id.sign_out_menu_item).setVisible(true);
     }
@@ -163,13 +177,13 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
                     baseActivity.launchFriendsActivity();
                     break;
                 case R.id.my_events_menu_item:
-                    baseActivity.launchDisplayActivity(MENU_MY_EVENTS);
+                    baseActivity.launchDisplayActivity(DISPLAY_MY_EVENTS);
                     break;
                 case R.id.my_invitations_menu_item:
-                    baseActivity.launchDisplayActivity(MENU_MY_INVITS);
+                    baseActivity.launchDisplayActivity(DISPLAY_MY_INVITS);
                     break;
                 case R.id.my_routes_menu_item:
-                    baseActivity.launchDisplayActivity(MENU_MY_ROUTES);
+                    baseActivity.launchDisplayActivity(DISPLAY_MY_ROUTES);
                     break;
                 case R.id.back_to_main_page_menu_item:
                     baseActivity.launchMainActivity();

@@ -1,13 +1,20 @@
 package com.g.laurent.backtobike;
 
+import android.database.Cursor;
 import android.test.AndroidTestCase;
+
+import com.g.laurent.backtobike.Models.AppDatabase;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
+import com.g.laurent.backtobike.Models.OnFriendDataGetListener;
+import com.g.laurent.backtobike.Models.OnRouteDataGetListener;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
+import com.g.laurent.backtobike.Utils.Action;
 import com.g.laurent.backtobike.Utils.FirebaseRecover;
 import com.g.laurent.backtobike.Utils.FirebaseUpdate;
+import com.g.laurent.backtobike.Utils.FriendsHandler;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -19,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 
 public class TestFirebase extends AndroidTestCase {
@@ -28,11 +37,11 @@ public class TestFirebase extends AndroidTestCase {
 
     @Override
     public void setUp() throws InterruptedException {
-        authSignal = new CountDownLatch(5);
+        authSignal = new CountDownLatch(10);
 
         auth = FirebaseAuth.getInstance();
         if(auth.getCurrentUser() == null) {
-            auth.signInWithEmailAndPassword("develop.lgon@gmail.com", "ABC123").addOnCompleteListener(
+            auth.signInWithEmailAndPassword("develop.lgon2@gmail.com", "ABC123").addOnCompleteListener(
                     task -> {
                         final AuthResult result = task.getResult();
                         final FirebaseUser user = result.getUser();
@@ -41,7 +50,7 @@ public class TestFirebase extends AndroidTestCase {
         } else {
             authSignal.countDown();
         }
-        authSignal.await(10, TimeUnit.SECONDS);
+        authSignal.await(20, TimeUnit.SECONDS);
     }
 
     @Override
@@ -54,65 +63,197 @@ public class TestFirebase extends AndroidTestCase {
     }
 
     @Test
-    public void testFirebase_Routes() throws InterruptedException {
+    public void test_my_routes() throws InterruptedException {
 
-        // WRITE
+        Route route = new Route(0,"trip to Lille",true);
+        route.setListRouteSegment(getListRouteSegments());
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
-        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(databaseReference);
-        firebaseUpdate.updateUserData(auth.getUid(),"name_test", "photo_url_test", "lolo91");
+        databaseReference.child(auth.getUid()).child("my_routes").removeValue();
 
-        Route route = new Route(999,"Trip to Paris",true);
+        // ------------------------------------------------ INSERT route
 
-        firebaseUpdate.updateMyRoutes(auth.getUid(),route, getListRouteSegments());
+        // insert route in Database and Firebase
+        int idRoute = Action.addNewRoute(route,auth.getUid(),getContext());
 
-        // READ
-        final CountDownLatch readSignal = new CountDownLatch(3);
-        readSignal.countDown();
+        // Check that route is well added to Database
+        Route routeTest = getRouteFromDatabase(idRoute);
 
+        Assert.assertEquals("trip to Lille", routeTest.getName());
+        Assert.assertEquals(4, routeTest.getListRouteSegment().size());
+
+        // Check that route is well added to Firebase
         FirebaseRecover firebaseRecover = new FirebaseRecover(databaseReference);
 
-        List<Route> listRoutes = firebaseRecover.recoverRoutesUser(auth.getUid());
+        CountDownLatch readSignal = new CountDownLatch(5);
+        readSignal.countDown();
 
-        Assert.assertEquals(1, listRoutes.size());
-        Assert.assertEquals(4, listRoutes.get(0).getListRouteSegment().size());
-        Assert.assertEquals(48.819446, listRoutes.get(0).getListRouteSegment().get(0).getLat(),1);
+        firebaseRecover.recoverRoutesUser(auth.getUid(), new OnRouteDataGetListener() {
+            @Override
+            public void onSuccess(List<Route> listRoutesFirebase) {
+                Assert.assertEquals(1, listRoutesFirebase.size());
+            }
 
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+
+        readSignal.await(10, TimeUnit.SECONDS);
+
+        // ----------------------------------------------------- UPDATE route
+        route.setName("Trip to Marseille");
+
+        // update route in database
+        Action.updateRoute(route, auth.getUid(), getContext());
+
+        // Check that route is well updated in Database
+        routeTest = getRouteFromDatabase(idRoute);
+        Assert.assertEquals("Trip to Marseille", routeTest.getName());
+
+        // Check that route is well updated in Firebase
+
+        readSignal = new CountDownLatch(5);
+        readSignal.countDown();
+
+        firebaseRecover.recoverRoutesUser(auth.getUid(), new OnRouteDataGetListener() {
+            @Override
+            public void onSuccess(List<Route> listRoutesFirebase) {
+                Assert.assertEquals("Trip to Marseille", listRoutesFirebase.get(0).getName());
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+        readSignal.await(10, TimeUnit.SECONDS);
+
+        // ----------------------------------------------------- DELETE route
+        Action.deleteRoute(route, auth.getUid(), getContext());
+
+        // Check that route is well "deleted" in Database
+        routeTest = getRouteFromDatabase(idRoute);
+        Assert.assertFalse(routeTest.getValid());
+
+        // Check that route is well "deleted" in Firebase
+
+        readSignal = new CountDownLatch(5);
+        readSignal.countDown();
+
+        firebaseRecover.recoverRoutesUser(auth.getUid(), new OnRouteDataGetListener() {
+            @Override
+            public void onSuccess(List<Route> listRoutesFirebase) {
+                Assert.assertFalse(listRoutesFirebase.get(0).getValid());
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
         readSignal.await(10, TimeUnit.SECONDS);
     }
 
     @Test
-    public void testFirebase_Friends() throws InterruptedException {
+    public void test_my_friends() throws InterruptedException {
 
-        // WRITE
+        // ------------------------------------------------ INSERT friend
+
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
-        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(databaseReference);
 
-        for(Friend friend : getListFriend())
-            firebaseUpdate.updateFriend(auth.getUid(), friend);
+        Friend friend = new Friend("id0","id0_login","Seb","photo_url",true);
 
-        // READ
-        CountDownLatch readSignal = new CountDownLatch(3);
-        readSignal.countDown();
+        Action.addNewFriend(friend, "login_user", auth.getCurrentUser(), getContext());
 
+        // Check that the friend is well added to database
+        Friend friendTest = FriendsHandler.getFriend(getContext(),"id0");
+
+        Assert.assertEquals("Seb", friendTest.getName());
+        Assert.assertEquals("id0_login", friendTest.getLogin());
+
+        // Check that the friend is well added to Firebase
         FirebaseRecover firebaseRecover = new FirebaseRecover(databaseReference);
 
-        List<Friend> listFriends = firebaseRecover.recoverFriendsUser(auth.getUid());
+        firebaseRecover.recoverFriendsUser(auth.getUid(), new OnFriendDataGetListener() {
 
-        Assert.assertEquals(5, listFriends.size());
+            @Override
+            public void onSuccess(Friend friend) {}
 
-        // DELETE FRIEND
-        /*firebaseUpdate.deleteFriend(auth.getUid(), listFriends.get(0));
+            @Override
+            public void onSuccess(List<Friend> listFriend) {
+                Assert.assertEquals(friend.getName(), listFriend.get(0).getName());
+            }
 
-        // READ
-        readSignal = new CountDownLatch(3);
-        readSignal.countDown();
+            @Override
+            public void onFailure(String error) {}
+        });
 
-        listFriends = firebaseRecover.recoverFriendsUser(auth.getUid());
+        waiting_time(3000);
 
-        Assert.assertEquals(4, listFriends.size());
+        // ------------------------------------------------ UPDATE friend
 
-        readSignal.await(10, TimeUnit.SECONDS);*/
+        friend.setName("Sean");
+
+        Action.updateFriend(friend, auth.getUid(), getContext());
+
+        // Check that the friend is well updated in database
+        friendTest = FriendsHandler.getFriend(getContext(),"id0");
+        Assert.assertEquals("Sean", friendTest.getName());
+
+        // Check that the friend is well updated in Firebase
+
+        firebaseRecover.recoverFriendsUser(auth.getUid(), new OnFriendDataGetListener() {
+            @Override
+            public void onSuccess(Friend friend) {}
+
+            @Override
+            public void onSuccess(List<Friend> listFriend) {
+                Assert.assertEquals("Sean", listFriend.get(0).getName());
+            }
+
+            @Override
+            public void onFailure(String error) {}
+        });
+
+        waiting_time(3000);
+
+        // ------------------------------------------------ DELETE friend
+
+        Action.deleteFriend(friend,auth.getUid(),getContext());
+
+        waiting_time(2000);
+
+        // Check that the friend is well deleted in database
+        friendTest = FriendsHandler.getFriend(getContext(),"id0");
+        Assert.assertNull(friendTest.getId());
+
+        // Check that the friend is well deleted in Firebase
+
+        firebaseRecover.recoverFriendsUser(auth.getUid(), new OnFriendDataGetListener() {
+            @Override
+            public void onSuccess(Friend friend) {}
+
+            @Override
+            public void onSuccess(List<Friend> listFriend) {
+                Assert.assertEquals(0, listFriend.size());
+            }
+
+            @Override
+            public void onFailure(String error) {}
+        });
+        waiting_time(3000);
     }
+
+    @Test
+    public void test_my_invitations() throws InterruptedException {
+
+
+    }
+
+
+
+
 
     @Test
     public void testFirebase_BikeEvents() throws InterruptedException {
@@ -149,7 +290,7 @@ public class TestFirebase extends AndroidTestCase {
         Route route = new Route(998,"Trip to Madrid",true, getListRouteSegments());
 
         // TODO firebaseUpdate.updateMyBikeEvent("id2", bikeEvent, getListEventFriends());
-        firebaseUpdate.setInvitationToGuests(route, bikeEvent);
+        firebaseUpdate.addInvitationGuests(bikeEvent);
 
         // READ
         CountDownLatch readSignal = new CountDownLatch(5);
@@ -187,7 +328,7 @@ public class TestFirebase extends AndroidTestCase {
         Route route = new Route(998,"Trip to Madrid",true, getListRouteSegments());
 
         // TODO firebaseUpdate.updateMyBikeEvent("id2", bikeEvent, getListEventFriends());
-        firebaseUpdate.setInvitationToGuests(route, bikeEvent);
+        firebaseUpdate.addInvitationGuests(bikeEvent);
 
         // id1 accept route
         firebaseUpdate.acceptRoute("id1", route, bikeEvent);
@@ -197,9 +338,9 @@ public class TestFirebase extends AndroidTestCase {
         readSignal.countDown();
 
         FirebaseRecover firebaseRecover = new FirebaseRecover(databaseReference);
-        List<Route> listRoutes = firebaseRecover.recoverRoutesUser("id1");
+        //List<Route> listRoutes = firebaseRecover.recoverRoutesUser("id1");
 
-        Assert.assertTrue(checkIfRouteExistsAmongMyRoutes(route.getId(),listRoutes));
+        //Assert.assertTrue(checkIfRouteExistsAmongMyRoutes(route.getId(),listRoutes));
 
         readSignal.await(10, TimeUnit.SECONDS);
     }
@@ -215,7 +356,7 @@ public class TestFirebase extends AndroidTestCase {
         Route route = new Route(998,"Trip to Madrid",true, getListRouteSegments());
 
         // TODO firebaseUpdate.updateMyBikeEvent("id2", bikeEvent, getListEventFriends());
-        firebaseUpdate.setInvitationToGuests(route, bikeEvent);
+        firebaseUpdate.addInvitationGuests(bikeEvent);
 
         // cancel bikeEvent
         firebaseUpdate.cancelMyBikeEvent(bikeEvent.getOrganizerId(),getListEventFriends(),bikeEvent);
@@ -269,6 +410,28 @@ public class TestFirebase extends AndroidTestCase {
 
 
     // -------------------------------------------- UTILS ---------------------------------------------------------
+
+    private void waiting_time(int time){
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Route getRouteFromDatabase(int idRoute){
+
+        Cursor cursor = AppDatabase.getInstance(getContext()).routesDao().getRoute(idRoute);
+        Route route = Route.getRouteFromCursor(cursor);
+
+        Cursor cursorSegments = AppDatabase.getInstance(getContext()).routeSegmentDao().getRouteSegment(idRoute);
+        List<RouteSegment> listRoutesSegments = RouteSegment.getRouteSegmentFromCursor(cursorSegments);
+
+        route.setListRouteSegment(listRoutesSegments);
+
+        return route;
+    }
+
 
     private Boolean checkIfBikeEventExistsAmongMyEvents(int idEvent, List<BikeEvent> listBikeEvent){
 

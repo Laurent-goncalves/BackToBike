@@ -144,7 +144,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
                         //Toast.makeText(getApplicationContext(),getApplicationContext().getResources().getString(R.string.connection_succeed), Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(this, FriendsActivity.class);
+                        Intent intent = new Intent(this, MainActivity.class);
                         startActivity(intent);
                     } else {
                         // If sign in fails, display a message to the user.

@@ -36,20 +36,26 @@ public class RouteAndEventHandlerTest {
 
         Context context = mActivityRule.getActivity().getApplicationContext();
 
+        Route route = new Route(0,"Trip around Paris",true);
+        route.setListRouteSegment(getListRouteSegments());
+
         // insertion
-        int idRoute = RouteHandler.insertNewRoute(context, getListPoints(),"Trip around Paris",true);
+        int idRoute = RouteHandler.insertNewRoute(context, route);
+
+        route.setId(idRoute);
+        route.setListRouteSegment(getUpdatedListRouteSegments());
 
         // update
-        RouteHandler.updateRoute(context,idRoute,getUpdatedListPoints(),"Trip into Paris",true);
+        RouteHandler.updateRoute(context, route);
 
         // get
-        Route route = RouteHandler.getRoute(context,idRoute);
+        Route routeToCheck = RouteHandler.getRoute(context,idRoute);
         List<RouteSegment> listSegments = RouteHandler.getRouteSegments(context,idRoute);
 
-        Assert.assertEquals("Trip into Paris", route.getName());
-        Assert.assertEquals(6, listSegments.size());
-        Assert.assertEquals(48.666666, listSegments.get(2).getLat(), 0.0);
-        Assert.assertEquals(2.402589, listSegments.get(5).getLng(), 0.0);
+        Assert.assertEquals("Trip into Paris", routeToCheck.getName());
+        Assert.assertEquals(5, listSegments.size());
+        Assert.assertEquals(48.863363, listSegments.get(2).getLat(), 0.0);
+        Assert.assertEquals(2.324222, listSegments.get(4).getLng(), 0.0);
     }
 
     @Test
@@ -57,8 +63,11 @@ public class RouteAndEventHandlerTest {
 
         Context context = mActivityRule.getActivity().getApplicationContext();
 
+        Route route = new Route(0,"Trip around Paris",true);
+        route.setListRouteSegment(getListRouteSegments());
+
         // add a route for test
-        int idRoute = RouteHandler.insertNewRoute(context, getListPoints(),"Trip around Paris",true);
+        int idRoute = RouteHandler.insertNewRoute(context, route);
 
         // insert friends:
         List<Friend> listFriends = getListFriends();
@@ -83,42 +92,39 @@ public class RouteAndEventHandlerTest {
         // TODO Assert.assertEquals(4, listEventFriends.size());
     }
 
-    private List<LatLng> getListPoints(){
-        LatLng point1 = new LatLng(48.858109, 2.339278);
-        LatLng point2 = new LatLng(48.800981, 2.520347);
-        LatLng point3 = new LatLng(48.615268, 2.473662);
-        LatLng point4 = new LatLng(48.587223, 2.445282);
-        LatLng point5 = new LatLng(48.512365, 2.412563);
-        LatLng point6 = new LatLng(48.552147, 2.402589);
+    private List<RouteSegment> getListRouteSegments(){
 
-        List<LatLng> list = new ArrayList<>();
-        list.add(point1);
-        list.add(point2);
-        list.add(point3);
-        list.add(point4);
-        list.add(point5);
-        list.add(point6);
+        List<RouteSegment> listRouteSegments = new ArrayList<>();
+        RouteSegment ROUTE_SEG1_DEMO = new RouteSegment(0,1,48.819446, 2.344624,999);
+        RouteSegment ROUTE_SEG2_DEMO = new RouteSegment(0,2,48.885412, 2.336589,999);
+        RouteSegment ROUTE_SEG3_DEMO = new RouteSegment(0,3,48.874563, 2.312778,999);
+        RouteSegment ROUTE_SEG4_DEMO = new RouteSegment(0,4,48.858933, 2.321511,999);
 
-        return list;
+        listRouteSegments.add(ROUTE_SEG1_DEMO);
+        listRouteSegments.add(ROUTE_SEG2_DEMO);
+        listRouteSegments.add(ROUTE_SEG3_DEMO);
+        listRouteSegments.add(ROUTE_SEG4_DEMO);
+
+        return listRouteSegments;
     }
 
-    private List<LatLng> getUpdatedListPoints(){
-        LatLng point1 = new LatLng(48.888888, 2.339278);
-        LatLng point2 = new LatLng(48.800000, 2.520347);
-        LatLng point3 = new LatLng(48.666666, 2.473662);
-        LatLng point4 = new LatLng(48.587223, 2.445282);
-        LatLng point5 = new LatLng(48.512365, 2.412563);
-        LatLng point6 = new LatLng(48.552147, 2.402589);
 
-        List<LatLng> list = new ArrayList<>();
-        list.add(point1);
-        list.add(point2);
-        list.add(point3);
-        list.add(point4);
-        list.add(point5);
-        list.add(point6);
+    private List<RouteSegment> getUpdatedListRouteSegments(){
 
-        return list;
+        List<RouteSegment> listRouteSegments = new ArrayList<>();
+        RouteSegment ROUTE_SEG1_DEMO = new RouteSegment(0,1,48.819446, 2.344624,999);
+        RouteSegment ROUTE_SEG2_DEMO = new RouteSegment(0,2,48.885457, 2.336589,999);
+        RouteSegment ROUTE_SEG3_DEMO = new RouteSegment(0,3,48.863363, 2.317778,999);
+        RouteSegment ROUTE_SEG4_DEMO = new RouteSegment(0,4,48.855911, 2.328511,999);
+        RouteSegment ROUTE_SEG5_DEMO = new RouteSegment(0,5,48.844444, 2.324222,999);
+
+        listRouteSegments.add(ROUTE_SEG1_DEMO);
+        listRouteSegments.add(ROUTE_SEG2_DEMO);
+        listRouteSegments.add(ROUTE_SEG3_DEMO);
+        listRouteSegments.add(ROUTE_SEG4_DEMO);
+        listRouteSegments.add(ROUTE_SEG5_DEMO);
+
+        return listRouteSegments;
     }
 
     private List<Friend> getListFriends(){

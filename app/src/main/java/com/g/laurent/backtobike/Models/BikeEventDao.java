@@ -9,6 +9,9 @@ import android.database.Cursor;
 @Dao
 public interface BikeEventDao {
 
+    @Query("SELECT * FROM BikeEvent")
+    Cursor getAllBikeEvents();
+
     @Query("SELECT * FROM BikeEvent WHERE id = :id")
     Cursor getBikeEvent(long id);
 

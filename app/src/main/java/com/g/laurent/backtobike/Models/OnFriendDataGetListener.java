@@ -1,8 +1,12 @@
 package com.g.laurent.backtobike.Models;
 
-public interface OnDataGetListener {
+import java.util.List;
+
+public interface OnFriendDataGetListener {
 
     void onSuccess(Friend friend);
+
+    void onSuccess(List<Friend> listFriend);
 
     void onFailure(String error);
 }

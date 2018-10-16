@@ -49,6 +49,7 @@ public class ConfigureDisplayFragment {
         this.typeDisplay = typeDisplay;
         this.fragment=fragment;
         position = fragment.getPosition();
+        route = fragment.getCallbackInvitActivity().getListRoutes().get(position);
         userId = FirebaseAuth.getInstance().getUid();
         ButterKnife.bind(this,view);
         recoverDatasToDisplay();

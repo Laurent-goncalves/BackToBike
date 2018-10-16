@@ -57,6 +57,8 @@ public class FriendsAdapter extends BaseAdapter {
 
             configureCheckbox(position);
 
+            configureClickListener(view);
+
             if(SelectMode && position==listFriends.size()-1)
                 view.setVisibility(View.GONE);
         }
@@ -122,6 +124,29 @@ public class FriendsAdapter extends BaseAdapter {
             });
         } else
             box.setVisibility(View.GONE);
+    }
+
+    private void configureClickListener(View view){
+
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                friendFragment.setSelectMode(true);
+                friendFragment.configureViews();
+                return false;
+            }
+        });
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(friendFragment.getCallbackFriendActivity()!=null){
+                    friendFragment.setSelectMode(false);
+                    friendFragment.configureViews();
+                }
+            }
+        });
+
     }
 
     @Override

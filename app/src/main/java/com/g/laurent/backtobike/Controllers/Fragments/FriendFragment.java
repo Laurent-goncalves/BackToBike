@@ -2,6 +2,7 @@ package com.g.laurent.backtobike.Controllers.Fragments;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,7 +14,7 @@ import android.widget.Toast;
 import com.g.laurent.backtobike.Models.CallbackFriendActivity;
 import com.g.laurent.backtobike.Models.CallbackInvitActivity;
 import com.g.laurent.backtobike.Models.Friend;
-import com.g.laurent.backtobike.Models.OnDataGetListener;
+import com.g.laurent.backtobike.Models.OnFriendDataGetListener;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.FirebaseRecover;
 import com.g.laurent.backtobike.Utils.FirebaseUpdate;
@@ -32,6 +33,7 @@ import butterknife.ButterKnife;
  */
 public class FriendFragment extends Fragment {
 
+    private static final String LOGIN_SHARED ="login_shared";
     private final static String BUNDLE_SELECT_MODE = "bundle_select_mode";
     @BindView(R.id.gridview_check_box) GridView gridView;
     @BindView(R.id.my_id_view) TextView myIdView;
@@ -56,7 +58,10 @@ public class FriendFragment extends Fragment {
         ButterKnife.bind(this, view);
         defineMode();
 
-        myLogin = "lolo91";
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
+
+        myLogin = sharedPref.getString(LOGIN_SHARED,null);
 
         FirebaseApp.initializeApp(context);
         FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -92,7 +97,7 @@ public class FriendFragment extends Fragment {
         }
     }
 
-    private void configureViews(){
+    public void configureViews(){
 
         // configure gridView
         gridView.setAdapter(new FriendsAdapter(context, listFriends, SelectMode, this));
@@ -111,10 +116,15 @@ public class FriendFragment extends Fragment {
         FirebaseRecover firebaseRecover = new FirebaseRecover(context);
 
         // Check if login is different than user's login, login is not among friends of the user and if the login exists on Firebase
-        firebaseRecover.isLoginNotAmongUserFriends(login, firebaseUser.getUid(), new OnDataGetListener() {
+        firebaseRecover.isLoginNotAmongUserFriends(login, firebaseUser.getUid(), new OnFriendDataGetListener() {
             @Override
             public void onSuccess(Friend friend) {
                 saveNewFriend(friend);
+            }
+
+            @Override
+            public void onSuccess(List<Friend> listFriend) {
+
             }
 
             @Override
@@ -143,11 +153,19 @@ public class FriendFragment extends Fragment {
         configureViews();
     }
 
+    public void setSelectMode(Boolean selectMode) {
+        SelectMode = selectMode;
+    }
+
     public ArrayList<String> getListFriendsSelected() {
         return listFriendsSelected;
     }
 
     public CallbackInvitActivity getCallbackInvitActivity() {
         return callbackInvitActivity;
+    }
+
+    public CallbackFriendActivity getCallbackFriendActivity() {
+        return callbackFriendActivity;
     }
 }

@@ -20,6 +20,8 @@ import com.g.laurent.backtobike.Models.RoutesContentProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.ArrayList;
 import java.util.List;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -55,7 +57,7 @@ public class ContentProviderTest {
         friendContentProvider.setUtils(InstrumentationRegistry.getTargetContext());
 
         bikeEventContentProvider = new BikeEventContentProvider();
-        bikeEventContentProvider.setUtils(InstrumentationRegistry.getTargetContext());
+        bikeEventContentProvider.setUtils(InstrumentationRegistry.getTargetContext(),null,null);
 
         routeSegmentContentProvider = new RouteSegmentContentProvider();
         routeSegmentContentProvider.setUtils(InstrumentationRegistry.getTargetContext());
@@ -310,4 +312,20 @@ public class ContentProviderTest {
         routesContentProvider.delete(uriRouteDelete,null,null);
     }
 
+
+    private List<RouteSegment> getListRouteSegments(){
+
+        List<RouteSegment> listRouteSegments = new ArrayList<>();
+        RouteSegment ROUTE_SEG1_DEMO = new RouteSegment(0,1,48.819446, 2.344624,999);
+        RouteSegment ROUTE_SEG2_DEMO = new RouteSegment(0,2,48.885412, 2.336589,999);
+        RouteSegment ROUTE_SEG3_DEMO = new RouteSegment(0,3,48.874563, 2.312778,999);
+        RouteSegment ROUTE_SEG4_DEMO = new RouteSegment(0,4,48.858933, 2.321511,999);
+
+        listRouteSegments.add(ROUTE_SEG1_DEMO);
+        listRouteSegments.add(ROUTE_SEG2_DEMO);
+        listRouteSegments.add(ROUTE_SEG3_DEMO);
+        listRouteSegments.add(ROUTE_SEG4_DEMO);
+
+        return listRouteSegments;
+    }
 }

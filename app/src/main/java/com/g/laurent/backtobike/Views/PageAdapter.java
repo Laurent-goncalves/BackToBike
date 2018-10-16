@@ -14,9 +14,11 @@ import java.util.List;
 public class PageAdapter extends FragmentPagerAdapter {
 
     private String typeDisplay;
+    private int count;
 
-    public PageAdapter(FragmentManager fm, String typeDisplay) {
+    public PageAdapter(FragmentManager fm, String typeDisplay, int count) {
         super(fm);
+        this.count=count;
         this.typeDisplay=typeDisplay;
     }
 
@@ -27,6 +29,6 @@ public class PageAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 0;
+        return count;
     }
 }

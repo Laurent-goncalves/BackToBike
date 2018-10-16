@@ -71,14 +71,17 @@ public class Action {
     // -------------------------------------------- ROUTE ------------------------------------------------------
     // ---------------------------------------------------------------------------------------------------------
 
-    public static void addNewRoute(Route route, String userId, Context context){
+    public static int addNewRoute(Route route, String userId, Context context){
 
         // Insert route in database
-        route.setId(RouteHandler.insertNewRoute(context, route));
+        int idRoute = RouteHandler.insertNewRoute(context, route);
+        route.setId(idRoute);
 
         // Insert route in Firebase
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
         firebaseUpdate.updateMyRoutes(userId, route, route.getListRouteSegment());
+
+        return idRoute;
     }
 
     public static void updateRoute(Route route, String userId, Context context){

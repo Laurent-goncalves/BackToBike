@@ -6,11 +6,11 @@ import android.support.annotation.NonNull;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
-import com.g.laurent.backtobike.Models.OnDataGetListener;
+import com.g.laurent.backtobike.Models.OnFriendDataGetListener;
+import com.g.laurent.backtobike.Models.OnRouteDataGetListener;
+import com.g.laurent.backtobike.Models.OnUserDataGetListener;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,7 +21,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 public class FirebaseRecover {
@@ -66,34 +65,80 @@ public class FirebaseRecover {
     }
 
     // ----------------------------------------------------------------------------------------------
+    // -------------------------------- RECOVER USER DATAS ------------------------------------------
+    // ----------------------------------------------------------------------------------------------
+
+    public void recoverUserDatas(String user_id, final OnUserDataGetListener onUserDataGetListener) {
+
+        databaseReferenceUsers.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                Boolean userIdOK = false;
+                Boolean loginOK = false;
+                String login = null;
+
+                // check data
+                if(dataSnapshot.getChildren()!=null){
+                    for (DataSnapshot datas : dataSnapshot.getChildren()) {
+                        if(datas.getKey()!=null){
+                            if(datas.getKey().equals(user_id)){
+                                userIdOK=true; // userId has been found
+
+                                if(datas.child(LOGIN).getValue()!=null){
+                                    if(datas.child(LOGIN).getValue().toString().length()>0){
+                                        login = datas.child(LOGIN).getValue().toString();
+                                        loginOK = true; // login is OK
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if(userIdOK && loginOK)
+                    onUserDataGetListener.onSuccess(true, login);
+                else {
+                    onUserDataGetListener.onSuccess(false, login);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                onUserDataGetListener.onFailure("Error to access data " + "\n" + databaseError);
+            }
+        });
+    }
+
+    // ----------------------------------------------------------------------------------------------
     // ------------------------- RECOVER ALL ROUTES FROM USER ---------------------------------------
     // ----------------------------------------------------------------------------------------------
 
-    public List<Route> recoverRoutesUser(String user_id) throws InterruptedException {
-
-        List<Route> listRoutes = new ArrayList<>();
-        final CountDownLatch writeSignal = new CountDownLatch(1);
+    public void recoverRoutesUser(String user_id, OnRouteDataGetListener onRouteDataGetListener) throws InterruptedException {
 
         DatabaseReference databaseReferenceRoutes = databaseReferenceUsers.child(user_id).child(MY_ROUTES);
 
         databaseReferenceRoutes.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                List<Route> listRoutes = new ArrayList<>();
+
                 if(dataSnapshot.getChildren()!=null){
                     for (DataSnapshot datas : dataSnapshot.getChildren()) {
                         listRoutes.add(buildListRoute(datas));
                     }
                 }
-                writeSignal.countDown();
+
+                onRouteDataGetListener.onSuccess(listRoutes);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                onRouteDataGetListener.onFailure(databaseError.toString());
+            }
         });
-
-        writeSignal.await(10, TimeUnit.SECONDS);
-
-        return listRoutes;
     }
 
     // ----------------------------------------------------------------------------------------------
@@ -130,7 +175,7 @@ public class FirebaseRecover {
     // -------------------------------- RECOVER FRIENDS ---------------------------------------------
     // ----------------------------------------------------------------------------------------------
 
-    public void isLoginNotAmongUserFriends(String login, String user_id, final OnDataGetListener onDataGetListener) {
+    public void isLoginNotAmongUserFriends(String login, String user_id, final OnFriendDataGetListener onFriendDataGetListener) {
 
         List<Boolean> answer = new ArrayList<>();
         answer.add(0,true);
@@ -155,35 +200,33 @@ public class FirebaseRecover {
 
                 // next steps
                 if(answer.get(0)){
-                    isLoginOnFirebase(login,user_id,onDataGetListener); // check if login exists on firebase
+                    isLoginOnFirebase(login,user_id, onFriendDataGetListener); // check if login exists on firebase
                 } else {
-                    onDataGetListener.onFailure("friend already in your list");
+                    onFriendDataGetListener.onFailure("friend already in your list");
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                onDataGetListener.onFailure("Error to access data " + "\n" + databaseError);
+                onFriendDataGetListener.onFailure("Error to access data " + "\n" + databaseError);
             }
         });
     }
 
-    public void isLoginOnFirebase(String login, String user_id, final OnDataGetListener onDataGetListener) {
-
-        List<Boolean> answer = new ArrayList<>();
-        answer.add(0,false);
+    public void isLoginOnFirebase(String login, String user_id, final OnFriendDataGetListener onFriendDataGetListener) {
 
         databaseReferenceUsers.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                Boolean answer = false;
                 Friend friend = null;
 
                 if(dataSnapshot.getChildren()!=null){
                     for (DataSnapshot datas : dataSnapshot.getChildren()) {
                         if(datas.child(LOGIN).getValue()!=null){
                             if(datas.child(LOGIN).getValue().toString().equals(login) && !datas.getKey().equals(user_id) ){
-                                answer.add(0,true);
+                                answer = true;
                                 friend = buildFriend(datas, login); // create Friend
                                 break;
                             }
@@ -192,34 +235,62 @@ public class FirebaseRecover {
                 }
 
                 // next steps
-                if(answer.get(0)){
-                    onDataGetListener.onSuccess(friend);
+                if(answer){
+                    onFriendDataGetListener.onSuccess(friend);
                 } else {
-                    onDataGetListener.onFailure("login doesn't exists on Firebase. Please check login provided.");
+                    onFriendDataGetListener.onFailure("login doesn't exists on Firebase. Please check login provided.");
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                onDataGetListener.onFailure("Error to access data " + "\n" + databaseError);
+                onFriendDataGetListener.onFailure("Error to access data " + "\n" + databaseError);
             }
         });
-
-
     }
 
-    public List<Friend> recoverFriendsUser(String user_id) throws InterruptedException {
+    public void isLoginOnFirebase(String login, String user_id, final OnUserDataGetListener onUserDataGetListener) {
 
-        List<Friend> listFriend = new ArrayList<>();
-        final CountDownLatch writeSignal = new CountDownLatch(1);
+        databaseReferenceUsers.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                Boolean answer = false;
+
+                if(dataSnapshot.getChildren()!=null){
+                    for (DataSnapshot datas : dataSnapshot.getChildren()) {
+                        if(datas.child(LOGIN).getValue()!=null){
+                            if(datas.child(LOGIN).getValue().toString().equals(login) && !datas.getKey().equals(user_id) ){
+                                answer = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // next steps
+                onUserDataGetListener.onSuccess(answer, login);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                onUserDataGetListener.onFailure("Error to access data " + "\n" + databaseError);
+            }
+        });
+    }
+
+    public void recoverFriendsUser(String user_id, OnFriendDataGetListener onFriendDataGetListener) {
 
         DatabaseReference databaseReferenceFriend = databaseReferenceUsers.child(user_id).child(MY_FRIENDS);
 
-        databaseReferenceFriend.addValueEventListener(new ValueEventListener() {
+        databaseReferenceFriend.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getChildren()!=null){
-                    for (DataSnapshot datas : dataSnapshot.getChildren()) {
+
+                List<Friend> listFriend = new ArrayList<>();
+
+                for (DataSnapshot datas : dataSnapshot.getChildren()) {
+                    if(datas.getKey()!=null){
                         listFriend.add(new Friend(datas.getKey(),
                                 (String) datas.child(LOGIN).getValue(),
                                 (String) datas.child(NAME).getValue(),
@@ -227,16 +298,15 @@ public class FirebaseRecover {
                                 (Boolean) datas.child(ACCEPTED).getValue()));
                     }
                 }
-                writeSignal.countDown();
+
+                onFriendDataGetListener.onSuccess(listFriend);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                onFriendDataGetListener.onFailure(databaseError.toString());
+            }
         });
-
-        writeSignal.await(10, TimeUnit.SECONDS);
-
-        return listFriend;
     }
 
     // ----------------------------------------------------------------------------------------------

@@ -14,9 +14,9 @@ import java.util.List;
 
 public class SaveAndRestoreDisplayActivity {
 
-    private static final String BUNDLE_TYPE_ROUTES ="bundle_type_routes";
-    private static final String BUNDLE_TYPE_EVENTS ="bundle_type_events";
-    private static final String BUNDLE_TYPE_INVITS ="bundle_type_invits";
+    private static final String DISPLAY_MY_ROUTES ="display_my_routes";
+    private static final String DISPLAY_MY_EVENTS ="display_my_events";
+    private static final String DISPLAY_MY_INVITS ="display_my_invits";
     private static final String BUNDLE_TYPE_DISPLAY ="bundle_type_display";
     private static final String BUNDLE_POSITION ="bundle_position";
 
@@ -48,12 +48,13 @@ public class SaveAndRestoreDisplayActivity {
         Context context = displayActivity.getApplicationContext();
 
         switch(typeDisplay){
-            case BUNDLE_TYPE_ROUTES:
+            case DISPLAY_MY_ROUTES:
                 List<Route> listRoutes = RouteHandler.getAllRoutes(context);
                 displayActivity.setListRoutes(listRoutes);
+                displayActivity.setCount(listRoutes.size());
                 break;
 
-            case BUNDLE_TYPE_EVENTS:
+            case DISPLAY_MY_EVENTS:
 
                 // Get Bike Events
                 List<BikeEvent> listEvents = BikeEventHandler.getAllFutureBikeEvents(context,user_id);
@@ -77,9 +78,10 @@ public class SaveAndRestoreDisplayActivity {
                 }
 
                 displayActivity.setListEvents(listEvents);
+                displayActivity.setCount(listEvents.size());
                 break;
 
-            case BUNDLE_TYPE_INVITS:
+            case DISPLAY_MY_INVITS:
 
                 // Get Invitations
                 List<BikeEvent> listInvits = BikeEventHandler.getAllInvitiations(context,user_id);
@@ -103,6 +105,7 @@ public class SaveAndRestoreDisplayActivity {
                 }
 
                 displayActivity.setListInvitations(listInvits);
+                displayActivity.setCount(listInvits.size());
                 break;
         }
     }

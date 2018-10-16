@@ -2,31 +2,15 @@ package com.g.laurent.backtobike.Controllers.Activities;
 
 import android.app.Dialog;
 import android.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.g.laurent.backtobike.Controllers.Fragments.FriendFragment;
-import com.g.laurent.backtobike.Controllers.Fragments.InvitFragment;
-import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackFriendActivity;
-import com.g.laurent.backtobike.Models.OnDataGetListener;
 import com.g.laurent.backtobike.R;
-import com.g.laurent.backtobike.Utils.FirebaseRecover;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-public class FriendsActivity extends AppCompatActivity implements CallbackFriendActivity {
+public class FriendsActivity extends BaseActivity implements CallbackFriendActivity {
 
     private final static String BUNDLE_SELECT_MODE = "bundle_select_mode";
 
@@ -34,6 +18,7 @@ public class FriendsActivity extends AppCompatActivity implements CallbackFriend
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends);
+        toolbarManager.configureToolbar(this, MENU_MY_FRIENDS);
         configureAndShowFriendFragment();
     }
 

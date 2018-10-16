@@ -12,6 +12,9 @@ public interface RouteSegmentDao {
     @Query("SELECT * FROM RouteSegment WHERE idRoute = :idRoute")
     Cursor getRouteSegment(long idRoute);
 
+    @Query("SELECT * FROM RouteSegment")
+    Cursor getAllRouteSegment();
+
     @Insert
     long insertRouteSegmentDao(RouteSegment routeSegment);
 

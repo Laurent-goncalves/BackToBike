@@ -9,6 +9,9 @@ import android.database.Cursor;
 @Dao
 public interface EventFriendsDao {
 
+    @Query("SELECT * FROM EventFriends")
+    Cursor getAllEventFriends();
+
     @Query("SELECT * FROM EventFriends WHERE idEvent = :idEvent")
     Cursor getEventFriends(long idEvent);
 
