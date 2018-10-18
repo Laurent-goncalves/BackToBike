@@ -1,21 +1,8 @@
 package com.g.laurent.backtobike;
 
 import com.g.laurent.backtobike.Utils.UtilsGoogleMaps;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
-
 import junit.framework.Assert;
-
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -52,20 +39,5 @@ public class ExampleUnitTest {
         Assert.assertEquals(22,index);
 
     }
-
-
-
-    /*@Test
-    public void test_equality_latlng(){
-
-        LatLng position1 = new LatLng(48.8625196080201,2.2872030796928584);
-        LatLng position2 = new LatLng(48.8625196080201,2.2872030796928584);
-
-        Assert.assertTrue(UtilsGoogleMaps.arePositionsEquals(position1,position2));
-
-        position2 = new LatLng(48.86591097479993,2.2745751764164197);
-
-        Assert.assertFalse(UtilsGoogleMaps.arePositionsEquals(position1,position2));
-    }*/
 
 }

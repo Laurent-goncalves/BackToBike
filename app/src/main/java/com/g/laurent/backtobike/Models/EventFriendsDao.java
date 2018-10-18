@@ -13,7 +13,7 @@ public interface EventFriendsDao {
     Cursor getAllEventFriends();
 
     @Query("SELECT * FROM EventFriends WHERE idEvent = :idEvent")
-    Cursor getEventFriends(long idEvent);
+    Cursor getEventFriends(String idEvent);
 
     @Insert
     long insertEventFriends(EventFriends eventFriends);
@@ -22,5 +22,5 @@ public interface EventFriendsDao {
     int updateEventFriends(EventFriends eventFriends);
 
     @Query("DELETE FROM EventFriends WHERE idEvent = :idEvent")
-    int deleteEventFriends(long idEvent);
+    int deleteEventFriends(String idEvent);
 }

@@ -139,11 +139,11 @@ public class FriendFragment extends Fragment {
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
 
         // Add friend to user Firebase "my_friends" with status "false" as accepted
-        firebaseUpdate.updateFriend(firebaseUser.getUid(), friend);
+        firebaseUpdate.updateFriend(firebaseUser.getUid(), friend, false);
 
         // Add user in friend Firebase "my_friends" with status "false" as accepted
-        Friend user = new Friend(firebaseUser.getUid(),myLogin,firebaseUser.getDisplayName(),firebaseUser.getPhotoUrl().toString(),false);
-        firebaseUpdate.updateFriend(friend.getId(),user);
+        Friend user = new Friend(firebaseUser.getUid(),myLogin,firebaseUser.getDisplayName(),firebaseUser.getPhotoUrl().toString(),false,null);
+        firebaseUpdate.updateFriend(friend.getId(),user, true);
 
         // Add friend in phone database
         FriendsHandler.insertNewFriend(context, friend);

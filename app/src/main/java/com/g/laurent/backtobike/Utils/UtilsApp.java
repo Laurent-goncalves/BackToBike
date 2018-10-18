@@ -9,6 +9,7 @@ import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.Route;
+import com.g.laurent.backtobike.Models.RouteSegment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +17,15 @@ import java.util.List;
 public class UtilsApp {
 
 
-    public static int getIdEventFriend(String idFriend, BikeEvent bikeEvent){
-        int idEventFriend = -1;
+    public static String getIdEventFriend(String idFriend, BikeEvent bikeEvent){
+        String idEventFriend = null;
 
         if(bikeEvent!=null){
             if(bikeEvent.getListEventFriends()!=null){
                 if(bikeEvent.getListEventFriends().size()>0){
                     for(EventFriends eventFriends : bikeEvent.getListEventFriends()){
                         if(eventFriends.getIdFriend().equals(idFriend)) {
-                            idEventFriend = eventFriends.getId();
+                            idEventFriend = eventFriends.getIdFriend();
                             break;
                         }
                     }
@@ -35,7 +36,7 @@ public class UtilsApp {
         return idEventFriend;
     }
 
-    public static String getIdInvitation(BikeEvent bikeEvent){
+    public static String getIdEvent(BikeEvent bikeEvent){
         String idInvitation = bikeEvent.getOrganizerId() + "_" + bikeEvent.getDate() + "_" + bikeEvent.getTime();
         idInvitation = idInvitation.replace("/","_");
         return idInvitation;
@@ -93,6 +94,24 @@ public class UtilsApp {
             if(listEventFriends.size()>0){
                 for(int i = 0; i < listEventFriends.size(); i++){
                     if(listEventFriends.get(i).getIdFriend().equals(friend.getId())){
+                        index = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return index;
+    }
+
+    public static int findFriendIndexInListEventFriends(String idFriend, List<EventFriends> listEventFriends){
+
+        int index = -1;
+
+        if(listEventFriends!=null){
+            if(listEventFriends.size()>0){
+                for(int i = 0; i < listEventFriends.size(); i++){
+                    if(listEventFriends.get(i).getIdFriend().equals(idFriend)){
                         index = i;
                         break;
                     }
@@ -170,6 +189,57 @@ public class UtilsApp {
         }
 
         return listFriends;
+    }
+
+    public static Boolean areRoutesEquals(Route route1, Route route2){
+
+        Boolean answer = false;
+
+        if(route1.getName().equals(route2.getName())){
+            if(route1.getValid().equals(route2.getValid())){
+                if(route1.getListRouteSegment().size()==route2.getListRouteSegment().size()){
+                    // Compare routesegments
+                    for(int i = 1; i < route1.getListRouteSegment().size()+1; i++){
+
+                        int index1 = findIndexSegmentNumber(i,route1.getListRouteSegment());
+                        int index2 = findIndexSegmentNumber(i,route2.getListRouteSegment());
+
+                        if(index1==index2 && index1!=-1){
+                            if(route1.getListRouteSegment().get(index1).getLat().equals(route2.getListRouteSegment().get(index2).getLat()) &&
+                                    route1.getListRouteSegment().get(index1).getLng().equals(route2.getListRouteSegment().get(index2).getLng()))
+                                answer = true;
+                            else {
+                                answer = false;
+                                break;
+                            }
+                        } else {
+                            answer = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return answer;
+    }
+
+    private static int findIndexSegmentNumber(int number, List<RouteSegment> listRouteSegments){
+
+        int index = -1;
+
+        if(listRouteSegments!=null){
+            if(listRouteSegments.size()>0){
+                for(int i = 0; i<listRouteSegments.size(); i++){
+                    if(listRouteSegments.get(i).getNumber()==number){
+                        index = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return index;
     }
 
     private static Boolean needLeftArrow(int position, int sizeList){

@@ -43,8 +43,7 @@ public class CheckAndSendInvitation {
             BikeEvent bikeEvent = buildBikeEvent();
 
             // Add an event in phone database
-            int idEvent = BikeEventHandler.insertNewBikeEvent(context, bikeEvent);
-            bikeEvent.setId(idEvent);
+            BikeEventHandler.insertNewBikeEvent(context, bikeEvent);
 
             // Add an event on Firebase in user's "my_events"
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
@@ -88,6 +87,8 @@ public class CheckAndSendInvitation {
 
         String date = invitation.getDate();
         String time = invitation.getTime();
+        String idEvent = user_id + "_" + date + "_" + time;
+        idEvent = idEvent.replace("/","_");
         String comments = invitation.getComments();
         int idRoute = invitation.getIdRoute();
         ArrayList<String> listIdFriends = invitation.getListIdFriends();
@@ -97,10 +98,10 @@ public class CheckAndSendInvitation {
         if(listIdFriends!=null){
             if(listIdFriends.size()>0){
                 for(String idFriend : listIdFriends)
-                    listEventFriends.add(new EventFriends(0,0,idFriend,false));
+                    listEventFriends.add(new EventFriends(0,idEvent,idFriend,ONGOING));
             }
         }
 
-        return new BikeEvent(0, user_id, date, time, idRoute, comments, ONGOING, listEventFriends);
+        return new BikeEvent(idEvent, user_id, date, time, idRoute, comments, ONGOING, listEventFriends);
     }
 }

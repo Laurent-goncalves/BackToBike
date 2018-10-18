@@ -21,11 +21,13 @@ public class BikeEventContentProvider extends ContentProvider {
     private Context context;
     private String typeEvent;
     private String organizerId;
+    private String idBikeEvent;
 
-    public void setUtils(Context context, String typeEvent, String organizerId){
+    public void setUtils(Context context, String typeEvent, String organizerId, String idBikeEvent){
         this.context=context;
         this.typeEvent=typeEvent;
         this.organizerId=organizerId;
+        this.idBikeEvent=idBikeEvent;
     }
 
     @Override
@@ -40,11 +42,10 @@ public class BikeEventContentProvider extends ContentProvider {
 
             switch(typeEvent){
                 case TYPE_MY_EVENTS:
-                    return AppDatabase.getInstance(context).bikeEventDao().getMyBikeEvents(organizerId,ONGOING);
+                    return AppDatabase.getInstance(context).bikeEventDao().getMyBikeEvents(organizerId, ONGOING);
                 case TYPE_MY_INVITS:
-                    return AppDatabase.getInstance(context).bikeEventDao().getMyInvitiations(organizerId,ONGOING);
+                    return AppDatabase.getInstance(context).bikeEventDao().getMyInvitiations(organizerId, ONGOING);
                 case TYPE_SINGLE_EVENT:
-                    long idBikeEvent = ContentUris.parseId(uri);
                     return AppDatabase.getInstance(context).bikeEventDao().getBikeEvent(idBikeEvent);
             }
         }
@@ -61,18 +62,15 @@ public class BikeEventContentProvider extends ContentProvider {
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         if (context != null && values !=null){
-            final long id = AppDatabase.getInstance(context).bikeEventDao().insertBikeEvent(BikeEvent.fromContentValues(values));
-            if (id != 0){
-                return ContentUris.withAppendedId(uri, id);
-            }
-        }
-        throw new IllegalArgumentException("Failed to insert row into " + uri);
+            AppDatabase.getInstance(context).bikeEventDao().insertBikeEvent(BikeEvent.fromContentValues(values));
+        } else
+            throw new IllegalArgumentException("Failed to insert row into " + uri);
+        return null;
     }
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         if (context!= null){
-            long idBikeEvent = ContentUris.parseId(uri);
             return AppDatabase.getInstance(context).bikeEventDao().deleteBikeEvent(idBikeEvent);
         }
         throw new IllegalArgumentException("Failed to delete row into " + uri);

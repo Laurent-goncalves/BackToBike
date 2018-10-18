@@ -5,6 +5,7 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +14,9 @@ import java.util.List;
 @Entity
 public class BikeEvent {
 
-    @PrimaryKey(autoGenerate = true)
-    private int id;
+    @NonNull
+    @PrimaryKey
+    private String id;
     private String organizerId;
     private String date;
     private String time;
@@ -24,7 +26,7 @@ public class BikeEvent {
     private transient List<EventFriends> listEventFriends;
     private transient Route route;
 
-    public BikeEvent(int id, String organizerId, String date, String time, int idRoute, String comments, String status) {
+    public BikeEvent(String id, String organizerId, String date, String time, int idRoute, String comments, String status) {
         this.id = id;
         this.organizerId = organizerId;
         this.date = date;
@@ -35,7 +37,7 @@ public class BikeEvent {
     }
 
     @Ignore
-    public BikeEvent(int id, String organizerId, String date, String time, int idRoute, String comments, String status, List<EventFriends> listEventFriends) {
+    public BikeEvent(String id, String organizerId, String date, String time, int idRoute, String comments, String status, List<EventFriends> listEventFriends) {
         this.id = id;
         this.organizerId = organizerId;
         this.date = date;
@@ -50,11 +52,11 @@ public class BikeEvent {
     public BikeEvent() {
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -127,7 +129,7 @@ public class BikeEvent {
 
         final BikeEvent bikeEvent = new BikeEvent();
 
-        if (values.containsKey("id")) bikeEvent.setId(values.getAsInteger("id"));
+        if (values.containsKey("id")) bikeEvent.setId(values.getAsString("id"));
         if (values.containsKey("organizerId")) bikeEvent.setOrganizerId(values.getAsString("id"));
         if (values.containsKey("date")) bikeEvent.setDate(values.getAsString("date"));
         if (values.containsKey("time")) bikeEvent.setTime(values.getAsString("time"));
@@ -142,6 +144,7 @@ public class BikeEvent {
 
         final ContentValues values = new ContentValues();
 
+        values.put("id",bikeEvent.getId());
         values.put("organizerId",bikeEvent.getOrganizerId());
         values.put("date",bikeEvent.getDate());
         values.put("time",bikeEvent.getTime());
@@ -173,7 +176,7 @@ public class BikeEvent {
 
         if(cursor!=null){
             while (cursor.moveToNext()) {
-                bikeEvent.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+                bikeEvent.setId(cursor.getString(cursor.getColumnIndexOrThrow("id")));
                 bikeEvent.setOrganizerId(cursor.getString(cursor.getColumnIndexOrThrow("organizerId")));
                 bikeEvent.setDate(cursor.getString(cursor.getColumnIndexOrThrow("date")));
                 bikeEvent.setTime(cursor.getString(cursor.getColumnIndexOrThrow("time")));
@@ -196,7 +199,7 @@ public class BikeEvent {
 
                 BikeEvent bikeEvent = new BikeEvent();
 
-                bikeEvent.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+                bikeEvent.setId(cursor.getString(cursor.getColumnIndexOrThrow("id")));
                 bikeEvent.setOrganizerId(cursor.getString(cursor.getColumnIndexOrThrow("organizerId")));
                 bikeEvent.setDate(cursor.getString(cursor.getColumnIndexOrThrow("date")));
                 bikeEvent.setTime(cursor.getString(cursor.getColumnIndexOrThrow("time")));

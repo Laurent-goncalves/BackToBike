@@ -1,19 +1,12 @@
 package com.g.laurent.backtobike.Utils;
 
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.BikeEventContentProvider;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.EventFriendsContentProvider;
 import com.g.laurent.backtobike.Models.Friend;
-import com.g.laurent.backtobike.Models.Route;
-import com.g.laurent.backtobike.Models.RouteSegment;
-import com.g.laurent.backtobike.Models.RouteSegmentContentProvider;
-import com.g.laurent.backtobike.Models.RoutesContentProvider;
-import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,37 +16,34 @@ public class BikeEventHandler {
     private static final String TYPE_MY_EVENTS ="type_my_events";
     private static final String TYPE_MY_INVITS ="type_my_invits";
     private static final String TYPE_SINGLE_EVENT ="type_single_event";
-
+    private static final String ONGOING = "ongoing";
 
 
     // --------------------------------------------------------------------------------------------------------------
     // --------------------------------------------- INSERT ---------------------------------------------------------
     // --------------------------------------------------------------------------------------------------------------
 
-    public static int insertNewBikeEvent(Context context, BikeEvent bikeEvent){
+    public static void insertNewBikeEvent(Context context, BikeEvent bikeEvent){
 
         // Insert bikeEvent in database
         BikeEventContentProvider bikeEventContentProvider = new BikeEventContentProvider();
-        bikeEventContentProvider.setUtils(context, TYPE_SINGLE_EVENT, bikeEvent.getOrganizerId());
+        bikeEventContentProvider.setUtils(context, TYPE_SINGLE_EVENT, bikeEvent.getOrganizerId(), bikeEvent.getId());
 
-        Uri uriInsert = bikeEventContentProvider.insert(BikeEventContentProvider.URI_ITEM, BikeEvent.createContentValuesFromBikeEventInsert(bikeEvent));
-        int idEvent = (int) ContentUris.parseId(uriInsert);
+        bikeEventContentProvider.insert(null, BikeEvent.createContentValuesFromBikeEventInsert(bikeEvent));
 
         // Build list event Friends
         List<EventFriends> listEventFriends = bikeEvent.getListEventFriends();
 
         EventFriendsContentProvider eventFriendsContentProvider = new EventFriendsContentProvider();
-        eventFriendsContentProvider.setUtils(context);
+        eventFriendsContentProvider.setUtils(context, bikeEvent.getId());
 
         // Add event friends to database
         if(listEventFriends.size()>0){
             for(EventFriends eventFriends : listEventFriends){
-                eventFriends.setIdEvent(idEvent);
-                eventFriendsContentProvider.insert(EventFriendsContentProvider.URI_ITEM, EventFriends.createContentValuesFromEventFriendsInsert(eventFriends));
+                eventFriends.setIdEvent(bikeEvent.getId());
+                eventFriendsContentProvider.insert(null, EventFriends.createContentValuesFromEventFriendsInsert(eventFriends));
             }
         }
-
-        return idEvent;
     }
 
     // --------------------------------------------------------------------------------------------------------------
@@ -64,17 +54,15 @@ public class BikeEventHandler {
 
         // Update bikeEvent in database
         BikeEventContentProvider bikeEventContentProvider = new BikeEventContentProvider();
-        bikeEventContentProvider.setUtils(context, TYPE_SINGLE_EVENT, bikeEvent.getOrganizerId());
+        bikeEventContentProvider.setUtils(context, TYPE_SINGLE_EVENT, bikeEvent.getOrganizerId(),bikeEvent.getId());
 
-        Uri uriUpdate = ContentUris.withAppendedId(BikeEventContentProvider.URI_ITEM, bikeEvent.getId());
-        bikeEventContentProvider.update(uriUpdate,BikeEvent.createContentValuesFromBikeEventUpdate(bikeEvent),null,null);
+        bikeEventContentProvider.update(null, BikeEvent.createContentValuesFromBikeEventUpdate(bikeEvent),null,null);
 
         EventFriendsContentProvider eventFriendsContentProvider = new EventFriendsContentProvider();
-        eventFriendsContentProvider.setUtils(context);
+        eventFriendsContentProvider.setUtils(context, bikeEvent.getId());
 
         // Delete event friends related to this idEvent
-        Uri uriDelete = ContentUris.withAppendedId(EventFriendsContentProvider.URI_ITEM, bikeEvent.getId());
-        eventFriendsContentProvider.delete(uriDelete,null,null);
+        eventFriendsContentProvider.delete(null,null,null);
 
         // Add event friends to database
         if(bikeEvent.getListEventFriends().size()>0){
@@ -90,33 +78,29 @@ public class BikeEventHandler {
 
     public static void deleteBikeEvent(Context context, BikeEvent bikeEvent){
 
-        // Update bikeEvent in database
-        BikeEventContentProvider bikeEventContentProvider = new BikeEventContentProvider();
-        bikeEventContentProvider.setUtils(context, TYPE_SINGLE_EVENT, bikeEvent.getOrganizerId());
-
-        Uri uriDeleteEvent = ContentUris.withAppendedId(BikeEventContentProvider.URI_ITEM, bikeEvent.getId());
-        bikeEventContentProvider.delete(uriDeleteEvent,null,null);
-
         // Delete event friends related to this idEvent
         EventFriendsContentProvider eventFriendsContentProvider = new EventFriendsContentProvider();
-        eventFriendsContentProvider.setUtils(context);
+        eventFriendsContentProvider.setUtils(context,bikeEvent.getId());
+        eventFriendsContentProvider.delete(null,null,null);
 
-        Uri uriDeleteFriends = ContentUris.withAppendedId(EventFriendsContentProvider.URI_ITEM, bikeEvent.getId());
-        eventFriendsContentProvider.delete(uriDeleteFriends,null,null);
+        // Update bikeEvent in database
+        BikeEventContentProvider bikeEventContentProvider = new BikeEventContentProvider();
+        bikeEventContentProvider.setUtils(context, TYPE_SINGLE_EVENT, bikeEvent.getOrganizerId(),bikeEvent.getId());
+        bikeEventContentProvider.delete(null,null,null);
     }
 
     // --------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------- UTILS --------------------------------------------------------
     // --------------------------------------------------------------------------------------------------------------
 
-    private static List<EventFriends> buildListEventFriends(int idEvent, List<Friend> listFriends){
+    private static List<EventFriends> buildListEventFriends(String idEvent, List<Friend> listFriends){
 
         List<EventFriends> listEventFriends = new ArrayList<>();
 
         if(listFriends!=null){
             if(listFriends.size()>0){ // if at least 1 friend
                 for(Friend friend : listFriends){
-                    listEventFriends.add(new EventFriends(0, idEvent, friend.getId(),true));
+                    listEventFriends.add(new EventFriends(0, idEvent, friend.getId(),ONGOING));
                 }
             }
         }
@@ -124,13 +108,11 @@ public class BikeEventHandler {
         return listEventFriends;
     }
 
-    public static BikeEvent getBikeEvent(Context context, int idEvent, String organizerId){
+    public static BikeEvent getBikeEvent(Context context, String idEvent, String organizerId){
 
         BikeEventContentProvider bikeEventContentProvider = new BikeEventContentProvider();
-        bikeEventContentProvider.setUtils(context, TYPE_SINGLE_EVENT, organizerId);
-
-        Uri uriQuery = ContentUris.withAppendedId(BikeEventContentProvider.URI_ITEM, idEvent);
-        final Cursor cursor = bikeEventContentProvider.query(uriQuery, null, null, null, null);
+        bikeEventContentProvider.setUtils(context, TYPE_SINGLE_EVENT, organizerId, idEvent);
+        final Cursor cursor = bikeEventContentProvider.query(null, null, null, null, null);
 
         return BikeEvent.getBikeEventFromCursor(cursor);
     }
@@ -138,7 +120,7 @@ public class BikeEventHandler {
     public static List<BikeEvent> getAllFutureBikeEvents(Context context, String organizerId){
 
         BikeEventContentProvider bikeEventContentProvider = new BikeEventContentProvider();
-        bikeEventContentProvider.setUtils(context,TYPE_MY_EVENTS,organizerId);
+        bikeEventContentProvider.setUtils(context,TYPE_MY_EVENTS,organizerId,null);
 
         final Cursor cursor = bikeEventContentProvider.query(null, null, null, null, null);
 
@@ -148,20 +130,19 @@ public class BikeEventHandler {
     public static List<BikeEvent> getAllInvitiations(Context context, String organizerId){
 
         BikeEventContentProvider bikeEventContentProvider = new BikeEventContentProvider();
-        bikeEventContentProvider.setUtils(context,TYPE_MY_INVITS,organizerId);
+        bikeEventContentProvider.setUtils(context,TYPE_MY_INVITS,organizerId,null);
 
         final Cursor cursor = bikeEventContentProvider.query(null, null, null, null, null);
 
         return BikeEvent.getListBikeEventsFromCursor(cursor);
     }
 
-    public static List<EventFriends> getEventFriends(Context context, int idEvent){
+    public static List<EventFriends> getEventFriends(Context context, String idEvent){
 
         EventFriendsContentProvider eventFriendsContentProvider = new EventFriendsContentProvider();
-        eventFriendsContentProvider.setUtils(context);
+        eventFriendsContentProvider.setUtils(context, idEvent);
 
-        Uri uriQuery = ContentUris.withAppendedId(EventFriendsContentProvider.URI_ITEM, idEvent);
-        final Cursor cursor = eventFriendsContentProvider.query(uriQuery, null, null, null, null);
+        final Cursor cursor = eventFriendsContentProvider.query(null, null, null, null, null);
 
         return EventFriends.getEventFriendsFromCursor(cursor);
     }

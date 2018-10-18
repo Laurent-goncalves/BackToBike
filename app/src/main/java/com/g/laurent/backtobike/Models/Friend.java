@@ -21,13 +21,15 @@ public class Friend {
     private String name;
     private String photoUrl;
     private Boolean accepted;
+    private Boolean hasAgreed;
 
-    public Friend(@NonNull String id, String login, String name, String photoUrl, Boolean accepted) {
+    public Friend(@NonNull String id, String login, String name, String photoUrl, Boolean accepted, Boolean hasAgreed) {
         this.id = id;
         this.login = login;
         this.name = name;
         this.photoUrl = photoUrl;
         this.accepted = accepted;
+        this.hasAgreed=hasAgreed;
     }
 
     @Ignore
@@ -74,6 +76,14 @@ public class Friend {
         this.accepted = accepted;
     }
 
+    public Boolean getHasAgreed() {
+        return hasAgreed;
+    }
+
+    public void setHasAgreed(Boolean hasAgreed) {
+        this.hasAgreed = hasAgreed;
+    }
+
     // --- UTILS ---
     public static Friend fromContentValues(ContentValues values) {
 
@@ -82,6 +92,7 @@ public class Friend {
         if (values.containsKey("id")) friend.setId(values.getAsString("id"));
         if (values.containsKey("login")) friend.setLogin(values.getAsString("login"));
         if (values.containsKey("accepted")) friend.setAccepted(values.getAsBoolean("accepted"));
+        if (values.containsKey("hasAgreed")) friend.setHasAgreed(values.getAsBoolean("hasAgreed"));
         if (values.containsKey("name")) friend.setName(values.getAsString("name"));
         if (values.containsKey("photoUrl")) friend.setPhotoUrl(values.getAsString("photoUrl"));
 
@@ -95,6 +106,7 @@ public class Friend {
         values.put("id",friend.getId());
         values.put("login",friend.getLogin());
         values.put("accepted",friend.getAccepted());
+        values.put("hasAgreed",friend.getHasAgreed());
         values.put("name",friend.getName());
         values.put("photoUrl",friend.getPhotoUrl());
 
@@ -112,6 +124,7 @@ public class Friend {
                 friend.setId(cursor.getString(cursor.getColumnIndexOrThrow("id")));
                 friend.setLogin(cursor.getString(cursor.getColumnIndexOrThrow("login")));
                 friend.setAccepted(cursor.getInt(cursor.getColumnIndexOrThrow("accepted"))>0);
+                friend.setHasAgreed(cursor.getInt(cursor.getColumnIndexOrThrow("hasAgreed"))>0);
                 friend.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
                 friend.setPhotoUrl(cursor.getString(cursor.getColumnIndexOrThrow("photoUrl")));
 
@@ -132,6 +145,7 @@ public class Friend {
                 friend.setId(cursor.getString(cursor.getColumnIndexOrThrow("id")));
                 friend.setLogin(cursor.getString(cursor.getColumnIndexOrThrow("login")));
                 friend.setAccepted(cursor.getInt(cursor.getColumnIndexOrThrow("accepted"))>0);
+                friend.setHasAgreed(cursor.getInt(cursor.getColumnIndexOrThrow("hasAgreed"))>0);
                 friend.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
                 friend.setPhotoUrl(cursor.getString(cursor.getColumnIndexOrThrow("photoUrl")));
             }
