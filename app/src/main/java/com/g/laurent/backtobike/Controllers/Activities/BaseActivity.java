@@ -59,7 +59,8 @@ public class BaseActivity extends AppCompatActivity {
     public void launchTraceActivity(Route route){
 
         Intent intent = new Intent(this, TraceActivity.class);
-        intent.getExtras().putInt(BUNDLE_ROUTE_ID, route.getId());
+        if(route!=null)
+            intent.getExtras().putInt(BUNDLE_ROUTE_ID, route.getId());
         startActivity(intent);
     }
 

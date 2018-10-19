@@ -439,11 +439,19 @@ public class FirebaseRecover {
 
     private Friend buildFriend(DataSnapshot datas){
 
+        Boolean accepted = null;
+        Boolean has_accepted = null;
+
+        if(datas.child(ACCEPTED).getValue()!=null)
+            accepted = (Boolean) datas.child(ACCEPTED).getValue();
+
+        if(datas.child(HAS_ACCEPTED).getValue()!=null)
+            has_accepted = (Boolean) datas.child(HAS_ACCEPTED).getValue();
+
         return new Friend(datas.getKey(),
                 (String) datas.child(LOGIN).getValue(),
                 (String) datas.child(NAME).getValue(),
                 (String) datas.child(PHOTO_URL).getValue(),
-                (Boolean) datas.child(ACCEPTED).getValue(),
-                (Boolean) datas.child(HAS_ACCEPTED).getValue());
+                accepted,has_accepted);
     }
 }

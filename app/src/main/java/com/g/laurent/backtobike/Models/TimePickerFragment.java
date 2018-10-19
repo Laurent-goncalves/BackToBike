@@ -3,15 +3,12 @@ package com.g.laurent.backtobike.Models;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.widget.TimePicker;
 import com.g.laurent.backtobike.Controllers.Fragments.InvitFragment;
-import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.UtilsApp;
 import java.util.Calendar;
-import butterknife.BindView;
 
 
 public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
@@ -38,6 +35,6 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         String time = UtilsApp.createStringTime(hourOfDay, minute);
         invitFragment.getConfig().getTimeView().setText(time); // change time selected
-        invitFragment.getCallbackInvitActivity().getInvitation().setTime(time);
+        invitFragment.getCallbackEventActivity().getInvitation().setTime(time);
     }
 }

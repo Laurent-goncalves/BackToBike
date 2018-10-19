@@ -44,17 +44,39 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
         this.baseActivity=baseActivity;
         context = baseActivity.getApplicationContext();
 
-        if(baseActivity!=null) {
-            toolbar = baseActivity.findViewById(R.id.activity_main_toolbar);
-            baseActivity.setSupportActionBar(toolbar);
-        }
+        toolbar = baseActivity.findViewById(R.id.activity_main_toolbar);
+        baseActivity.setSupportActionBar(toolbar);
 
         drawerLayout = baseActivity.findViewById(R.id.activity_drawer_layout);
         navigationView = baseActivity.findViewById(R.id.activity_nav_view);
 
         finalizeToolbarConfiguration(currentMenu);
+        configureAddButton(currentMenu);
+
         //configureButtonToolbar(baseActivity, currentMenu);
         configureNavigationDrawerMenus(currentMenu);
+    }
+
+    private void configureAddButton(String currentMenu){
+
+        if(currentMenu.equals(DISPLAY_MY_ROUTES) || currentMenu.equals(DISPLAY_MY_EVENTS)){
+            ImageButton buttonAdd = baseActivity.findViewById(R.id.button_add);
+            buttonAdd.setOnClickListener(v -> {
+                switch(currentMenu){
+
+                    case DISPLAY_MY_ROUTES:
+                        baseActivity.launchTraceActivity(null);
+                        break;
+
+                    case DISPLAY_MY_EVENTS:
+                        baseActivity.launchEventActivity();
+                        break;
+                }
+            });
+        } else if (currentMenu.equals(DISPLAY_MY_INVITS)){
+            ImageButton buttonAdd = baseActivity.findViewById(R.id.button_add);
+            buttonAdd.setVisibility(View.GONE);
+        }
     }
 
     private void finalizeToolbarConfiguration(String currentMenu){

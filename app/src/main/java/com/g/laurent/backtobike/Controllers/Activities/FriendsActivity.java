@@ -3,29 +3,47 @@ package com.g.laurent.backtobike.Controllers.Activities;
 import android.app.Dialog;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.widget.Button;
 import android.widget.EditText;
-
 import com.g.laurent.backtobike.Controllers.Fragments.FriendFragment;
 import com.g.laurent.backtobike.Models.CallbackFriendActivity;
 import com.g.laurent.backtobike.R;
+import com.g.laurent.backtobike.Utils.SynchronizeWithFirebase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 
 public class FriendsActivity extends BaseActivity implements CallbackFriendActivity {
 
     private final static String BUNDLE_SELECT_MODE = "bundle_select_mode";
+    private FriendFragment friendFragment;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends);
         toolbarManager.configureToolbar(this, MENU_MY_FRIENDS);
-        configureAndShowFriendFragment();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            userId = user.getUid();
+            SynchronizeWithFirebase.synchronizeFriends(userId, getApplicationContext(), this::configureAndShowFriendFragment);
+        }
+
+        SwipeRefreshLayout mySwipeRefreshLayout = findViewById(R.id.swipe_to_refresh);
+        mySwipeRefreshLayout.setOnRefreshListener(() -> SynchronizeWithFirebase.synchronizeFriends(userId, getApplicationContext(), () -> {
+            configureAndShowFriendFragment();
+            mySwipeRefreshLayout.setRefreshing(false);
+        }
+        ));
     }
 
     public void configureAndShowFriendFragment(){
 
         // Initialize variables
-        FriendFragment friendFragment = new FriendFragment();
+        friendFragment = new FriendFragment();
 
         // add a bundle
         Bundle bundle = new Bundle();

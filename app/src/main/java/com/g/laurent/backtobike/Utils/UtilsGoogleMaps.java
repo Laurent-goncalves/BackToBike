@@ -2,7 +2,6 @@ package com.g.laurent.backtobike.Utils;
 
 import android.graphics.Point;
 import android.location.Location;
-
 import com.g.laurent.backtobike.Models.RouteSegment;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.Projection;
@@ -295,6 +294,23 @@ public class UtilsGoogleMaps {
         }
     }
 
+    public static List<RouteSegment> transformListPointsToListRouteSegments(List<LatLng> listPoints){
+
+        List<RouteSegment> listRouteSegments = new ArrayList<>();
+
+        if(listPoints!=null){
+            if(listPoints.size()>0){
+                for(int i = 0; i<listPoints.size();i++){
+                    listRouteSegments.add(new RouteSegment(0,i+1,listPoints.get(i).latitude,
+                            listPoints.get(i).longitude,0));
+
+                }
+            }
+        }
+
+        return listRouteSegments;
+    }
+
     public static List<LatLng> extractListPointsFromListRouteSegments(List<RouteSegment> listRouteSegments){
 
         List<LatLng> listPoints = new ArrayList<>();
@@ -308,4 +324,5 @@ public class UtilsGoogleMaps {
 
         return listPoints;
     }
+
 }

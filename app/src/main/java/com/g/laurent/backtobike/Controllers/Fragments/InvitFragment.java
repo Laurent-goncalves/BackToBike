@@ -13,7 +13,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import com.g.laurent.backtobike.Models.CallbackInvitActivity;
+import com.g.laurent.backtobike.Models.CallbackEventActivity;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.ConfigureInvitFragment;
 import butterknife.BindView;
@@ -35,7 +35,7 @@ public class InvitFragment extends Fragment {
     @BindView(R.id.comments_edit_text) EditText commentsView;
     @BindView(R.id.button_cancel) Button buttonCancel;
     @BindView(R.id.button_send) Button buttonSend;
-    private CallbackInvitActivity callbackInvitActivity;
+    private CallbackEventActivity mCallbackEventActivity;
     private ConfigureInvitFragment config;
     private Context context;
 
@@ -48,8 +48,8 @@ public class InvitFragment extends Fragment {
         super.onAttach(context);
 
         this.context=context;
-        if(context instanceof CallbackInvitActivity){
-            callbackInvitActivity = (CallbackInvitActivity) context;
+        if(context instanceof CallbackEventActivity){
+            mCallbackEventActivity = (CallbackEventActivity) context;
         }
     }
 
@@ -59,13 +59,13 @@ public class InvitFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_invit, container, false);
         ButterKnife.bind(this, view);
-        config = new ConfigureInvitFragment(view,this, callbackInvitActivity);
-        config.configureViews(callbackInvitActivity.getInvitation());
+        config = new ConfigureInvitFragment(view,this, mCallbackEventActivity);
+        config.configureViews(mCallbackEventActivity.getInvitation());
         return view;
     }
 
-    public CallbackInvitActivity getCallbackInvitActivity() {
-        return callbackInvitActivity;
+    public CallbackEventActivity getCallbackEventActivity() {
+        return mCallbackEventActivity;
     }
 
     public ConfigureInvitFragment getConfig() {

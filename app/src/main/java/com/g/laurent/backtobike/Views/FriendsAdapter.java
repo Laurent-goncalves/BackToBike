@@ -93,9 +93,17 @@ public class FriendsAdapter extends BaseAdapter {
             addFriend.setVisibility(View.GONE);
             name.setText(listFriends.get(position).getName());
 
+            if(listFriends.get(position).getHasAgreed()==null){
+                name.setBackgroundColor(context.getResources().getColor(R.color.colorGray));
+            } else if(!listFriends.get(position).getHasAgreed()){ // REJECTED or NO ANSWER
+                name.setBackgroundColor(context.getResources().getColor(R.color.colorGray));
+            } else {                                              // ACCEPTED
+                name.setBackgroundColor(context.getResources().getColor(R.color.colorValid));
+            }
+
             Glide.with(context)
                     .load(listFriends.get(position).getPhotoUrl())
-                    //.apply(new RequestOptions().placeholder(R.drawable.placeholder))
+                    // TODO .apply(new RequestOptions().placeholder(R.drawable.placeholder))
                     .into(image);
         }
     }
@@ -128,25 +136,20 @@ public class FriendsAdapter extends BaseAdapter {
 
     private void configureClickListener(View view){
 
-        view.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                friendFragment.setSelectMode(true);
+        // Long click listener : to actuate Select Mode and show checkboxes
+        view.setOnLongClickListener(v -> {
+            friendFragment.setSelectMode(true);
+            friendFragment.configureViews();
+            return true;
+        });
+
+        // Click listener : to deactivate Select mode and remove checkboxes
+        view.setOnClickListener(v -> {
+            if(friendFragment.getCallbackFriendActivity()!=null){
+                friendFragment.setSelectMode(false);
                 friendFragment.configureViews();
-                return false;
             }
         });
-
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(friendFragment.getCallbackFriendActivity()!=null){
-                    friendFragment.setSelectMode(false);
-                    friendFragment.configureViews();
-                }
-            }
-        });
-
     }
 
     @Override

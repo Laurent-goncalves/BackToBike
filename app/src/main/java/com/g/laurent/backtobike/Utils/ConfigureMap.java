@@ -29,16 +29,18 @@ public class ConfigureMap implements OnMapReadyCallback {
     private Context context;
     private GoogleMap googleMap;
     private List<RouteSegment> listRouteSegments;
+    private String userId;
 
-    public ConfigureMap(Context context, View view) {
+    public ConfigureMap(Context context, View view, String userId) {
         this.context = context;
+        this.userId = userId;
         mapView = view.findViewById(R.id.map);
         mileageView = view.findViewById(R.id.mileage_estimation);
         timeView = view.findViewById(R.id.time_estimation);
     }
 
     public void configureMapLayout(Route route){
-        listRouteSegments = RouteHandler.getRouteSegments(context, route.getId());
+        listRouteSegments = RouteHandler.getRouteSegments(context, route.getId(), userId);
         mapView.onCreate(null);
         mapView.onResume();
         mapView.getMapAsync(this);

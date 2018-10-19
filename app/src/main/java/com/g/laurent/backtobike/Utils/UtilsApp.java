@@ -10,6 +10,7 @@ import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -176,19 +177,28 @@ public class UtilsApp {
         return listRoutesNames;
     }
 
-    public static List<Friend> getListFriendsFromEventFriends(List<EventFriends> listEventFriends, Context context){
+    public static List<Friend> getListFriendsFromEventFriends(List<EventFriends> listEventFriends, String userId, Context context){
 
         List<Friend> listFriends = new ArrayList<>();
 
         if(listEventFriends!=null){
             if(listEventFriends.size()!=0){
                 for(EventFriends eventFriends : listEventFriends){
-                    listFriends.add(FriendsHandler.getFriend(context, eventFriends.getIdFriend()));
+                    listFriends.add(FriendsHandler.getFriend(context, eventFriends.getIdFriend(),userId));
                 }
             }
         }
 
         return listFriends;
+    }
+
+    public static Friend getUserFromFirebaseUser(String mylogin, FirebaseUser user){
+
+        String photoUrl = null;
+        if(user.getPhotoUrl()!=null)
+            photoUrl = user.getPhotoUrl().toString();
+
+        return new Friend(user.getUid(), mylogin, user.getDisplayName(), photoUrl,false,null);
     }
 
     public static Boolean areRoutesEquals(Route route1, Route route2){

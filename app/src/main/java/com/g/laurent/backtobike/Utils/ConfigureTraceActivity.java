@@ -40,11 +40,15 @@ public class ConfigureTraceActivity {
     private Boolean deleteMode;
     private int index;
     private int routeNumber;
+    private TraceActivity traceActivity;
     private GraphicsHandler graphicsHandler;
     private Context context;
+    private View view;
 
     public ConfigureTraceActivity(View view, TraceActivity traceActivity, final GoogleMap map) {
 
+        this.view=view;
+        this.traceActivity=traceActivity;
         this.map = map;
         context = traceActivity.getApplicationContext();
 
@@ -159,6 +163,23 @@ public class ConfigureTraceActivity {
         setButtonAsPressed(buttonDelete);
     }
 
+    @OnClick(R.id.button_cancel)
+    public void cancel(){
+
+        map.clear();
+
+        graphicsHandler = new GraphicsHandler(this, view, map, context);
+        graphicsHandler.updateButtonsState("any");
+
+        configureMapListeners();
+    }
+
+    @OnClick(R.id.button_save)
+    public void save(){
+        // Open dialog fragment to give name to the route
+        traceActivity.showAlertDialogAddNewRoute(graphicsHandler.getRoute());
+    }
+
     private void setButtonAsPressed(final ImageButton button){
 
         // set deleteMode value
@@ -237,4 +258,6 @@ public class ConfigureTraceActivity {
     // --------------------------------------------------------------------------------------------------------
     // ------------------------------------- GETTERS AND SETTERS ----------------------------------------------
     // --------------------------------------------------------------------------------------------------------
+
+
 }

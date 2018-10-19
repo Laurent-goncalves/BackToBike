@@ -17,12 +17,12 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract EventFriendsDao eventFriendsDao();
 
     // Create a single instance of property database
-    public static AppDatabase getInstance(Context context) {
+    public static AppDatabase getInstance(Context context, String userId) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            AppDatabase.class, "MyDatabase.db")
+                            AppDatabase.class, "MyDatabase" + userId + ".db")
                             .allowMainThreadQueries()
                             .fallbackToDestructiveMigration()
                             .build();

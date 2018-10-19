@@ -100,7 +100,7 @@ public class ConfigureDisplayFragment {
 
     // -------------------------------- 3 - Configure map
     private void configureMap(){
-        ConfigureMap configMap = new ConfigureMap(context, mapLayout);
+        ConfigureMap configMap = new ConfigureMap(context, mapLayout, userId);
         configMap.configureMapLayout(route);
     }
 
@@ -136,12 +136,12 @@ public class ConfigureDisplayFragment {
                 break;
 
             case BUNDLE_TYPE_EVENTS:
-                listFriends = UtilsApp.getListFriendsFromEventFriends(bikeEvent.getListEventFriends(),context);
+                listFriends = UtilsApp.getListFriendsFromEventFriends(bikeEvent.getListEventFriends(),userId,context);
                 friendsView.setVisibility(View.VISIBLE);
                 break;
 
             case BUNDLE_TYPE_INVITS:
-                listFriends = UtilsApp.getListFriendsFromEventFriends(invitation.getListEventFriends(),context);
+                listFriends = UtilsApp.getListFriendsFromEventFriends(invitation.getListEventFriends(),userId,context);
                 friendsView.setVisibility(View.VISIBLE);
                 break;
         }

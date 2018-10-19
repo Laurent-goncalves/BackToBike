@@ -15,10 +15,10 @@ public class Action {
     // -------------------------------------------- FRIEND -----------------------------------------------------
     // ---------------------------------------------------------------------------------------------------------
 
-    public static void addNewFriend(Friend friend, Friend user, Context context){
+    public static void addNewFriend(Friend friend, Friend user, String userId, Context context){
 
         // Insert friend in database
-        FriendsHandler.insertNewFriend(context, friend);
+        FriendsHandler.insertNewFriend(context, friend, userId);
 
         // Insert friend in Firebase
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
@@ -28,7 +28,7 @@ public class Action {
     public static void updateFriend(Friend friend, String userId, Context context){
 
         // Update friend in database
-        FriendsHandler.updateFriend(context, friend);
+        FriendsHandler.updateFriend(context, friend, userId);
 
         // Update friend in Firebase
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
@@ -38,7 +38,7 @@ public class Action {
     public static void deleteFriend(Friend friend, String userId, Context context){
 
         // Update friend in database
-        FriendsHandler.deleteFriend(context, friend.getId());
+        FriendsHandler.deleteFriend(context, friend.getId(), userId);
 
         // Update friend in Firebase
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
@@ -49,7 +49,7 @@ public class Action {
 
         // Friend accepted in database
         friend.setAccepted(true);
-        FriendsHandler.updateFriend(context, friend);
+        FriendsHandler.updateFriend(context, friend, userId);
 
         // Friend accepted in Firebase
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
@@ -60,7 +60,7 @@ public class Action {
 
         // Friend accepted in database
         friend.setAccepted(false);
-        FriendsHandler.updateFriend(context, friend);
+        FriendsHandler.updateFriend(context, friend, userId);
 
         // Friend accepted in Firebase
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
@@ -74,7 +74,7 @@ public class Action {
     public static int addNewRoute(Route route, String userId, Context context){
 
         // Insert route in database
-        int idRoute = RouteHandler.insertNewRoute(context, route);
+        int idRoute = RouteHandler.insertNewRoute(context, route, userId);
         route.setId(idRoute);
 
         // Insert route in Firebase
@@ -87,7 +87,7 @@ public class Action {
     public static void updateRoute(Route route, String userId, Context context){
 
         // Update route in database
-        RouteHandler.updateRoute(context, route);
+        RouteHandler.updateRoute(context, route, userId);
 
         // Update route in Firebase
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
@@ -99,7 +99,7 @@ public class Action {
         route.setValid(false);
 
         // Delete route in database
-        RouteHandler.updateRoute(context, route);
+        RouteHandler.updateRoute(context, route, userId);
 
         // Delete route in Firebase
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
@@ -115,7 +115,7 @@ public class Action {
         // Insert event in database
         String idEvent = UtilsApp.getIdEvent(event);
         event.setId(idEvent);
-        BikeEventHandler.insertNewBikeEvent(context,event);
+        BikeEventHandler.insertNewBikeEvent(context,event, userId);
 
         // Insert event in Firebase
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
@@ -128,7 +128,7 @@ public class Action {
     public static void cancelBikeEvent(BikeEvent event, String userId, Context context){
 
         // Delete event in database
-        BikeEventHandler.deleteBikeEvent(context, event);
+        BikeEventHandler.deleteBikeEvent(context, event, userId);
 
         // Cancel event and invitations in Firebase
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
@@ -144,7 +144,7 @@ public class Action {
         invitation.setStatus(ACCEPTED);
 
         // Accept invitation in database
-        BikeEventHandler.updateBikeEvent(context, invitation);
+        BikeEventHandler.updateBikeEvent(context, invitation, userId);
 
         // Accept invitation in Firebase
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
@@ -156,7 +156,7 @@ public class Action {
         invitation.setStatus(REJECTED);
 
         // Reject invitation in database
-        BikeEventHandler.updateBikeEvent(context,invitation);
+        BikeEventHandler.updateBikeEvent(context,invitation, userId);
 
         // Reject invitation in Firebase
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
@@ -166,7 +166,7 @@ public class Action {
     public static void addInvitRouteToMyRoutes(BikeEvent invitation, String userId, Context context){
 
         // Add route in database
-        int idRoute = RouteHandler.insertNewRoute(context, invitation.getRoute());
+        int idRoute = RouteHandler.insertNewRoute(context, invitation.getRoute(), userId);
         invitation.getRoute().setId(idRoute);
 
         // Add route in Firebase

@@ -17,9 +17,11 @@ public class RouteSegmentContentProvider extends ContentProvider {
     public static final String TABLE_NAME = RouteSegment.class.getSimpleName();
     public static final Uri URI_ITEM = Uri.parse("content://" + AUTHORITY + "/" + TABLE_NAME);
     private Context context;
+    private String userId;
 
-    public void setUtils(Context context){
+    public void setUtils(Context context, String userId){
         this.context=context;
+        this.userId=userId;
     }
 
     @Override
@@ -32,7 +34,7 @@ public class RouteSegmentContentProvider extends ContentProvider {
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         if (context != null){
             long idRoute = ContentUris.parseId(uri);
-            return AppDatabase.getInstance(context).routeSegmentDao().getRouteSegment(idRoute);
+            return AppDatabase.getInstance(context, userId).routeSegmentDao().getRouteSegment(idRoute);
         }
         throw new IllegalArgumentException("Failed to query row for uri " +  uri);
     }
@@ -47,7 +49,7 @@ public class RouteSegmentContentProvider extends ContentProvider {
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         if (context != null && values !=null){
-            final long id = AppDatabase.getInstance(context).routeSegmentDao().insertRouteSegmentDao(RouteSegment.fromContentValues(values));
+            final long id = AppDatabase.getInstance(context, userId).routeSegmentDao().insertRouteSegmentDao(RouteSegment.fromContentValues(values));
             if (id != 0){
                 return ContentUris.withAppendedId(uri, id);
             }
@@ -59,7 +61,7 @@ public class RouteSegmentContentProvider extends ContentProvider {
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         if (context!= null){
             long idRoute = ContentUris.parseId(uri);
-            return AppDatabase.getInstance(context).routeSegmentDao().deleteRouteSegment(idRoute);
+            return AppDatabase.getInstance(context, userId).routeSegmentDao().deleteRouteSegment(idRoute);
         }
         throw new IllegalArgumentException("Failed to delete row into " + uri);
     }
@@ -67,7 +69,7 @@ public class RouteSegmentContentProvider extends ContentProvider {
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         if (context!= null && values!=null){
-            return AppDatabase.getInstance(context).routeSegmentDao().updateRouteSegment(RouteSegment.fromContentValues(values));
+            return AppDatabase.getInstance(context, userId).routeSegmentDao().updateRouteSegment(RouteSegment.fromContentValues(values));
         }
         throw new IllegalArgumentException("Failed to update row into " + uri);
     }

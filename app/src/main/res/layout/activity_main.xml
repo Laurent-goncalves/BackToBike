@@ -99,7 +99,7 @@
             app:itemTextColor="@color/colorWhite"
             app:itemIconTint="@color/colorWhite"
             android:layout_marginStart="5dp"
-            android:background="@color/colorPrimary"
+            android:background="@drawable/background_drawer"
             app:headerLayout="@layout/navigation_drawer_header"
             app:menu="@menu/navigation_drawer_menu" />
 

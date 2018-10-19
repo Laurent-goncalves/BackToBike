@@ -1,11 +1,13 @@
 package com.g.laurent.backtobike.Models;
 
 
-public interface CallbackInvitActivity {
+public interface CallbackEventActivity {
 
     void configureAndShowInvitFragment();
 
     void configureAndShowFriendFragment();
 
     Invitation getInvitation();
+
+    String getUserId();
 }

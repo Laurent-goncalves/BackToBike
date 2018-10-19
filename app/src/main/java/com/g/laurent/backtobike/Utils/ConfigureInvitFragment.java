@@ -4,37 +4,25 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.database.Cursor;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.g.laurent.backtobike.Controllers.Fragments.InvitFragment;
-import com.g.laurent.backtobike.Models.AppDatabase;
-import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CalendarDialog;
-import com.g.laurent.backtobike.Models.CallbackInvitActivity;
-import com.g.laurent.backtobike.Models.EventFriends;
+import com.g.laurent.backtobike.Models.CallbackEventActivity;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.Invitation;
 import com.g.laurent.backtobike.Models.Route;
-import com.g.laurent.backtobike.Models.RouteSegment;
 import com.g.laurent.backtobike.Models.TimePickerFragment;
 import com.g.laurent.backtobike.R;
-import com.google.android.gms.maps.MapView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -42,7 +30,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemSelected;
 import butterknife.OnTextChanged;
-import butterknife.internal.Utils;
 
 
 public class ConfigureInvitFragment {
@@ -62,16 +49,16 @@ public class ConfigureInvitFragment {
     private Context context;
     private View view;
     private List<Route> listRoutes;
-    private CallbackInvitActivity callbackInvitActivity;
+    private CallbackEventActivity mCallbackEventActivity;
     private ConfigureMap configMap;
 
-    public ConfigureInvitFragment(View view, InvitFragment invitFragment, CallbackInvitActivity callbackInvitActivity) {
+    public ConfigureInvitFragment(View view, InvitFragment invitFragment, CallbackEventActivity callbackEventActivity) {
         ButterKnife.bind(this, view);
         this.view = view;
         this.invitFragment=invitFragment;
-        this.callbackInvitActivity=callbackInvitActivity;
+        this.mCallbackEventActivity = callbackEventActivity;
         context = invitFragment.getContext();
-        configMap = new ConfigureMap(context, mapLayout);
+        configMap = new ConfigureMap(context, mapLayout, mCallbackEventActivity.getUserId());
     }
 
     public void configureViews(Invitation invitation){
@@ -84,7 +71,7 @@ public class ConfigureInvitFragment {
 
     private void configureSpinner(int idRoute){
 
-        listRoutes = RouteHandler.getAllRoutes(context);
+        listRoutes = RouteHandler.getAllRoutes(context, mCallbackEventActivity.getUserId());
         listRoutes.add(0,new Route(-1,"Select a route",false,null));
 
         // Creating adapter for spinner
@@ -118,7 +105,7 @@ public class ConfigureInvitFragment {
         if(listIdFriends!=null){
             if(listIdFriends.size()>0){
                 for(String idFriend : listIdFriends){
-                    Friend friend = FriendsHandler.getFriend(context, idFriend);
+                    Friend friend = FriendsHandler.getFriend(context, idFriend, mCallbackEventActivity.getUserId());
                     EventFriendsHandler.addGuestView(friend, context, guestsLayout,this);
                 }
             }
@@ -130,14 +117,14 @@ public class ConfigureInvitFragment {
         int position = listRoutesView.getSelectedItemPosition();
 
         if(position!=0){
-            callbackInvitActivity.getInvitation().setIdRoute(listRoutes.get(position).getId());
+            mCallbackEventActivity.getInvitation().setIdRoute(listRoutes.get(position).getId());
             configMap.configureMapLayout(listRoutes.get(position));
         }
     }
 
     @OnTextChanged(R.id.comments_edit_text)
     public void onCommentsChanged(){
-        callbackInvitActivity.getInvitation().setComments(commentsView.getText().toString());
+        mCallbackEventActivity.getInvitation().setComments(commentsView.getText().toString());
     }
 
     @OnClick(R.id.button_send)
@@ -147,7 +134,7 @@ public class ConfigureInvitFragment {
 
     @OnClick(R.id.button_add_guests)
     public void addGuests(){
-        callbackInvitActivity.configureAndShowFriendFragment();
+        mCallbackEventActivity.configureAndShowFriendFragment();
     }
 
     @OnClick(R.id.date_picker_layout)
@@ -185,8 +172,8 @@ public class ConfigureInvitFragment {
     // -----------------------------------------------------------------------------------------------------
 
 
-    public CallbackInvitActivity getCallbackInvitActivity() {
-        return callbackInvitActivity;
+    public CallbackEventActivity getCallbackEventActivity() {
+        return mCallbackEventActivity;
     }
 
     public InvitFragment getInvitFragment() {

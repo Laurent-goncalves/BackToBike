@@ -41,6 +41,11 @@
     <string name="add_start_point_message">Please click on the map to add a start point</string>
     <string name="add_end_point_message">Please click on the map to add a arrival point</string>
     <string name="delete_message">Please click on segments or markers to delete</string>
+    <string name="title_add_name_route">Title of the route</string>
+    <string name="add_name_route">Enter a title for the route</string>
+    <string name="error_add_name_route">Please give a title for the route</string>
+    <string name="error_current_location">Error to get current location</string>
+    <string name="give_permission">Please give your permission</string>
 
     <!-- AUTHACTIVITY -->
     <string name="facebook_app_id">291137544820428</string>

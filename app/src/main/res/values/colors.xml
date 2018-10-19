@@ -14,4 +14,6 @@
     <color name="colorButtonDelete">#ff0066</color>
     <color name="colorReject">#cc0000</color>
     <color name="colorValid">#669900</color>
+    <color name="colorDrawer">#823719</color>
+
 </resources>

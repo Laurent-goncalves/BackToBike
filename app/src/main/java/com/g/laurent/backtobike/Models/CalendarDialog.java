@@ -42,7 +42,7 @@ public class CalendarDialog extends DialogFragment {
 
             InvitFragment invitFragment = (InvitFragment) getTargetFragment();
             invitFragment.getConfig().getDateView().setText(date); // change date selected into string
-            invitFragment.getCallbackInvitActivity().getInvitation().setDate(date);
+            invitFragment.getCallbackEventActivity().getInvitation().setDate(date);
 
             this.dismiss();
         }));

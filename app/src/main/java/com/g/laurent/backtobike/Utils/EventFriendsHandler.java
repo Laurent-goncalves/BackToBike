@@ -38,9 +38,9 @@ public class EventFriendsHandler {
     private static void deleteGuestView(Friend friend, View guestView, LinearLayout guestsLayout, ConfigureInvitFragment config){
 
         // remove friend from listEventFriend
-        int index = UtilsApp.findFriendIndexInListIds(friend.getId(), config.getInvitFragment().getCallbackInvitActivity().getInvitation().getListIdFriends());
+        int index = UtilsApp.findFriendIndexInListIds(friend.getId(), config.getInvitFragment().getCallbackEventActivity().getInvitation().getListIdFriends());
         if(index!=-1)
-            config.getInvitFragment().getCallbackInvitActivity().getInvitation().getListIdFriends().remove(index);
+            config.getInvitFragment().getCallbackEventActivity().getInvitation().getListIdFriends().remove(index);
 
         // remove view in linearLayout
         guestsLayout.removeView(guestView);

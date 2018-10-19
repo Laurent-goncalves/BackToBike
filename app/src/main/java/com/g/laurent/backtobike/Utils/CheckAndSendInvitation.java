@@ -43,15 +43,15 @@ public class CheckAndSendInvitation {
             BikeEvent bikeEvent = buildBikeEvent();
 
             // Add an event in phone database
-            BikeEventHandler.insertNewBikeEvent(context, bikeEvent);
+            BikeEventHandler.insertNewBikeEvent(context, bikeEvent, firebaseUser.getUid());
 
             // Add an event on Firebase in user's "my_events"
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
             firebaseUpdate.updateMyBikeEvent(firebaseUser.getUid(), bikeEvent);
 
             // Add an event on Firebase in friend's "my_invitations"
-            Route route = RouteHandler.getRoute(context, bikeEvent.getIdRoute());
-            List<RouteSegment> listRouteSegments = RouteHandler.getRouteSegments(context,route.getId());
+            Route route = RouteHandler.getRoute(context, bikeEvent.getIdRoute(), firebaseUser.getUid());
+            List<RouteSegment> listRouteSegments = RouteHandler.getRouteSegments(context,route.getId(), firebaseUser.getUid());
             route.setListRouteSegment(listRouteSegments);
 
             bikeEvent.setRoute(route);
@@ -83,7 +83,7 @@ public class CheckAndSendInvitation {
     private BikeEvent buildBikeEvent(){
 
         String user_id = firebaseUser.getUid();
-        Invitation invitation = config.getCallbackInvitActivity().getInvitation();
+        Invitation invitation = config.getCallbackEventActivity().getInvitation();
 
         String date = invitation.getDate();
         String time = invitation.getTime();

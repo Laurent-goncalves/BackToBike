@@ -37,7 +37,7 @@ public class TestActionClass extends AndroidTestCase {
 
     @Override
     public void setUp() throws InterruptedException {
-        authSignal = new CountDownLatch(10);
+        authSignal = new CountDownLatch(30);
 
         auth = FirebaseAuth.getInstance();
         if(auth.getCurrentUser() == null) {
@@ -50,7 +50,7 @@ public class TestActionClass extends AndroidTestCase {
         } else {
             authSignal.countDown();
         }
-        authSignal.await(20, TimeUnit.SECONDS);
+        authSignal.await(60, TimeUnit.SECONDS);
     }
 
     @Override
@@ -492,7 +492,6 @@ public class TestActionClass extends AndroidTestCase {
     public void testFirebase_AcceptRoute() throws InterruptedException {
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
-        databaseReference.child(auth.getUid()).child("my_events").removeValue();
         databaseReference.child("id2").child("my_routes").removeValue();
         databaseReference.child("id2").child("my_events").removeValue();
 

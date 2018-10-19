@@ -11,14 +11,16 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.g.laurent.backtobike.Models.CallbackFriendActivity;
-import com.g.laurent.backtobike.Models.CallbackInvitActivity;
+import com.g.laurent.backtobike.Models.CallbackEventActivity;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.OnFriendDataGetListener;
 import com.g.laurent.backtobike.R;
+import com.g.laurent.backtobike.Utils.Action;
 import com.g.laurent.backtobike.Utils.FirebaseRecover;
-import com.g.laurent.backtobike.Utils.FirebaseUpdate;
 import com.g.laurent.backtobike.Utils.FriendsHandler;
+import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.g.laurent.backtobike.Views.FriendsAdapter;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,7 +43,7 @@ public class FriendFragment extends Fragment {
     private List<Friend> listFriends;
     private ArrayList<String> listFriendsSelected;
     private CallbackFriendActivity callbackFriendActivity;
-    private CallbackInvitActivity callbackInvitActivity;
+    private CallbackEventActivity mCallbackEventActivity;
     private FirebaseUser firebaseUser;
     private String myLogin;
     private Boolean SelectMode;
@@ -67,11 +69,17 @@ public class FriendFragment extends Fragment {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         firebaseUser = auth.getCurrentUser();
 
-        listFriends = FriendsHandler.getListFriends(context);
+        configureListFriendsAndView();
+
+        return view;
+    }
+
+    public void configureListFriendsAndView(){
+
+        listFriends = FriendsHandler.getListFriends(context, firebaseUser.getUid());
         listFriends.add(new Friend()); // add item for "add a friend"
 
         configureViews();
-        return view;
     }
 
     private void defineMode(){
@@ -89,9 +97,9 @@ public class FriendFragment extends Fragment {
             listFriendsSelected = new ArrayList<>();
         }
 
-        if(context instanceof CallbackInvitActivity){
-            callbackInvitActivity = (CallbackInvitActivity) context;
-            listFriendsSelected = callbackInvitActivity.getInvitation().getListIdFriends();
+        if(context instanceof CallbackEventActivity){
+            mCallbackEventActivity = (CallbackEventActivity) context;
+            listFriendsSelected = mCallbackEventActivity.getInvitation().getListIdFriends();
             if(listFriendsSelected==null)
                 listFriendsSelected = new ArrayList<>();
         }
@@ -123,9 +131,7 @@ public class FriendFragment extends Fragment {
             }
 
             @Override
-            public void onSuccess(List<Friend> listFriend) {
-
-            }
+            public void onSuccess(List<Friend> listFriend) {}
 
             @Override
             public void onFailure(String error) {
@@ -136,17 +142,8 @@ public class FriendFragment extends Fragment {
 
     private void saveNewFriend(Friend friend){
 
-        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-
-        // Add friend to user Firebase "my_friends" with status "false" as accepted
-        firebaseUpdate.updateFriend(firebaseUser.getUid(), friend, false);
-
-        // Add user in friend Firebase "my_friends" with status "false" as accepted
-        Friend user = new Friend(firebaseUser.getUid(),myLogin,firebaseUser.getDisplayName(),firebaseUser.getPhotoUrl().toString(),false,null);
-        firebaseUpdate.updateFriend(friend.getId(),user, true);
-
-        // Add friend in phone database
-        FriendsHandler.insertNewFriend(context, friend);
+        // Add friend to database and Firebase
+        Action.addNewFriend(friend, UtilsApp.getUserFromFirebaseUser(myLogin, firebaseUser),firebaseUser.getUid(), context);
 
         // Update layout
         listFriends.add(listFriends.size()-1, friend); // add new friend before the last item
@@ -161,8 +158,8 @@ public class FriendFragment extends Fragment {
         return listFriendsSelected;
     }
 
-    public CallbackInvitActivity getCallbackInvitActivity() {
-        return callbackInvitActivity;
+    public CallbackEventActivity getCallbackEventActivity() {
+        return mCallbackEventActivity;
     }
 
     public CallbackFriendActivity getCallbackFriendActivity() {

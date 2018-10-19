@@ -49,7 +49,7 @@ public class SaveAndRestoreDisplayActivity {
 
         switch(typeDisplay){
             case DISPLAY_MY_ROUTES:
-                List<Route> listRoutes = RouteHandler.getAllRoutes(context);
+                List<Route> listRoutes = RouteHandler.getAllRoutes(context, user_id);
                 displayActivity.setListRoutes(listRoutes);
                 displayActivity.setCount(listRoutes.size());
                 break;
@@ -57,7 +57,7 @@ public class SaveAndRestoreDisplayActivity {
             case DISPLAY_MY_EVENTS:
 
                 // Get Bike Events
-                List<BikeEvent> listEvents = BikeEventHandler.getAllFutureBikeEvents(context,user_id);
+                List<BikeEvent> listEvents = BikeEventHandler.getAllFutureBikeEvents(context,user_id,user_id);
 
                 // Find event friends and route for each bikeEvent
                 if(listEvents!=null){
@@ -65,12 +65,12 @@ public class SaveAndRestoreDisplayActivity {
                         for(BikeEvent event : listEvents){
 
                             // Event friends
-                            List<EventFriends> listEventFriends = BikeEventHandler.getEventFriends(context,event.getId());
+                            List<EventFriends> listEventFriends = BikeEventHandler.getEventFriends(context,event.getId(),user_id);
                             event.setListEventFriends(listEventFriends);
 
                             // Route and RouteSegments
-                            Route route = RouteHandler.getRoute(context,event.getIdRoute());
-                            List<RouteSegment> listSegments = RouteHandler.getRouteSegments(context,event.getIdRoute());
+                            Route route = RouteHandler.getRoute(context,event.getIdRoute(),user_id);
+                            List<RouteSegment> listSegments = RouteHandler.getRouteSegments(context,event.getIdRoute(),user_id);
                             route.setListRouteSegment(listSegments);
                             event.setRoute(route);
                         }
@@ -84,7 +84,7 @@ public class SaveAndRestoreDisplayActivity {
             case DISPLAY_MY_INVITS:
 
                 // Get Invitations
-                List<BikeEvent> listInvits = BikeEventHandler.getAllInvitiations(context,user_id);
+                List<BikeEvent> listInvits = BikeEventHandler.getAllInvitiations(context,user_id,user_id);
 
                 // Find event friends and route for each invitations
                 if(listInvits!=null){
@@ -92,12 +92,12 @@ public class SaveAndRestoreDisplayActivity {
                         for(BikeEvent event : listInvits){
 
                             // Event friends
-                            List<EventFriends> listEventFriends = BikeEventHandler.getEventFriends(context,event.getId());
+                            List<EventFriends> listEventFriends = BikeEventHandler.getEventFriends(context,event.getId(),user_id);
                             event.setListEventFriends(listEventFriends);
 
                             // Route and RouteSegments
-                            Route route = RouteHandler.getRoute(context,event.getIdRoute());
-                            List<RouteSegment> listSegments = RouteHandler.getRouteSegments(context,event.getIdRoute());
+                            Route route = RouteHandler.getRoute(context,event.getIdRoute(),user_id);
+                            List<RouteSegment> listSegments = RouteHandler.getRouteSegments(context,event.getIdRoute(),user_id);
                             route.setListRouteSegment(listSegments);
                             event.setRoute(route);
                         }

@@ -16,9 +16,11 @@ public class FriendContentProvider extends ContentProvider {
     public static final Uri URI_ITEM = Uri.parse("content://" + AUTHORITY + "/" + TABLE_NAME);
     private Context context;
     private String idFriend;
+    private String userId;
 
-    public void setUtils(Context context){
+    public void setUtils(Context context, String userId){
         this.context=context;
+        this.userId=userId;
     }
 
     @Override
@@ -31,9 +33,9 @@ public class FriendContentProvider extends ContentProvider {
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         if (context != null){
             if(idFriend==null)
-                return AppDatabase.getInstance(context).friendsDao().getAllFriends();
+                return AppDatabase.getInstance(context, userId).friendsDao().getAllFriends();
             else // get single friend
-                return AppDatabase.getInstance(context).friendsDao().getFriend(idFriend);
+                return AppDatabase.getInstance(context, userId).friendsDao().getFriend(idFriend);
         }
         throw new IllegalArgumentException("Failed to query row for uri " +  uri);
     }
@@ -48,7 +50,7 @@ public class FriendContentProvider extends ContentProvider {
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         if (context != null && values !=null){
-            AppDatabase.getInstance(context).friendsDao().insertFriend(Friend.fromContentValues(values));
+            AppDatabase.getInstance(context, userId).friendsDao().insertFriend(Friend.fromContentValues(values));
         } else
             throw new IllegalArgumentException("Failed to insert row into " + uri);
         return null;
@@ -57,7 +59,7 @@ public class FriendContentProvider extends ContentProvider {
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         if (context!= null){
-            return AppDatabase.getInstance(context).friendsDao().deleteFriend(idFriend);
+            return AppDatabase.getInstance(context, userId).friendsDao().deleteFriend(idFriend);
         }
         throw new IllegalArgumentException("Failed to delete row into " + uri);
     }
@@ -65,7 +67,7 @@ public class FriendContentProvider extends ContentProvider {
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         if (context!= null && values!=null){
-            return AppDatabase.getInstance(context).friendsDao().updateFriend(Friend.fromContentValues(values));
+            return AppDatabase.getInstance(context, userId).friendsDao().updateFriend(Friend.fromContentValues(values));
         }
         throw new IllegalArgumentException("Failed to update row into " + uri);
     }

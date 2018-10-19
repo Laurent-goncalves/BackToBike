@@ -2,17 +2,16 @@ package com.g.laurent.backtobike.Controllers.Activities;
 
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 import com.g.laurent.backtobike.Controllers.Fragments.FriendFragment;
 import com.g.laurent.backtobike.Controllers.Fragments.InvitFragment;
-import com.g.laurent.backtobike.Models.CallbackInvitActivity;
+import com.g.laurent.backtobike.Models.CallbackEventActivity;
 import com.g.laurent.backtobike.Models.Invitation;
-import com.g.laurent.backtobike.Models.ToolbarManager;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.SaveAndRestoreDataInvitActivity;
+import com.google.firebase.auth.FirebaseAuth;
 
-public class EventActivity extends BaseActivity implements CallbackInvitActivity {
+public class EventActivity extends BaseActivity implements CallbackEventActivity {
 
     private final static String TAG_INVIT_FRAGMENT = "tag_invit_fragment";
     private final static String TAG_FRIEND_FRAGMENT = "tag_friend_fragment";
@@ -26,6 +25,8 @@ public class EventActivity extends BaseActivity implements CallbackInvitActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invit);
         invitation = new Invitation();
+        userId = FirebaseAuth.getInstance().getUid();
+
         SaveAndRestoreDataInvitActivity.restoreData(savedInstanceState,this);
         toolbarManager.configureToolbar(this, MENU_CREATE_EVENT);
 
@@ -81,6 +82,11 @@ public class EventActivity extends BaseActivity implements CallbackInvitActivity
 
     public Invitation getInvitation() {
         return invitation;
+    }
+
+    @Override
+    public String getUserId() {
+        return userId;
     }
 
     public void setInvitation(Invitation invitation) {

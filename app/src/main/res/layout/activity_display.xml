@@ -63,6 +63,15 @@
                         android:textSize="20sp"
                         android:textColor="@color/colorWhite"/>
 
+                    <!-- BUTTON ADD -->
+                    <ImageButton
+                        android:id="@+id/button_add"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:background="@color/fui_transparent"
+                        android:src="@drawable/baseline_add_white_36"/>
+
                 </RelativeLayout>
 
             </android.support.v7.widget.Toolbar>
@@ -84,7 +93,7 @@
             app:itemTextColor="@color/colorWhite"
             app:itemIconTint="@color/colorWhite"
             android:layout_marginStart="5dp"
-            android:background="@color/colorPrimary"
+            android:background="@drawable/background_drawer"
             app:headerLayout="@layout/navigation_drawer_header"
             app:menu="@menu/navigation_drawer_menu" />
 
