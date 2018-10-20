@@ -87,7 +87,7 @@ public class ConfigureInvitFragment {
         // Select item in spinner
         if(idRoute!=-1){ // if a route is already selected
 
-            int index = UtilsApp.findIndexRouteInList(idRoute,listRoutes);
+            int index = UtilsApp.findIndexRouteInList(String.valueOf(idRoute) ,listRoutes);
 
             if(index!=-1){
                 listRoutesView.setSelection(index);

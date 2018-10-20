@@ -311,6 +311,22 @@ public class UtilsGoogleMaps {
         return listRouteSegments;
     }
 
+    public static List<LatLng> transformListRouteSegmentsToListPoints(List<RouteSegment> listRouteSegments){
+
+        List<LatLng> listPoints = new ArrayList<>();
+
+        if(listRouteSegments!=null){
+            if(listRouteSegments.size()>0){
+                for(int i = 0; i<listRouteSegments.size();i++){
+                    listPoints.add(new LatLng(listRouteSegments.get(i).getLat(),
+                            listRouteSegments.get(i).getLng()));
+                }
+            }
+        }
+
+        return listPoints;
+    }
+
     public static List<LatLng> extractListPointsFromListRouteSegments(List<RouteSegment> listRouteSegments){
 
         List<LatLng> listPoints = new ArrayList<>();

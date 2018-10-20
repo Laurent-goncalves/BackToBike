@@ -20,153 +20,209 @@
         tools:openDrawer="start">
 
         <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:id="@+id/view_trace_activity"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <!-- BAR WITH BUTTONS -->
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <!-- BUTTON ADD / CHANGE START POINT -->
-        <ImageButton
-            android:id="@+id/button_add_start_point"
-            android:layout_width="0dp"
-            android:layout_weight="15"
-            android:layout_height="@dimen/height_button_trace_map"
-            android:layout_marginStart="@dimen/buttons_spaces"
-            android:layout_marginTop="@dimen/buttons_spaces"
-            android:layout_marginBottom="@dimen/buttons_spaces"
-            android:background="@drawable/button_trace"
-            android:src="@drawable/baseline_place_black_24"/>
-
-        <!-- BUTTON ADD SEGMENT -->
-        <ImageButton
-            android:id="@+id/button_add_segment"
-            android:layout_width="0dp"
-            android:layout_weight="15"
-            android:layout_height="@dimen/height_button_trace_map"
-            android:layout_marginStart="@dimen/buttons_spaces"
-            android:layout_marginTop="@dimen/buttons_spaces"
-            android:layout_marginBottom="@dimen/buttons_spaces"
-            android:background="@drawable/button_trace"
-            android:src="@drawable/baseline_linear_scale_black_24"/>
-
-        <!-- BUTTON ADD / CHANGE END POINT -->
-        <ImageButton
-            android:id="@+id/button_add_end_point"
-            android:layout_width="0dp"
-            android:layout_weight="15"
-            android:layout_height="@dimen/height_button_trace_map"
-            android:layout_marginStart="@dimen/buttons_spaces"
-            android:layout_marginTop="@dimen/buttons_spaces"
-            android:layout_marginBottom="@dimen/buttons_spaces"
-            android:background="@drawable/button_trace"
-            android:src="@drawable/baseline_flag_black_24"/>
-
-        <!-- BUTTON DELETE  -->
-        <ImageButton
-            android:id="@+id/button_delete"
-            android:layout_width="0dp"
-            android:layout_weight="15"
-            android:layout_height="@dimen/height_button_trace_map"
-            android:layout_marginStart="@dimen/buttons_spaces"
-            android:layout_marginTop="@dimen/buttons_spaces"
-            android:layout_marginBottom="@dimen/buttons_spaces"
-            android:background="@drawable/button_trace"
-            android:src="@drawable/baseline_delete_black_24"/>
-
-        <!--  LINE SEPARATOR  -->
-        <View
-            android:layout_width="2dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/buttons_spaces"
-            android:layout_marginEnd="@dimen/buttons_spaces"
-            android:background="#dfdfdf"/>
-
-        <!--  MILEAGE DISPLAYED  -->
-        <TextView
-            android:id="@+id/mileage_measured"
-            android:layout_width="0dp"
-            android:layout_weight="20"
-            android:layout_height="@dimen/height_button_trace_map"
-            android:textColor="@color/colorPrimaryDark"
-            android:gravity="center"
-            android:layout_marginStart="@dimen/buttons_spaces"
-            android:layout_marginTop="@dimen/buttons_spaces"
-            android:layout_marginBottom="@dimen/buttons_spaces"/>
-
-        <!--  LINE SEPARATOR  -->
-        <View
-            android:layout_width="2dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/buttons_spaces"
-            android:layout_marginEnd="@dimen/buttons_spaces"
-            android:background="#dfdfdf"/>
-
-        <!--  TIME ROUTE DISPLAYED  -->
-        <TextView
-            android:id="@+id/time_estimated"
-            android:layout_width="0dp"
-            android:layout_weight="20"
-            android:layout_height="@dimen/height_button_trace_map"
-            android:textColor="@color/colorPrimaryDark"
-            android:gravity="center"
-            android:layout_marginStart="@dimen/buttons_spaces"
-            android:layout_marginTop="@dimen/buttons_spaces"
-            android:layout_marginBottom="@dimen/buttons_spaces"/>
-
-    </LinearLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <!-- MAPS -->
-        <fragment
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:context=".Controllers.Activities.TraceActivity" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/view_trace_activity"
+            xmlns:android="http://schemas.android.com/apk/res/android">
 
-        <!-- BUTTON CANCEL  -->
-        <Button
-            android:id="@+id/button_cancel"
-            android:layout_width="@dimen/width_buttons_cancel_and_save"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_marginEnd="104dp"
-            android:layout_marginTop="@dimen/buttons_spaces"
-            android:layout_marginBottom="@dimen/buttons_spaces"
-            android:background="@android:color/white"
-            android:textColor="@color/colorPrimary"
-            android:text="@string/cancel"/>
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/activity_main_toolbar"
+                android:minHeight="?android:attr/actionBarSize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                app:theme="@style/ToolBarStyle">
 
-        <!-- BUTTON SAVE  -->
-        <Button
-            android:id="@+id/button_save"
-            android:layout_width="@dimen/width_buttons_cancel_and_save"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_marginStart="@dimen/buttons_spaces"
-            android:layout_marginEnd="@dimen/buttons_spaces"
-            android:layout_marginTop="@dimen/buttons_spaces"
-            android:layout_marginBottom="@dimen/buttons_spaces"
-            android:background="@color/colorPrimary"
-            android:textColor="@android:color/white"
-            android:text="@string/save"/>
+                <RelativeLayout
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:tools="http://schemas.android.com/tools"
+                    android:id="@+id/toolbar_relativelayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-    </FrameLayout>
+                    <!-- Hamburger icon -->
+                    <ImageButton
+                        android:id="@+id/button_hamburger"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_alignParentStart="true"
+                        android:background="@color/colorPrimary"
+                        android:src="@drawable/baseline_menu_white_24"/>
+
+                    <!-- Title toolbar -->
+                    <TextView
+                        android:id="@+id/title_toolbar"
+                        android:layout_toEndOf="@id/button_hamburger"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="7dp"
+                        android:layout_centerInParent="true"
+                        android:textSize="20sp"
+                        android:textColor="@color/colorWhite"/>
+
+                </RelativeLayout>
+
+            </android.support.v7.widget.Toolbar>
+
+            <!-- BAR WITH BUTTONS -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- BUTTON ADD / CHANGE START POINT -->
+                <ImageButton
+                    android:id="@+id/button_add_start_point"
+                    android:layout_width="0dp"
+                    android:layout_weight="15"
+                    android:layout_height="@dimen/height_button_trace_map"
+                    android:layout_marginStart="@dimen/buttons_spaces"
+                    android:layout_marginTop="@dimen/buttons_spaces"
+                    android:layout_marginBottom="@dimen/buttons_spaces"
+                    android:background="@drawable/button_trace"
+                    android:src="@drawable/baseline_place_black_24"/>
+
+                <!-- BUTTON ADD SEGMENT -->
+                <ImageButton
+                    android:id="@+id/button_add_segment"
+                    android:layout_width="0dp"
+                    android:layout_weight="15"
+                    android:layout_height="@dimen/height_button_trace_map"
+                    android:layout_marginStart="@dimen/buttons_spaces"
+                    android:layout_marginTop="@dimen/buttons_spaces"
+                    android:layout_marginBottom="@dimen/buttons_spaces"
+                    android:background="@drawable/button_trace"
+                    android:src="@drawable/baseline_linear_scale_black_24"/>
+
+                <!-- BUTTON ADD / CHANGE END POINT -->
+                <ImageButton
+                    android:id="@+id/button_add_end_point"
+                    android:layout_width="0dp"
+                    android:layout_weight="15"
+                    android:layout_height="@dimen/height_button_trace_map"
+                    android:layout_marginStart="@dimen/buttons_spaces"
+                    android:layout_marginTop="@dimen/buttons_spaces"
+                    android:layout_marginBottom="@dimen/buttons_spaces"
+                    android:background="@drawable/button_trace"
+                    android:src="@drawable/baseline_flag_black_24"/>
+
+                <!-- BUTTON DELETE  -->
+                <ImageButton
+                    android:id="@+id/button_delete"
+                    android:layout_width="0dp"
+                    android:layout_weight="15"
+                    android:layout_height="@dimen/height_button_trace_map"
+                    android:layout_marginStart="@dimen/buttons_spaces"
+                    android:layout_marginTop="@dimen/buttons_spaces"
+                    android:layout_marginBottom="@dimen/buttons_spaces"
+                    android:background="@drawable/button_trace"
+                    android:src="@drawable/baseline_delete_black_24"/>
+
+                <!--  LINE SEPARATOR  -->
+                <View
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/buttons_spaces"
+                    android:layout_marginEnd="@dimen/buttons_spaces"
+                    android:background="#dfdfdf"/>
+
+                <!--  MILEAGE DISPLAYED  -->
+                <TextView
+                    android:id="@+id/mileage_measured"
+                    android:layout_width="0dp"
+                    android:layout_weight="20"
+                    android:layout_height="@dimen/height_button_trace_map"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:gravity="center"
+                    android:layout_marginStart="@dimen/buttons_spaces"
+                    android:layout_marginTop="@dimen/buttons_spaces"
+                    android:layout_marginBottom="@dimen/buttons_spaces"/>
+
+                <!--  LINE SEPARATOR  -->
+                <View
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/buttons_spaces"
+                    android:layout_marginEnd="@dimen/buttons_spaces"
+                    android:background="#dfdfdf"/>
+
+                <!--  TIME ROUTE DISPLAYED  -->
+                <TextView
+                    android:id="@+id/time_estimated"
+                    android:layout_width="0dp"
+                    android:layout_weight="20"
+                    android:layout_height="@dimen/height_button_trace_map"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:gravity="center"
+                    android:layout_marginStart="@dimen/buttons_spaces"
+                    android:layout_marginTop="@dimen/buttons_spaces"
+                    android:layout_marginBottom="@dimen/buttons_spaces"/>
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- MAPS -->
+                <fragment
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:tools="http://schemas.android.com/tools"
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:context=".Controllers.Activities.TraceActivity" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:visibility="gone"
+                    android:layout_gravity="center"
+                    android:indeterminateDrawable="@drawable/progress" >
+                </ProgressBar>
+
+                <!-- BUTTONS -->
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="10dp">
+
+                    <!-- BUTTON CANCEL  -->
+                    <Button
+                        android:id="@+id/button_cancel"
+                        android:layout_width="@dimen/width_buttons_cancel_and_save"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|end"
+                        android:layout_toStartOf="@+id/button_save"
+                        android:background="@android:color/white"
+                        android:textColor="@color/colorPrimary"
+                        android:text="@string/cancel"/>
+
+                    <!-- BUTTON SAVE  -->
+                    <Button
+                        android:id="@+id/button_save"
+                        android:layout_width="@dimen/width_buttons_cancel_and_save"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|end"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginStart="5dp"
+                        android:background="@color/colorPrimary"
+                        android:textColor="@android:color/white"
+                        android:text="@string/save"/>
+
+                </RelativeLayout>
+
+            </FrameLayout>
 
 
-</LinearLayout>
+        </LinearLayout>
 
         <android.support.design.widget.NavigationView
         android:id="@+id/activity_nav_view"

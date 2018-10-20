@@ -47,8 +47,10 @@ public class DisplayFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_display, container, false);
-        position = getArguments().getInt(BUNDLE_POSITION);
-        typeDisplay = getArguments().getString(BUNDLE_TYPE_DISPLAY);
+        if(getArguments()!=null){
+            position = getArguments().getInt(BUNDLE_POSITION);
+            typeDisplay = getArguments().getString(BUNDLE_TYPE_DISPLAY);
+        }
         config = new ConfigureDisplayFragment(context, view, typeDisplay,this);
         return view;
     }

@@ -13,8 +13,8 @@ public interface RoutesDao {
     @Query("SELECT * FROM Route WHERE id = :id")
     Cursor getRoute(long id);
 
-    @Query("SELECT * FROM Route")
-    Cursor getAllRoutes();
+    @Query("SELECT * FROM Route WHERE valid =:valid")
+    Cursor getAllRoutes(Boolean valid);
 
     @Insert
     long insertRoute(Route route);
@@ -24,4 +24,7 @@ public interface RoutesDao {
 
     @Query("DELETE FROM Route WHERE id = :id")
     int deleteRoute(long id);
+
+    @Query("DELETE FROM Route")
+    int deleteAllRoutes();
 }

@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <!-- DATE PLANNED -->
     <LinearLayout
         android:id="@+id/layout_calendar_event"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
+        android:layout_marginTop="40dp"
+        android:gravity="top|center_horizontal"
         android:orientation="horizontal">
 
         <ImageView
@@ -47,88 +46,54 @@
 
     </LinearLayout>
 
-    <!-- TITLE ROUTE -->
-    <TextView
-        android:id="@+id/title_route"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="26sp"
-        android:layout_marginTop="30dp"
-        android:layout_gravity="center"
-        android:text="Tour de Corbeil"/>
-
-    <!-- MAP ROUTE -->
+    <!-- MAP + LIST FRIENDS -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:orientation="horizontal">
+        android:layout_gravity="center"
+        android:orientation="vertical">
 
-        <!-- ARROW LEFT -->
-        <ImageView
-            android:id="@+id/arrow_back"
-            android:layout_width="0dp"
-            android:layout_weight="15"
-            android:layout_height="match_parent"
-            android:src="@drawable/baseline_navigate_before_black_48"
-            android:contentDescription="@string/arrow_back_image" />
+        <!-- MAP ROUTE -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-        <!-- MAPS -->
-        <include
-            android:id="@+id/map_layout"
-            layout="@layout/map_layout"
-            android:layout_width="0dp"
-            android:layout_weight="70"
-            android:layout_height="200dp"/>
+            <!-- ARROW LEFT -->
+            <ImageView
+                android:id="@+id/arrow_back_location"
+                android:layout_width="0dp"
+                android:layout_weight="15"
+                android:layout_height="match_parent"
+                android:visibility="invisible"
+                android:contentDescription="@string/arrow_back_image" />
 
-        <!-- ARROW RIGHT -->
-        <ImageView
-            android:id="@+id/arrow_next"
-            android:layout_width="0dp"
-            android:layout_weight="15"
-            android:layout_height="match_parent"
-            android:src="@drawable/baseline_navigate_next_black_48"/>
+            <!-- MAPS -->
+            <include
+                android:id="@+id/map_layout"
+                layout="@layout/map_layout"
+                android:layout_width="0dp"
+                android:layout_weight="70"
+                android:layout_height="wrap_content"/>
+
+            <!-- ARROW RIGHT -->
+            <View
+                android:id="@+id/arrow_next_location"
+                android:layout_width="0dp"
+                android:layout_weight="15"
+                android:layout_height="match_parent"
+                android:visibility="invisible"
+                android:contentDescription="@string/arrow_next_image"/>
+
+        </LinearLayout>
+
+        <!-- FRIENDS JOINING -->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/friends_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_height="60dp"/>
 
     </LinearLayout>
 
-    <!-- FRIENDS JOINING -->
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/friends_recyclerview"
-        android:layout_width="match_parent"
-        android:layout_marginTop="10dp"
-        android:layout_height="60dp"/>
-
-    <!-- BUTTONS -->
-    <RelativeLayout
-        android:id="@+id/buttons_layout"
-        android:layout_marginTop="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <!-- BUTTON LEFT / RIGHT -->
-        <Button
-            android:id="@+id/left_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:layout_alignParentStart="true"
-            android:drawableTop="@drawable/round_cancel_white_48"
-            android:text="@string/reject"
-            android:background="@color/colorWhite"
-            android:textColor="@android:color/holo_red_dark"/>
-
-        <!-- BUTTON ACCEPT -->
-        <Button
-            android:id="@+id/right_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="30dp"
-            android:layout_alignParentEnd="true"
-            android:drawableTop="@drawable/baseline_check_circle_white_48"
-            android:text="@string/accept"
-            android:background="@color/colorWhite"
-            android:textColor="@android:color/holo_green_dark"/>
-
-    </RelativeLayout>
-
-</LinearLayout>
+</FrameLayout>

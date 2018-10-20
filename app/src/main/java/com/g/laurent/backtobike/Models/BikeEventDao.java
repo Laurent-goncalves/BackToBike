@@ -31,4 +31,7 @@ public interface BikeEventDao {
     @Query("DELETE FROM BikeEvent WHERE id = :id")
     int deleteBikeEvent(String id);
 
+    @Query("DELETE FROM BikeEvent")
+    int deleteAllBikeEvents();
+
 }

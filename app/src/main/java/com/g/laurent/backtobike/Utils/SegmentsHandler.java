@@ -46,6 +46,9 @@ public class SegmentsHandler {
                     routeAlt.remove(0); // remove first point of routeAlt
             }
 
+            if(routeAlt.size()==0)
+                routeAlt = null;
+
             graphicsHandler.setRoute(route);
             graphicsHandler.setRouteAlt(routeAlt);
 

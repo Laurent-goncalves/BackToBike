@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.g.laurent.backtobike.Models.AppDatabase;
 import com.g.laurent.backtobike.Models.OnUserDataGetListener;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.FirebaseRecover;
@@ -24,6 +25,9 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         user = FirebaseAuth.getInstance().getCurrentUser();
+
+       // clearDatabase();
+
         userId = user.getUid();
         toolbarManager.configureToolbar(this, MENU_MAIN_PAGE);
         checkIfUserHasLoginOnFirebase();
@@ -113,4 +117,13 @@ public class MainActivity extends BaseActivity {
 
     }
 
+    private void clearDatabase(){
+
+        AppDatabase.getInstance(getApplicationContext(),user.getUid()).friendsDao().deleteAllFriends();
+        AppDatabase.getInstance(getApplicationContext(),user.getUid()).routeSegmentDao().deleteRouteSegment();
+        AppDatabase.getInstance(getApplicationContext(),user.getUid()).routesDao().deleteAllRoutes();
+        AppDatabase.getInstance(getApplicationContext(),user.getUid()).eventFriendsDao().deleteAllEventFriends();
+        AppDatabase.getInstance(getApplicationContext(),user.getUid()).bikeEventDao().deleteAllBikeEvents();
+
+    }
 }

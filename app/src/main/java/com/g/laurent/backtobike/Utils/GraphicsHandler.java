@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -43,14 +45,26 @@ public class GraphicsHandler {
     private SegmentsHandler segmentsHandler;
     private MarkersHandler markersHandler;
 
-    public GraphicsHandler(ConfigureTraceActivity config, View view, GoogleMap map, Context context) {
+    public GraphicsHandler(ConfigureTraceActivity config, View view, List<LatLng> points, GoogleMap map, Context context) {
         this.config = config;
         this.context=context;
         this.map=map;
-        route = new ArrayList<>();
+        route = points;
         segmentsHandler = new SegmentsHandler(this, map,context);
         markersHandler = new MarkersHandler(this, map);
         ButterKnife.bind(this, view);
+        handleRouteInitialization();
+        drawMap(false);
+    }
+
+    private void handleRouteInitialization(){
+
+        if(route!=null){
+            if(route.size()>1){
+                markersHandler.setStartPoint(route.get(0));
+                markersHandler.setEndPoint(route.get(route.size()-1));
+            }
+        }
     }
 
     // ------------------------------- BUTTONS ADD AND DELETE ---------------------------------------

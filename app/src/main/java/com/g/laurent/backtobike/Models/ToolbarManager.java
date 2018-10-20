@@ -199,13 +199,13 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
                     baseActivity.launchFriendsActivity();
                     break;
                 case R.id.my_events_menu_item:
-                    baseActivity.launchDisplayActivity(DISPLAY_MY_EVENTS);
+                    baseActivity.launchDisplayActivity(DISPLAY_MY_EVENTS, null);
                     break;
                 case R.id.my_invitations_menu_item:
-                    baseActivity.launchDisplayActivity(DISPLAY_MY_INVITS);
+                    baseActivity.launchDisplayActivity(DISPLAY_MY_INVITS, null);
                     break;
                 case R.id.my_routes_menu_item:
-                    baseActivity.launchDisplayActivity(DISPLAY_MY_ROUTES);
+                    baseActivity.launchDisplayActivity(DISPLAY_MY_ROUTES, null);
                     break;
                 case R.id.back_to_main_page_menu_item:
                     baseActivity.launchMainActivity();

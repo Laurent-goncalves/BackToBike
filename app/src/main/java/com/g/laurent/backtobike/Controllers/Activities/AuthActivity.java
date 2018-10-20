@@ -14,6 +14,7 @@ import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.firebase.ui.auth.AuthUI;
+import com.g.laurent.backtobike.Models.AppDatabase;
 import com.g.laurent.backtobike.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;

@@ -64,17 +64,15 @@
                         android:textSize="20sp"
                         android:textColor="@color/colorWhite"/>
 
-                    <!-- Button OK / SUPPR. -->
-                    <Button
-                        android:id="@+id/button_toolbar"
-                        android:layout_width="80dp"
+                    <!-- BUTTON ADD -->
+                    <ImageButton
+                        android:id="@+id/button_add"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerInParent="true"
-                        android:textSize="16sp"
-                        android:maxLength="40"
+                        android:layout_marginEnd="10dp"
                         android:background="@color/fui_transparent"
-                        android:textColor="@color/colorWhite"/>
+                        android:src="@drawable/baseline_add_white_24"/>
 
                 </RelativeLayout>
 

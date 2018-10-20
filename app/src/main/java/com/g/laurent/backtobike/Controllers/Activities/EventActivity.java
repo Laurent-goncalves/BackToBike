@@ -23,7 +23,7 @@ public class EventActivity extends BaseActivity implements CallbackEventActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_invit);
+        setContentView(R.layout.activity_event);
         invitation = new Invitation();
         userId = FirebaseAuth.getInstance().getUid();
 

@@ -8,6 +8,25 @@
     android:id="@+id/displayactivity_xml"
     tools:context=".Controllers.Activities.DisplayActivity">
 
+    <!-- ARROW LEFT -->
+    <ImageView
+        android:id="@+id/arrow_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/fui_transparent"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/baseline_navigate_before_black_48"
+        android:contentDescription="@string/arrow_back_image" />
+
+    <!-- ARROW RIGHT -->
+    <ImageView
+        android:id="@+id/arrow_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/fui_transparent"
+        android:layout_gravity="end|center_vertical"
+        android:src="@drawable/baseline_navigate_next_black_48"
+        android:contentDescription="@string/arrow_next_image" />
 
     <android.support.v4.widget.DrawerLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -70,7 +89,8 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:background="@color/fui_transparent"
-                        android:src="@drawable/baseline_add_white_36"/>
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/baseline_add_white_24"/>
 
                 </RelativeLayout>
 
@@ -98,6 +118,40 @@
             app:menu="@menu/navigation_drawer_menu" />
 
     </android.support.v4.widget.DrawerLayout>
+
+    <!-- BUTTONS -->
+    <RelativeLayout
+        android:id="@+id/buttons_layout"
+        android:layout_marginBottom="20dp"
+        android:layout_gravity="bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- BUTTON LEFT / RIGHT -->
+        <Button
+            android:id="@+id/left_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_alignParentStart="true"
+            android:drawableTop="@drawable/baseline_delete_white_48"
+            android:text="@string/reject"
+            android:background="@color/colorWhite"
+            android:textColor="@android:color/holo_red_dark"/>
+
+        <!-- BUTTON ACCEPT -->
+        <Button
+            android:id="@+id/right_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="30dp"
+            android:layout_alignParentEnd="true"
+            android:drawableTop="@drawable/baseline_check_circle_white_48"
+            android:text="@string/accept"
+            android:background="@color/colorWhite"
+            android:textColor="@android:color/holo_green_dark"/>
+
+    </RelativeLayout>
 
 </FrameLayout>
 

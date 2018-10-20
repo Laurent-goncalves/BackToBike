@@ -120,8 +120,11 @@ public class MarkersHandler {
         // Remove last point of route
         if(routeAlt==null)
             route.remove(route.size()-1);
-        else
-            routeAlt.remove(routeAlt.size()-1);
+        else {
+            routeAlt.remove(routeAlt.size() - 1);
+            if(routeAlt.size()==0)
+                routeAlt = null;
+        }
 
         graphicsHandler.setRoute(route);
         graphicsHandler.setRouteAlt(routeAlt);

@@ -22,6 +22,9 @@ public interface FriendsDao {
     @Query("DELETE FROM Friend WHERE id = :id")
     int deleteFriend(String id);
 
+    @Query("DELETE FROM Friend")
+    int deleteAllFriends();
+
     @Query("SELECT * FROM Friend WHERE id = :idFriend")
     Cursor getFriend(String idFriend);
 }

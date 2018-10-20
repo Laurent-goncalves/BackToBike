@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.g.laurent.backtobike.Controllers.Activities.DisplayActivity;
 import com.g.laurent.backtobike.Controllers.Fragments.DisplayFragment;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
@@ -69,6 +70,10 @@ public class UtilsApp {
             return hourOfDay + ":" + minute;
     }
 
+    // ------------------------------------------------------------------------------------------------------
+    // ---------------------------------------- FIND INDEX --------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------
+
     public static int findFriendIndexInListFriends(Friend friend, List<Friend> listFriends){
 
         int index = -1;
@@ -86,6 +91,46 @@ public class UtilsApp {
 
         return index;
     }
+
+    public static int findIndexEventInList(String idEvent, List<BikeEvent> listBikeEvent){
+
+        int index = -1;
+
+        if(listBikeEvent!=null && idEvent !=null){
+            if(listBikeEvent.size()>0){
+                for(int i = 0; i < listBikeEvent.size()-1 ; i++){
+                    if(listBikeEvent.get(i).getId()!=null){
+                        if(listBikeEvent.get(i).getId().equals(idEvent)){
+                            index = i;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return index;
+    }
+
+    public static int findIndexRouteInList(String idRoute, List<Route> listRoutes){
+
+        int index = -1;
+
+        if(listRoutes!=null && idRoute !=null){
+            if(listRoutes.size()>0){
+                for(int i = 0; i < listRoutes.size()-1 ; i++){
+                    if(listRoutes.get(i).getId()==Integer.parseInt(idRoute)){
+                        index = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return index;
+    }
+
+
 
     public static int findFriendIndexInListEventFriends(Friend friend, List<EventFriends> listEventFriends){
 
@@ -141,23 +186,7 @@ public class UtilsApp {
         return index;
     }
 
-    public static int findIndexRouteInList(int idRoute, List<Route> listRoutes){
 
-        int index = -1;
-
-        if(listRoutes!=null){
-            if(listRoutes.size()>0){
-                for(int i = 0; i < listRoutes.size()-1 ; i++){
-                    if(listRoutes.get(i).getId()==idRoute){
-                        index = i;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return index;
-    }
 
     public static List<String> transformListRouteIntoListRouteNames(List<Route> listRoutes){
 
@@ -270,17 +299,17 @@ public class UtilsApp {
         }
     }
 
-    public static void configureArrows(int position, int sizeList, ImageView arrowLeft, ImageView arrowRight, DisplayFragment fragment){
+    public static void configureArrows(int position, int sizeList, ImageView arrowLeft, ImageView arrowRight, DisplayActivity activity){
 
         if(needLeftArrow(position,sizeList)) {
             arrowLeft.setVisibility(View.VISIBLE);
-            arrowLeft.setOnClickListener(v -> fragment.getCallbackInvitActivity().getPager().setCurrentItem(position-1));
+            arrowLeft.setOnClickListener(v -> activity.getPager().setCurrentItem(position-1));
         } else
             arrowLeft.setVisibility(View.INVISIBLE);
 
         if(needRightArrow(position,sizeList)) {
             arrowRight.setVisibility(View.VISIBLE);
-            arrowRight.setOnClickListener(v -> fragment.getCallbackInvitActivity().getPager().setCurrentItem(position+1));
+            arrowRight.setOnClickListener(v -> activity.getPager().setCurrentItem(position+1));
         } else
             arrowRight.setVisibility(View.INVISIBLE);
     }

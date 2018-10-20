@@ -65,18 +65,6 @@
                         android:textSize="20sp"
                         android:textColor="@color/colorWhite"/>
 
-                    <!-- Button OK / SUPPR. -->
-                    <Button
-                        android:id="@+id/button_toolbar"
-                        android:layout_width="80dp"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerInParent="true"
-                        android:textSize="16sp"
-                        android:maxLength="40"
-                        android:background="@color/fui_transparent"
-                        android:textColor="@color/colorWhite"/>
-
                 </RelativeLayout>
 
             </android.support.v7.widget.Toolbar>

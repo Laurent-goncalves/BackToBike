@@ -4,6 +4,7 @@
     <string name="title_route">Title route</string>
     <string name="cancel">CANCEL</string>
     <string name="save">SAVE</string>
+    <string name="confirm">CONFIRM</string>
     <string name="sharedpreferences">backtobike_sharedpreferences</string>
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -26,6 +27,7 @@
     <string name="invitation_send">Your invitation has been sent!</string>
     <string name="bike_event_saved">Your bike event has been saved!</string>
     <string name="ok">OK</string>
+    <string name="warning_title">Warning!</string>
 
     <!-- FRIENDSACTIVITY -->
     <string name="image_friend">image friend</string>
@@ -46,6 +48,8 @@
     <string name="error_add_name_route">Please give a title for the route</string>
     <string name="error_current_location">Error to get current location</string>
     <string name="give_permission">Please give your permission</string>
+    <string name="delete_route">The route has been deleted</string>
+    <string name="leave_authorization">Are you sure that you want to leave ?</string>
 
     <!-- AUTHACTIVITY -->
     <string name="facebook_app_id">291137544820428</string>
@@ -75,5 +79,6 @@
     <string name="title_trace_route">Trace a route</string>
     <string name="title_main_page">Back To Bike</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="arrow_next_image">arrow_next_image</string>
 
 </resources>

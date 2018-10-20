@@ -24,12 +24,14 @@ import butterknife.ButterKnife;
 public class ConfigureMap implements OnMapReadyCallback {
 
     private MapView mapView;
+    private TextView titleView;
     private TextView mileageView;
     private TextView timeView;
     private Context context;
     private GoogleMap googleMap;
     private List<RouteSegment> listRouteSegments;
     private String userId;
+    private Route route;
 
     public ConfigureMap(Context context, View view, String userId) {
         this.context = context;
@@ -37,9 +39,11 @@ public class ConfigureMap implements OnMapReadyCallback {
         mapView = view.findViewById(R.id.map);
         mileageView = view.findViewById(R.id.mileage_estimation);
         timeView = view.findViewById(R.id.time_estimation);
+        titleView = view.findViewById(R.id.title_route);
     }
 
     public void configureMapLayout(Route route){
+        this.route=route;
         listRouteSegments = RouteHandler.getRouteSegments(context, route.getId(), userId);
         mapView.onCreate(null);
         mapView.onResume();
@@ -52,11 +56,19 @@ public class ConfigureMap implements OnMapReadyCallback {
         List<LatLng> listPoints = UtilsGoogleMaps.extractListPointsFromListRouteSegments(listRouteSegments);
 
         if(listPoints.size()>0){
+            setTitleMap(route.getName());
             drawSegments(listPoints);
             drawMarkers(listPoints.get(0), listPoints.get(listPoints.size()-1));
             displayEstimationTimeAndMileage(listPoints);
             scaleMap(listPoints);
         }
+    }
+
+    private void setTitleMap(String title){
+        if(title.length()<=50)
+            titleView.setText(title);
+        else
+            titleView.setText(title.substring(0,50));
     }
 
     private void drawSegments(List<LatLng> listPoints) {

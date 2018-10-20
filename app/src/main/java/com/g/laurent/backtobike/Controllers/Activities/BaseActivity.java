@@ -1,5 +1,7 @@
 package com.g.laurent.backtobike.Controllers.Activities;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -24,6 +26,7 @@ public class BaseActivity extends AppCompatActivity {
     protected final static String MENU_SIGN_OUT= "menu_sign_out";
     protected static final String BUNDLE_TYPE_DISPLAY ="bundle_type_display";
     protected static final String BUNDLE_ROUTE_ID ="bundle_route_id";
+    protected static final String BUNDLE_ID ="bundle_id";
     protected static final String LOGIN_SHARED ="login_shared";
     protected ToolbarManager toolbarManager;
     protected String userId;
@@ -50,9 +53,10 @@ public class BaseActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void launchDisplayActivity(String typeDisplay){
+    public void launchDisplayActivity(String typeDisplay, String id){
         Intent intent = new Intent(this,DisplayActivity.class);
         intent.putExtra(BUNDLE_TYPE_DISPLAY,typeDisplay);
+        intent.putExtra(BUNDLE_ID, id);
         startActivity(intent);
     }
 
@@ -60,8 +64,11 @@ public class BaseActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, TraceActivity.class);
         if(route!=null)
-            intent.getExtras().putInt(BUNDLE_ROUTE_ID, route.getId());
+            intent.putExtra(BUNDLE_ROUTE_ID, route.getId());
         startActivity(intent);
     }
 
+    public static void showSnackBar(BaseActivity baseActivity, String text) {
+        //Snackbar.make(baseActivity.findViewById(R.id.fragment_position), text, Snackbar.LENGTH_LONG).show();
+    }
 }

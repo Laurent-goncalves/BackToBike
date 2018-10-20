@@ -112,7 +112,7 @@ public class RouteHandler {
         RoutesContentProvider routesContentProvider = new RoutesContentProvider();
         routesContentProvider.setUtils(context, userId);
 
-        final Cursor cursor = AppDatabase.getInstance(context, userId).routesDao().getAllRoutes();
+        final Cursor cursor = AppDatabase.getInstance(context, userId).routesDao().getAllRoutes(true);
 
         return Route.getListRoutesFromCursor(cursor);
     }
