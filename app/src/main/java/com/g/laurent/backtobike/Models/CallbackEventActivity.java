@@ -10,4 +10,6 @@ public interface CallbackEventActivity {
     Invitation getInvitation();
 
     String getUserId();
+
+    void launchDisplayActivity(String typeDisplay, String id);
 }

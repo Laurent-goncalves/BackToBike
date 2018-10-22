@@ -16,6 +16,7 @@ import com.facebook.login.LoginResult;
 import com.firebase.ui.auth.AuthUI;
 import com.g.laurent.backtobike.Models.AppDatabase;
 import com.g.laurent.backtobike.R;
+import com.g.laurent.backtobike.Utils.FirebaseUpdate;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -145,8 +146,22 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
                         //Toast.makeText(getApplicationContext(),getApplicationContext().getResources().getString(R.string.connection_succeed), Toast.LENGTH_SHORT).show();
+
+                        FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                        if(user!=null){
+                            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(getApplicationContext());
+
+                            String photoUrl = null;
+                            if(user.getPhotoUrl()!=null)
+                                photoUrl = user.getPhotoUrl().toString();
+
+                            firebaseUpdate.updateUserData(user.getUid(), user.getDisplayName(), photoUrl);
+                        }
+
                         Intent intent = new Intent(this, MainActivity.class);
                         startActivity(intent);
+
                     } else {
                         // If sign in fails, display a message to the user.
                         //display_error_messages(null);

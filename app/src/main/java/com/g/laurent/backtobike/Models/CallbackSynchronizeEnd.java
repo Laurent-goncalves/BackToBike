@@ -4,4 +4,5 @@ public interface CallbackSynchronizeEnd {
 
     void onCompleted();
 
+    void onFailure(String error);
 }

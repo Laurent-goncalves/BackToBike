@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import com.g.laurent.backtobike.Controllers.Fragments.FriendFragment;
 import com.g.laurent.backtobike.Models.CallbackFriendActivity;
+import com.g.laurent.backtobike.Models.CallbackSynchronizeEnd;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.SynchronizeWithFirebase;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,20 +25,41 @@ public class FriendsActivity extends BaseActivity implements CallbackFriendActiv
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends);
-        toolbarManager.configureToolbar(this, MENU_MY_FRIENDS);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         if (user != null) {
+
             userId = user.getUid();
-            SynchronizeWithFirebase.synchronizeFriends(userId, getApplicationContext(), this::configureAndShowFriendFragment);
+            synchronizeDataWithFirebaseAndConfigureToolbar(MENU_MY_FRIENDS,this);
+
+            SynchronizeWithFirebase.synchronizeFriends(userId, getApplicationContext(), new CallbackSynchronizeEnd() {
+                @Override
+                public void onCompleted() {
+                    configureAndShowFriendFragment();
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    configureAndShowFriendFragment();
+                }
+            });
         }
 
         SwipeRefreshLayout mySwipeRefreshLayout = findViewById(R.id.swipe_to_refresh);
-        mySwipeRefreshLayout.setOnRefreshListener(() -> SynchronizeWithFirebase.synchronizeFriends(userId, getApplicationContext(), () -> {
-            configureAndShowFriendFragment();
-            mySwipeRefreshLayout.setRefreshing(false);
-        }
-        ));
+        mySwipeRefreshLayout.setOnRefreshListener(() -> SynchronizeWithFirebase.synchronizeFriends(userId, getApplicationContext(), new CallbackSynchronizeEnd() {
+            @Override
+            public void onCompleted() {
+                configureAndShowFriendFragment();
+                mySwipeRefreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure(String error) {
+                configureAndShowFriendFragment();
+                mySwipeRefreshLayout.setRefreshing(false);
+            }
+        }));
     }
 
     public void configureAndShowFriendFragment(){

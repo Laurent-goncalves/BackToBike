@@ -28,6 +28,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import java.util.List;
 
+import butterknife.ButterKnife;
 
 
 public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
@@ -47,11 +48,12 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trace);
 
-        progressBar = findViewById(R.id.progress_bar);
+        progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE); // open progressBar
 
         sharedPreferences = getSharedPreferences(SHAREDPREFERENCES,MODE_PRIVATE);
-        toolbarManager.configureToolbar(this, MENU_TRACE_ROUTE);
+        synchronizeDataWithFirebaseAndConfigureToolbar(MENU_TRACE_ROUTE,this);
+
 
         userId = FirebaseAuth.getInstance().getUid();
         defineRouteToTrace(savedInstanceState, getIntent().getExtras());

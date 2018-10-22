@@ -45,7 +45,6 @@ public class ConfigureDisplayFragment {
         this.typeDisplay = typeDisplay;
         this.fragment=fragment;
         position = fragment.getPosition();
-        route = fragment.getCallbackInvitActivity().getListRoutes().get(position);
         userId = FirebaseAuth.getInstance().getUid();
         ButterKnife.bind(this,view);
         recoverDatasToDisplay();
@@ -95,7 +94,18 @@ public class ConfigureDisplayFragment {
     // -------------------------------- 3 - Configure map
     private void configureMap(){
         ConfigureMap configMap = new ConfigureMap(context, mapLayout, userId);
-        configMap.configureMapLayout(route);
+
+        switch(typeDisplay){
+            case DISPLAY_MY_ROUTES:
+                configMap.configureMapLayout(route);
+                break;
+            case DISPLAY_MY_EVENTS:
+                configMap.configureMapLayout(bikeEvent.getRoute());
+                break;
+            case DISPLAY_MY_INVITS:
+                configMap.configureMapLayout(invitation.getRoute());
+                break;
+        }
     }
 
     // -------------------------------- 4 - Configure guests

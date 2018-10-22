@@ -181,7 +181,7 @@
                     android:layout_width="match_parent"
                     android:layout_below="@+id/frame_list_routes"
                     android:layout_marginTop="10dp"
-                    android:layout_height="200dp"/>
+                    android:layout_height="250dp"/>
 
             </RelativeLayout>
 

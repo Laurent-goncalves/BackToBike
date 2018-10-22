@@ -8,14 +8,17 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackDisplayActivity;
+import com.g.laurent.backtobike.Models.CallbackSynchronizeEnd;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.Action;
 import com.g.laurent.backtobike.Utils.SaveAndRestoreDisplayActivity;
+import com.g.laurent.backtobike.Utils.SynchronizeWithFirebase;
 import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.g.laurent.backtobike.Views.PageAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,10 +50,25 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         setContentView(R.layout.activity_display);
         ButterKnife.bind(this);
 
+        // Initialization
         userId = FirebaseAuth.getInstance().getUid();
         Bundle extras = getIntent().getExtras();
-        SaveAndRestoreDisplayActivity.restoreData(extras, userId,this);
-        toolbarManager.configureToolbar(this, typeDisplay);
+
+        // Recover datas
+        try {
+            SaveAndRestoreDisplayActivity.restoreData(extras, userId,this);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    public void configureViews(){
+
+        synchronizeDataWithFirebaseAndConfigureToolbar(typeDisplay,this);
+
+        // Configure views
         configureAndShowDisplayFragmentsInViewPager();
         configureArrows();
         configureButtons();
@@ -110,15 +128,18 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
 
         switch(typeDisplay){
             case DISPLAY_MY_ROUTES:
-                setIdSelected(String.valueOf(listRoutes.get(position).getId()));
+                if(listRoutes.size()>0)
+                    setIdSelected(String.valueOf(listRoutes.get(position).getId()));
                 sizeList = getListRoutes().size();
                 break;
             case DISPLAY_MY_EVENTS:
-                setIdSelected(listEvents.get(position).getId());
+                if(listEvents.size()>0)
+                    setIdSelected(listEvents.get(position).getId());
                 sizeList = getListEvents().size();
                 break;
             case DISPLAY_MY_INVITS:
-                setIdSelected(listInvitations.get(position).getId());
+                if(listInvitations.size()>0)
+                    setIdSelected(listInvitations.get(position).getId());
                 sizeList = getListInvitations().size();
                 break;
         }
@@ -153,12 +174,14 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
             case DISPLAY_MY_EVENTS:
 
                 // CANCEL EVENT
+                buttonLeft.setCompoundDrawablesWithIntrinsicBounds(null,context.getResources().getDrawable(R.drawable.round_cancel_white_48),null,null);
                 iconLeft = buttonLeft.getCompoundDrawables();
-                iconLeft[1].setColorFilter(context.getResources().getColor(R.color.colorReject),PorterDuff.Mode.SRC_IN);
-                buttonLeft.setText(context.getResources().getString(R.string.delete));
-                buttonLeft.setTextColor(context.getResources().getColor(R.color.colorReject));
+                iconLeft[1].setColorFilter(context.getResources().getColor(R.color.colorGray),PorterDuff.Mode.SRC_IN);
+                buttonLeft.setText(context.getResources().getString(R.string.cancel));
+                buttonLeft.setTextColor(context.getResources().getColor(R.color.colorGray));
 
                 buttonRight.setVisibility(View.GONE);
+
                 break;
 
             case DISPLAY_MY_INVITS:
@@ -260,6 +283,10 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
 
     public PageAdapter getAdapter() {
         return adapter;
+    }
+
+    public int getCount() {
+        return count;
     }
 
     public void setCount(int count) {

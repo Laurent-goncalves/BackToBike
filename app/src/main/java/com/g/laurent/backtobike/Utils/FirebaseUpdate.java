@@ -69,6 +69,11 @@ public class FirebaseUpdate {
         databaseReferenceUsers.child(user_id).child(LOGIN).setValue(login);
     }
 
+    public void updateUserData(String user_id, String name, String photoUrl){
+        databaseReferenceUsers.child(user_id).child(NAME).setValue(name);
+        databaseReferenceUsers.child(user_id).child(PHOTO_URL).setValue(photoUrl);
+    }
+
     // ------------------------------------------------------------------------------------------------
     // -------------------------------- UPDATE DATA FROM USER -----------------------------------------
     // ------------------------------------------------------------------------------------------------
@@ -243,49 +248,51 @@ public class FirebaseUpdate {
 
         // Add friend to user Firebase "my_friends" with status "true" as accepted
         friend.setAccepted(true);
-        updateFriend(user.getId(), friend, false);
+        updateFriendsFromUser(user.getId(), friend);
 
         // Add user in friend Firebase "my_friends" with status "null" as accepted
-        updateFriend(friend.getId(), user, true);
+        sendFriendRequests(friend.getId(), user);
     }
 
-    public void updateFriend(String user_id, Friend friend, Boolean isUser){
+    public void updateFriendsFromUser(String user_id, Friend friend){
         DatabaseReference databaseReferenceFriend = databaseReferenceUsers.child(user_id).child(MY_FRIENDS).child(friend.getId());
         databaseReferenceFriend.child(NAME).setValue(friend.getName());
         databaseReferenceFriend.child(PHOTO_URL).setValue(friend.getPhotoUrl());
         databaseReferenceFriend.child(LOGIN).setValue(friend.getLogin());
+        databaseReferenceFriend.child(ACCEPTED).setValue(true);
+    }
 
-        if(!isUser) {
-            databaseReferenceFriend.child(ACCEPTED).setValue(true);
-        } else {
+    public void sendFriendRequests(String user_id, Friend requester){
+        DatabaseReference databaseReferenceFriend = databaseReferenceUsers.child(user_id).child(MY_FRIENDS).child(requester.getId());
+        databaseReferenceFriend.child(NAME).setValue(requester.getName());
+        databaseReferenceFriend.child(PHOTO_URL).setValue(requester.getPhotoUrl());
+        databaseReferenceFriend.child(LOGIN).setValue(requester.getLogin());
+        databaseReferenceFriend.child(HAS_ACCEPTED).setValue(true);
+    }
 
-        }
+    public void acceptFriend(String user_id, Friend requester){
+        // Change status accepted from user
+        DatabaseReference databaseReferenceUser = databaseReferenceUsers.child(user_id).child(MY_FRIENDS);
+        databaseReferenceUser.child(requester.getId()).child(ACCEPTED).setValue(true);
+
+        // Change status has_accepted from requester
+        DatabaseReference databaseReferenceRequester = databaseReferenceUsers.child(requester.getId()).child(MY_FRIENDS);
+        databaseReferenceRequester.child(user_id).child(HAS_ACCEPTED).setValue(true);
+    }
+
+    public void rejectFriend(String user_id, Friend requester){
+
+        // Delete requester from user
+        deleteFriend(user_id,requester);
+
+        // Change status has_accepted from requester
+        DatabaseReference databaseReferenceRequester = databaseReferenceUsers.child(requester.getId()).child(MY_FRIENDS);
+        databaseReferenceRequester.child(user_id).child(HAS_ACCEPTED).setValue(false);
     }
 
     public void deleteFriend(String user_id, Friend friend){
         DatabaseReference databaseReferenceFriend = databaseReferenceUsers.child(user_id).child(MY_FRIENDS);
         databaseReferenceFriend.child(friend.getId()).removeValue();
-    }
-
-    public void acceptFriend(String user_id, Friend friend){
-        // Change status has_accepted from user
-        DatabaseReference databaseReferenceUser = databaseReferenceUsers.child(user_id).child(MY_FRIENDS);
-        databaseReferenceUser.child(friend.getId()).child(ACCEPTED).setValue(true);
-
-        // Change status accepted from friend
-        DatabaseReference databaseReferenceFriend = databaseReferenceUsers.child(friend.getId()).child(MY_FRIENDS);
-        databaseReferenceFriend.child(user_id).child(HAS_ACCEPTED).setValue(true);
-    }
-
-    public void rejectFriend(String user_id, Friend friend){
-
-        // Change status has_accepted from user
-        DatabaseReference databaseReferenceUser = databaseReferenceUsers.child(user_id).child(MY_FRIENDS);
-        databaseReferenceUser.child(friend.getId()).child(ACCEPTED).setValue(false);
-
-        // Change status accepted from friend
-        DatabaseReference databaseReferenceFriend = databaseReferenceUsers.child(friend.getId()).child(MY_FRIENDS);
-        databaseReferenceFriend.child(user_id).child(HAS_ACCEPTED).setValue(false);
     }
 
     // ------------------------------------------------------------------------------------------------

@@ -23,7 +23,6 @@ import butterknife.OnClick;
 @SuppressLint("ClickableViewAccessibility")
 public class ConfigureTraceActivity {
 
-
     @BindView(R.id.button_add_segment) ImageButton buttonAddSegment;
     @BindView(R.id.button_add_start_point) ImageButton buttonAddStartPoint;
     @BindView(R.id.button_add_end_point) ImageButton buttonAddEndPoint;

@@ -2,7 +2,6 @@ package com.g.laurent.backtobike.Controllers.Activities;
 
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-
 import com.g.laurent.backtobike.Controllers.Fragments.FriendFragment;
 import com.g.laurent.backtobike.Controllers.Fragments.InvitFragment;
 import com.g.laurent.backtobike.Models.CallbackEventActivity;
@@ -10,6 +9,7 @@ import com.g.laurent.backtobike.Models.Invitation;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.SaveAndRestoreDataInvitActivity;
 import com.google.firebase.auth.FirebaseAuth;
+
 
 public class EventActivity extends BaseActivity implements CallbackEventActivity {
 
@@ -28,7 +28,7 @@ public class EventActivity extends BaseActivity implements CallbackEventActivity
         userId = FirebaseAuth.getInstance().getUid();
 
         SaveAndRestoreDataInvitActivity.restoreData(savedInstanceState,this);
-        toolbarManager.configureToolbar(this, MENU_CREATE_EVENT);
+        synchronizeDataWithFirebaseAndConfigureToolbar(MENU_CREATE_EVENT,this);
 
         configureAndShowInvitFragment();
     }

@@ -127,10 +127,10 @@ public class BikeEventHandler {
         return BikeEvent.getListBikeEventsFromCursor(cursor);
     }
 
-    public static List<BikeEvent> getAllInvitiations(Context context, String organizerId, String userId){
+    public static List<BikeEvent> getAllInvitiations(Context context, String userId){
 
         BikeEventContentProvider bikeEventContentProvider = new BikeEventContentProvider();
-        bikeEventContentProvider.setUtils(context,TYPE_MY_INVITS,organizerId,null, userId);
+        bikeEventContentProvider.setUtils(context,TYPE_MY_INVITS, userId,null, userId);
 
         final Cursor cursor = bikeEventContentProvider.query(null, null, null, null, null);
 

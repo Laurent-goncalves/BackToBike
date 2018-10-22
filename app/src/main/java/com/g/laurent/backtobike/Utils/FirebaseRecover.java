@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.g.laurent.backtobike.Models.BikeEvent;
+import com.g.laurent.backtobike.Models.CallbackCounters;
+import com.g.laurent.backtobike.Models.CallbackSynchronizeEnd;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.OnBikeEventDataGetListener;
@@ -360,6 +362,40 @@ public class FirebaseRecover {
         writeSignal.await(10, TimeUnit.SECONDS);
 
         return listEventFriends;
+    }
+
+    public void recoverDatasForCounters(String user_id, CallbackCounters callbackCounters) {
+
+        DatabaseReference databaseReferenceFriend = databaseReferenceUsers.child(user_id);
+
+        databaseReferenceFriend.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                int counterFriends = 0;
+                int counterInvits = 0;
+
+                DataSnapshot datasFriends = dataSnapshot.child(MY_FRIENDS);
+                DataSnapshot datasInvits = dataSnapshot.child(MY_INVITATIONS);
+
+                for (DataSnapshot datas : datasFriends.getChildren()) {
+                    if(!datas.hasChild(ACCEPTED)){
+                        counterFriends++;
+                    }
+                }
+
+                for (DataSnapshot datas : datasInvits.getChildren()) {
+                    counterInvits++;
+                }
+
+                callbackCounters.onCompleted(counterFriends, counterInvits);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callbackCounters.onFailure(databaseError.toString());
+            }
+        });
     }
 
     // ----------------------------------------------------------------------------------------------

@@ -22,7 +22,8 @@ import butterknife.ButterKnife;
 
 public class CheckAndSendInvitation {
 
-    private static final String ONGOING = "ongoing";
+    private final static String DISPLAY_MY_EVENTS ="display_my_events";
+    private final static String ONGOING = "ongoing";
     @BindView(R.id.date_view) TextView dateView;
     @BindView(R.id.time_view) TextView timeView;
     @BindView(R.id.comments_edit_text) EditText commentsView;
@@ -42,27 +43,21 @@ public class CheckAndSendInvitation {
             // Build bike Event
             BikeEvent bikeEvent = buildBikeEvent();
 
-            // Add an event in phone database
-            BikeEventHandler.insertNewBikeEvent(context, bikeEvent, firebaseUser.getUid());
-
-            // Add an event on Firebase in user's "my_events"
-            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-            firebaseUpdate.updateMyBikeEvent(firebaseUser.getUid(), bikeEvent);
-
-            // Add an event on Firebase in friend's "my_invitations"
             Route route = RouteHandler.getRoute(context, bikeEvent.getIdRoute(), firebaseUser.getUid());
             List<RouteSegment> listRouteSegments = RouteHandler.getRouteSegments(context,route.getId(), firebaseUser.getUid());
             route.setListRouteSegment(listRouteSegments);
-
             bikeEvent.setRoute(route);
 
-            firebaseUpdate.addInvitationGuests(bikeEvent);
+            // Add an event in phone database and Firebase, and send invitation to guests
+            Action.addBikeEvent(bikeEvent,firebaseUser.getUid(),context);
 
             // Display message to user
             if(bikeEvent.getListEventFriends().size()>0)
                 Toast.makeText(context,context.getResources().getString(R.string.invitation_send),Toast.LENGTH_LONG).show(); // send invitations to friends, if at least one friend
             else
                 Toast.makeText(context,context.getResources().getString(R.string.bike_event_saved),Toast.LENGTH_LONG).show(); // bike event saved
+
+            config.getCallbackEventActivity().launchDisplayActivity(DISPLAY_MY_EVENTS,firebaseUser.getUid());
         }
     }
 

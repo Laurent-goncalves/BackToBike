@@ -130,7 +130,7 @@ public class BikeEvent {
         final BikeEvent bikeEvent = new BikeEvent();
 
         if (values.containsKey("id")) bikeEvent.setId(values.getAsString("id"));
-        if (values.containsKey("organizerId")) bikeEvent.setOrganizerId(values.getAsString("id"));
+        if (values.containsKey("organizerId")) bikeEvent.setOrganizerId(values.getAsString("organizerId"));
         if (values.containsKey("date")) bikeEvent.setDate(values.getAsString("date"));
         if (values.containsKey("time")) bikeEvent.setTime(values.getAsString("time"));
         if (values.containsKey("idRoute")) bikeEvent.setIdRoute(values.getAsInteger("idRoute"));

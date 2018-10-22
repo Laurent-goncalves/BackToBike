@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import com.g.laurent.backtobike.Controllers.Activities.DisplayActivity;
 import com.g.laurent.backtobike.Models.BikeEvent;
+import com.g.laurent.backtobike.Models.CallbackSynchronizeEnd;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
@@ -27,7 +28,7 @@ public class SaveAndRestoreDisplayActivity {
     }
 
     // ----------------------------------- RESTORE DATA
-    public static void restoreData(Bundle saveInstantState, String user_id, DisplayActivity displayActivity){
+    public static void restoreData(Bundle saveInstantState, String user_id, DisplayActivity displayActivity) throws InterruptedException {
 
         if(saveInstantState!=null && displayActivity!=null){
 
@@ -41,7 +42,7 @@ public class SaveAndRestoreDisplayActivity {
         }
     }
 
-    private static void defineListToShow(String typeDisplay, String user_id, DisplayActivity displayActivity){
+    private static void defineListToShow(String typeDisplay, String user_id, DisplayActivity displayActivity) throws InterruptedException {
 
         Context context = displayActivity.getApplicationContext();
 
@@ -52,72 +53,103 @@ public class SaveAndRestoreDisplayActivity {
                     List<Route> listRoutes = RouteHandler.getAllRoutes(context, user_id);
                     displayActivity.setListRoutes(listRoutes);
                     displayActivity.setCount(listRoutes.size());
+
+                    displayActivity.configureViews();
                     break;
 
                 case DISPLAY_MY_EVENTS:
-
-                    // Get Bike Events
-                    List<BikeEvent> listEvents = BikeEventHandler.getAllFutureBikeEvents(context,user_id,user_id);
-
-                    // Find event friends and route for each bikeEvent
-                    if(listEvents!=null){
-                        if(listEvents.size()>0){
-                            for(BikeEvent event : listEvents){
-
-                                // Event friends
-                                List<EventFriends> listEventFriends = BikeEventHandler.getEventFriends(context,event.getId(),user_id);
-                                event.setListEventFriends(listEventFriends);
-
-                                // Route and RouteSegments
-                                Route route = RouteHandler.getRoute(context,event.getIdRoute(),user_id);
-                                List<RouteSegment> listSegments = RouteHandler.getRouteSegments(context,event.getIdRoute(),user_id);
-                                route.setListRouteSegment(listSegments);
-                                event.setRoute(route);
-                            }
-                        }
-                    }
-
-                    displayActivity.setListEvents(listEvents);
-
-                    if(listEvents!=null)
-                        displayActivity.setCount(listEvents.size());
-                    else
-                        displayActivity.setCount(0);
+                    configureDisplayActivityForMyEvents(user_id,displayActivity);
 
                     break;
 
                 case DISPLAY_MY_INVITS:
 
-                    // Get Invitations
-                    List<BikeEvent> listInvits = BikeEventHandler.getAllInvitiations(context,user_id,user_id);
-
-                    // Find event friends and route for each invitations
-                    if(listInvits!=null){
-                        if(listInvits.size()>0){
-                            for(BikeEvent event : listInvits){
-
-                                // Event friends
-                                List<EventFriends> listEventFriends = BikeEventHandler.getEventFriends(context,event.getId(),user_id);
-                                event.setListEventFriends(listEventFriends);
-
-                                // Route and RouteSegments
-                                Route route = RouteHandler.getRoute(context,event.getIdRoute(),user_id);
-                                List<RouteSegment> listSegments = RouteHandler.getRouteSegments(context,event.getIdRoute(),user_id);
-                                route.setListRouteSegment(listSegments);
-                                event.setRoute(route);
-                            }
+                    // Synchronize with Firebase if invitations are displayed
+                    SynchronizeWithFirebase.synchronizeInvitations(user_id, context, new CallbackSynchronizeEnd() {
+                        @Override
+                        public void onCompleted() {
+                            configureDisplayActivityForMyInvits(user_id,displayActivity);
                         }
-                    }
 
-                    displayActivity.setListInvitations(listInvits);
-                    if(listInvits!=null)
-                        displayActivity.setCount(listInvits.size());
-                    else
-                        displayActivity.setCount(0);
+                        @Override
+                        public void onFailure(String error) {
+                            configureDisplayActivityForMyInvits(user_id,displayActivity);
+                        }
+                    });
 
                     break;
             }
         }
+    }
+
+    private static void configureDisplayActivityForMyEvents(String user_id, DisplayActivity displayActivity){
+
+        Context context = displayActivity.getApplicationContext();
+
+        // Get Bike Events
+        List<BikeEvent> listEvents = BikeEventHandler.getAllFutureBikeEvents(context, user_id, user_id);
+
+        // Find event friends and route for each bikeEvent
+        if(listEvents!=null){
+            if(listEvents.size()>0){
+                for(BikeEvent event : listEvents){
+
+                    // Event friends
+                    List<EventFriends> listEventFriends = BikeEventHandler.getEventFriends(context,event.getId(),user_id);
+                    event.setListEventFriends(listEventFriends);
+
+                    // Route and RouteSegments
+                    Route route = RouteHandler.getRoute(context,event.getIdRoute(),user_id);
+                    List<RouteSegment> listSegments = RouteHandler.getRouteSegments(context,event.getIdRoute(),user_id);
+                    route.setListRouteSegment(listSegments);
+                    event.setRoute(route);
+                }
+            }
+        }
+
+        displayActivity.setListEvents(listEvents);
+
+        if(listEvents!=null)
+            displayActivity.setCount(listEvents.size());
+        else
+            displayActivity.setCount(0);
+
+        displayActivity.configureViews();
+    }
+
+    private static void configureDisplayActivityForMyInvits(String user_id, DisplayActivity displayActivity){
+
+        Context context = displayActivity.getApplicationContext();
+
+        // Get Invitations
+        List<BikeEvent> listInvits = BikeEventHandler.getAllInvitiations(context,user_id);
+
+        // Find event friends and route for each invitations
+        if(listInvits!=null){
+            if(listInvits.size()>0){
+                for(BikeEvent event : listInvits){
+
+                    // Event friends
+                    List<EventFriends> listEventFriends = BikeEventHandler.getEventFriends(context,event.getId(),user_id);
+                    event.setListEventFriends(listEventFriends);
+
+                    // Route and RouteSegments
+                    Route route = RouteHandler.getRoute(context,event.getIdRoute(),user_id);
+                    List<RouteSegment> listSegments = RouteHandler.getRouteSegments(context,event.getIdRoute(),user_id);
+                    route.setListRouteSegment(listSegments);
+                    event.setRoute(route);
+                }
+            }
+        }
+
+        displayActivity.setListInvitations(listInvits);
+
+        if(listInvits!=null)
+            displayActivity.setCount(listInvits.size());
+        else
+            displayActivity.setCount(0);
+
+        displayActivity.configureViews();
     }
 
 }

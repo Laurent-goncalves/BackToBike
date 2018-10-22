@@ -10,9 +10,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.g.laurent.backtobike.Models.CallbackCounters;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.ToolbarManager;
 import com.g.laurent.backtobike.R;
+import com.g.laurent.backtobike.Utils.FirebaseRecover;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -66,6 +68,25 @@ public class BaseActivity extends AppCompatActivity {
         if(route!=null)
             intent.putExtra(BUNDLE_ROUTE_ID, route.getId());
         startActivity(intent);
+    }
+
+    public void synchronizeDataWithFirebaseAndConfigureToolbar(String typeDisplay, BaseActivity baseActivity){
+
+        // Get
+        FirebaseRecover firebaseRecover = new FirebaseRecover(getApplicationContext());
+        firebaseRecover.recoverDatasForCounters(userId, new CallbackCounters() {
+            @Override
+            public void onCompleted(int counterFriend, int counterInvits) {
+                // Configure toolbar
+                toolbarManager.configureToolbar(baseActivity, typeDisplay, counterFriend, counterInvits);
+            }
+
+            @Override
+            public void onFailure(String error) {
+                // Configure toolbar
+                toolbarManager.configureToolbar(baseActivity, typeDisplay,0,0);
+            }
+        });
     }
 
     public static void showSnackBar(BaseActivity baseActivity, String text) {

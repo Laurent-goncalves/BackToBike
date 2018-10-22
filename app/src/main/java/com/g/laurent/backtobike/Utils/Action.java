@@ -32,7 +32,7 @@ public class Action {
 
         // Update friend in Firebase
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-        firebaseUpdate.updateFriend(userId, friend, false);
+        firebaseUpdate.updateFriendsFromUser(userId, friend);
     }
 
     public static void deleteFriend(Friend friend, String userId, Context context){
