@@ -18,8 +18,9 @@ public class FriendContentProvider extends ContentProvider {
     private String idFriend;
     private String userId;
 
-    public void setUtils(Context context, String userId){
+    public void setUtils(Context context, String idFriend, String userId){
         this.context=context;
+        this.idFriend=idFriend;
         this.userId=userId;
     }
 
@@ -70,9 +71,5 @@ public class FriendContentProvider extends ContentProvider {
             return AppDatabase.getInstance(context, userId).friendsDao().updateFriend(Friend.fromContentValues(values));
         }
         throw new IllegalArgumentException("Failed to update row into " + uri);
-    }
-
-    public void setIdFriend(String idFriend) {
-        this.idFriend = idFriend;
     }
 }

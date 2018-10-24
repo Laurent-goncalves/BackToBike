@@ -24,6 +24,9 @@ public interface EventFriendsDao {
     @Query("DELETE FROM EventFriends WHERE idEvent = :idEvent")
     int deleteEventFriends(String idEvent);
 
+    @Query("DELETE FROM EventFriends WHERE idFriend = :idFriend")
+    int deleteFriends(String idFriend);
+
     @Query("DELETE FROM EventFriends")
     int deleteAllEventFriends();
 }

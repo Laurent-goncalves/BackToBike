@@ -1,6 +1,9 @@
 package com.g.laurent.backtobike.Utils;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -18,8 +21,41 @@ import java.util.List;
 
 public class UtilsApp {
 
+    // ------------------------------------------------------------------------------------------------------------
+    // ------------------------------------  ADD COUNT ON ICON APP  -----------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------
+
+    public static void setBadge(Context context, int count) {
+        String launcherClassName = getLauncherClassName(context);
+        if (launcherClassName == null) {
+            return;
+        }
+        Intent intent = new Intent("android.intent.action.BADGE_COUNT_UPDATE");
+        intent.putExtra("badge_count", count);
+        intent.putExtra("badge_count_package_name", context.getPackageName());
+        intent.putExtra("badge_count_class_name", launcherClassName);
+        context.sendBroadcast(intent);
+    }
+
+    private static String getLauncherClassName(Context context) {
+
+        PackageManager pm = context.getPackageManager();
+
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        List<ResolveInfo> resolveInfos = pm.queryIntentActivities(intent, 0);
+        for (ResolveInfo resolveInfo : resolveInfos) {
+            String pkgName = resolveInfo.activityInfo.applicationInfo.packageName;
+            if (pkgName.equalsIgnoreCase(context.getPackageName())) {
+                return resolveInfo.activityInfo.name;
+            }
+        }
+        return null;
+    }
 
     public static String getIdEventFriend(String idFriend, BikeEvent bikeEvent){
+
         String idEventFriend = null;
 
         if(bikeEvent!=null){
@@ -27,7 +63,7 @@ public class UtilsApp {
                 if(bikeEvent.getListEventFriends().size()>0){
                     for(EventFriends eventFriends : bikeEvent.getListEventFriends()){
                         if(eventFriends.getIdFriend().equals(idFriend)) {
-                            idEventFriend = eventFriends.getIdFriend();
+                            idEventFriend = eventFriends.getIdEvent();
                             break;
                         }
                     }
@@ -38,11 +74,19 @@ public class UtilsApp {
         return idEventFriend;
     }
 
+    // ------------------------------------------------------------------------------------------------------------
+    // ------------------------------------  GET ID  --------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------
+
     public static String getIdEvent(BikeEvent bikeEvent){
         String idInvitation = bikeEvent.getOrganizerId() + "_" + bikeEvent.getDate() + "_" + bikeEvent.getTime();
         idInvitation = idInvitation.replace("/","_");
         return idInvitation;
     }
+
+    // ------------------------------------------------------------------------------------------------------------
+    // ------------------------------------  DATE FORMAT  ---------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------
 
     public static String createStringDate(int year, int month, int dayOfMonth){
 
@@ -71,7 +115,7 @@ public class UtilsApp {
     }
 
     // ------------------------------------------------------------------------------------------------------
-    // ---------------------------------------- FIND INDEX --------------------------------------------------
+    // ---------------------------------------- FIND IN LIST ------------------------------------------------
     // ------------------------------------------------------------------------------------------------------
 
     public static int findFriendIndexInListFriends(Friend friend, List<Friend> listFriends){
@@ -82,6 +126,24 @@ public class UtilsApp {
             if(listFriends.size()>0){
                 for(int i = 0; i < listFriends.size(); i++){
                     if(listFriends.get(i).getId().equals(friend.getId())){
+                        index = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return index;
+    }
+
+    public static int findFriendIndexInListFriends(String idFriend, List<Friend> listFriends){
+
+        int index = -1;
+
+        if(listFriends!=null){
+            if(listFriends.size()>0){
+                for(int i = 0; i < listFriends.size(); i++){
+                    if(listFriends.get(i).getId().equals(idFriend)){
                         index = i;
                         break;
                     }
@@ -129,8 +191,6 @@ public class UtilsApp {
 
         return index;
     }
-
-
 
     public static int findFriendIndexInListEventFriends(Friend friend, List<EventFriends> listEventFriends){
 
@@ -186,7 +246,9 @@ public class UtilsApp {
         return index;
     }
 
-
+    // ------------------------------------------------------------------------------------------------------
+    // ---------------------------------------- TRANSFORM LIST ----------------------------------------------
+    // ------------------------------------------------------------------------------------------------------
 
     public static List<String> transformListRouteIntoListRouteNames(List<Route> listRoutes){
 

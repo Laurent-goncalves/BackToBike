@@ -19,7 +19,7 @@ public class SynchronizeWithFirebase {
 
     private static final String SHAREDPREFERENCES_INIT = "database_init_sharedpreferences";
 
-    public static void synchronizeAllDatasFromUser(String userId, SharedPreferences sharedPref, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) throws InterruptedException {
+    public static void buildDatabaseWithDatasFromFirebase(String userId, SharedPreferences sharedPref, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) throws InterruptedException {
 
         // Recover friends from user on Firebase
         FirebaseRecover firebaseRecover = new FirebaseRecover(context);
@@ -77,7 +77,7 @@ public class SynchronizeWithFirebase {
 
             @Override
             public void onFailure(String error) {
-
+                callbackSynchronizeEnd.onFailure(error);
             }
         });
 
@@ -103,20 +103,19 @@ public class SynchronizeWithFirebase {
                 if(listFriendFirebase!=null){
                     if(listFriendFirebase.size()>0){
                         for(Friend friend : listFriendFirebase){
-
-                            if(UtilsApp.findFriendIndexInListFriends(friend, listFriendApp) != -1) // if friend in database
+                            if (UtilsApp.findFriendIndexInListFriends(friend, listFriendApp) != -1) // if friend in database
                                 FriendsHandler.updateFriend(context, friend, userId); // update friend
                             else
                                 FriendsHandler.insertNewFriend(context, friend, userId); // add new friend in database
-
-                            callbackSynchronizeEnd.onCompleted();
                         }
                     }
                 }
+                callbackSynchronizeEnd.onCompleted();
             }
 
             @Override
             public void onFailure(String error) {
+                callbackSynchronizeEnd.onFailure(error);
             }
         });
     }
@@ -124,7 +123,7 @@ public class SynchronizeWithFirebase {
     public static void synchronizeInvitations(String userId, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) throws InterruptedException {
 
         // Recover invitations on database
-        List<BikeEvent> listBikeEventApp = BikeEventHandler.getAllInvitiations(context, userId);
+        List<BikeEvent> listBikeEventApp = BikeEventHandler.getAllInvitations(context, userId);
 
         // Recover invitations from user on Firebase
         FirebaseRecover firebaseRecover = new FirebaseRecover(context);
@@ -144,14 +143,16 @@ public class SynchronizeWithFirebase {
                             else
                                 BikeEventHandler.insertNewBikeEvent(context, invit, userId); // add new invit in database
 
-                            callbackSynchronizeEnd.onCompleted();
                         }
                     }
                 }
+                callbackSynchronizeEnd.onCompleted();
             }
 
             @Override
-            public void onFailure(String error) {}
+            public void onFailure(String error) {
+                callbackSynchronizeEnd.onFailure(error);
+            }
         });
     }
 }

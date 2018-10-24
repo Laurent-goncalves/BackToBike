@@ -87,7 +87,7 @@ public class SaveAndRestoreDisplayActivity {
         Context context = displayActivity.getApplicationContext();
 
         // Get Bike Events
-        List<BikeEvent> listEvents = BikeEventHandler.getAllFutureBikeEvents(context, user_id, user_id);
+        List<BikeEvent> listEvents = BikeEventHandler.getAllFutureBikeEvents(context, user_id);
 
         // Find event friends and route for each bikeEvent
         if(listEvents!=null){
@@ -122,7 +122,7 @@ public class SaveAndRestoreDisplayActivity {
         Context context = displayActivity.getApplicationContext();
 
         // Get Invitations
-        List<BikeEvent> listInvits = BikeEventHandler.getAllInvitiations(context,user_id);
+        List<BikeEvent> listInvits = BikeEventHandler.getAllInvitations(context,user_id);
 
         // Find event friends and route for each invitations
         if(listInvits!=null){

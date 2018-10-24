@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -53,6 +54,7 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         // Initialization
         userId = FirebaseAuth.getInstance().getUid();
         Bundle extras = getIntent().getExtras();
+        assignToolbarViews();
 
         // Recover datas
         try {
@@ -62,16 +64,15 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         }
     }
 
-
-
     public void configureViews(){
 
-        synchronizeDataWithFirebaseAndConfigureToolbar(typeDisplay,this);
+        defineCountersAndConfigureToolbar(typeDisplay);
 
         // Configure views
         configureAndShowDisplayFragmentsInViewPager();
         configureArrows();
-        configureButtons();
+        configureButtons(count > 0);
+        configureAddButton();
     }
 
     @Override
@@ -147,62 +148,73 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         UtilsApp.configureArrows(position, sizeList, arrowBack, arrowNext, this);
     }
 
-    private void configureButtons(){
+    private void configureButtons(Boolean showButtons){
 
         Drawable iconRight[];
         Drawable iconLeft[];
         Context context = getApplicationContext();
 
-        switch(typeDisplay){
-            case DISPLAY_MY_ROUTES:
+        if(!showButtons){ // HIDE BUTTONS
+            buttonLeft.setVisibility(View.GONE);
+            buttonRight.setVisibility(View.GONE);
 
-                // DELETE ROUTE
-                iconLeft = buttonLeft.getCompoundDrawables();
-                iconLeft[1].setColorFilter(context.getResources().getColor(R.color.colorReject),PorterDuff.Mode.SRC_IN);
-                buttonLeft.setText(context.getResources().getString(R.string.delete));
-                buttonLeft.setTextColor(context.getResources().getColor(R.color.colorReject));
+        } else { // SHOW BUTTONS
+            switch(typeDisplay){
+                case DISPLAY_MY_ROUTES:
 
-                // CHANGE ROUTE
-                buttonRight.setCompoundDrawablesWithIntrinsicBounds(null, context.getResources().getDrawable(R.drawable.baseline_edit_white_48),null,null);
-                iconRight = buttonRight.getCompoundDrawables();
-                iconRight[1].setColorFilter(context.getResources().getColor(R.color.colorPolylineNotComplete),PorterDuff.Mode.SRC_IN);
-                buttonRight.setText(context.getResources().getString(R.string.change));
-                buttonRight.setTextColor(context.getResources().getColor(R.color.colorPolylineNotComplete));
+                    // DELETE ROUTE
+                    buttonLeft.setVisibility(View.VISIBLE);
+                    iconLeft = buttonLeft.getCompoundDrawables();
+                    iconLeft[1].setColorFilter(context.getResources().getColor(R.color.colorReject),PorterDuff.Mode.SRC_IN);
+                    buttonLeft.setText(context.getResources().getString(R.string.delete));
+                    buttonLeft.setTextColor(context.getResources().getColor(R.color.colorReject));
 
-                break;
+                    // CHANGE ROUTE
+                    buttonRight.setVisibility(View.VISIBLE);
+                    buttonRight.setCompoundDrawablesWithIntrinsicBounds(null, context.getResources().getDrawable(R.drawable.baseline_edit_white_48),null,null);
+                    iconRight = buttonRight.getCompoundDrawables();
+                    iconRight[1].setColorFilter(context.getResources().getColor(R.color.colorPolylineNotComplete),PorterDuff.Mode.SRC_IN);
+                    buttonRight.setText(context.getResources().getString(R.string.change));
+                    buttonRight.setTextColor(context.getResources().getColor(R.color.colorPolylineNotComplete));
 
-            case DISPLAY_MY_EVENTS:
+                    break;
 
-                // CANCEL EVENT
-                buttonLeft.setCompoundDrawablesWithIntrinsicBounds(null,context.getResources().getDrawable(R.drawable.round_cancel_white_48),null,null);
-                iconLeft = buttonLeft.getCompoundDrawables();
-                iconLeft[1].setColorFilter(context.getResources().getColor(R.color.colorGray),PorterDuff.Mode.SRC_IN);
-                buttonLeft.setText(context.getResources().getString(R.string.cancel));
-                buttonLeft.setTextColor(context.getResources().getColor(R.color.colorGray));
+                case DISPLAY_MY_EVENTS:
 
-                buttonRight.setVisibility(View.GONE);
+                    // CANCEL EVENT
+                    buttonLeft.setVisibility(View.VISIBLE);
+                    buttonLeft.setCompoundDrawablesWithIntrinsicBounds(null,context.getResources().getDrawable(R.drawable.round_cancel_white_48),null,null);
+                    iconLeft = buttonLeft.getCompoundDrawables();
+                    iconLeft[1].setColorFilter(context.getResources().getColor(R.color.colorGray),PorterDuff.Mode.SRC_IN);
+                    buttonLeft.setText(context.getResources().getString(R.string.cancel));
+                    buttonLeft.setTextColor(context.getResources().getColor(R.color.colorGray));
 
-                break;
+                    buttonRight.setVisibility(View.GONE);
 
-            case DISPLAY_MY_INVITS:
+                    break;
 
-                // REJECT INVITATION
-                buttonLeft.setCompoundDrawablesWithIntrinsicBounds(null,context.getResources().getDrawable(R.drawable.round_cancel_white_48),null,null);
-                iconLeft = buttonLeft.getCompoundDrawables();
-                iconLeft[1].setColorFilter(context.getResources().getColor(R.color.colorReject),PorterDuff.Mode.SRC_IN);
-                buttonLeft.setText(context.getResources().getString(R.string.delete));
-                buttonLeft.setTextColor(context.getResources().getColor(R.color.colorReject));
+                case DISPLAY_MY_INVITS:
 
-                // ACCEPT INVITATION
-                buttonRight.setCompoundDrawablesWithIntrinsicBounds(null,context.getResources().getDrawable(R.drawable.baseline_check_circle_white_48),null,null);
-                iconRight = buttonRight.getCompoundDrawables();
-                iconRight[1].setColorFilter(context.getResources().getColor(R.color.colorPolylineComplete),PorterDuff.Mode.SRC_IN);
-                buttonRight.setText(context.getResources().getString(R.string.accept));
-                buttonRight.setTextColor(context.getResources().getColor(R.color.colorPolylineComplete));
-                break;
+                    // REJECT INVITATION
+                    buttonLeft.setVisibility(View.VISIBLE);
+                    buttonLeft.setCompoundDrawablesWithIntrinsicBounds(null,context.getResources().getDrawable(R.drawable.round_cancel_white_48),null,null);
+                    iconLeft = buttonLeft.getCompoundDrawables();
+                    iconLeft[1].setColorFilter(context.getResources().getColor(R.color.colorReject),PorterDuff.Mode.SRC_IN);
+                    buttonLeft.setText(context.getResources().getString(R.string.delete));
+                    buttonLeft.setTextColor(context.getResources().getColor(R.color.colorReject));
+
+                    // ACCEPT INVITATION
+                    buttonRight.setVisibility(View.VISIBLE);
+                    buttonRight.setCompoundDrawablesWithIntrinsicBounds(null,context.getResources().getDrawable(R.drawable.baseline_check_circle_white_48),null,null);
+                    iconRight = buttonRight.getCompoundDrawables();
+                    iconRight[1].setColorFilter(context.getResources().getColor(R.color.colorPolylineComplete),PorterDuff.Mode.SRC_IN);
+                    buttonRight.setText(context.getResources().getString(R.string.accept));
+                    buttonRight.setTextColor(context.getResources().getColor(R.color.colorPolylineComplete));
+                    break;
+            }
+
+            setOnClickListenersButtons();
         }
-
-        setOnClickListenersButtons();
     }
 
     private void setOnClickListenersButtons(){
@@ -210,9 +222,10 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
             case DISPLAY_MY_ROUTES:
                 // DELETE ROUTE
                 buttonLeft.setOnClickListener(v -> {
-                    Action.deleteRoute(listRoutes.get(position), userId, getApplicationContext());
+                    // TODO Action.deleteRoute(listRoutes.get(position), userId, getApplicationContext());
+                    count--;
                     listRoutes.remove(position);
-                    adapter.notifyDataSetChanged();
+                    configureAndShowDisplayFragmentsInViewPager();
                     Toast.makeText(getApplicationContext(), getApplicationContext().getResources().getString(R.string.delete_route), Toast.LENGTH_LONG).show();
                 });
                 // CHANGE ROUTE
@@ -226,10 +239,45 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
 
             case DISPLAY_MY_INVITS:
                 // REJECT INVITATION
-                buttonLeft.setOnClickListener(v -> Action.rejectInvitation(listInvitations.get(position),userId,getApplicationContext()));
+                buttonLeft.setOnClickListener(v -> {
+                    // TODO  Action.rejectInvitation(listInvitations.get(position),userId,getApplicationContext());
+                    count--;
+                    listInvitations.remove(position);
+                    configureAndShowDisplayFragmentsInViewPager();
+                    Toast.makeText(getApplicationContext(), getApplicationContext().getResources().getString(R.string.reject_invitation), Toast.LENGTH_LONG).show();
+                });
+
                 // ACCEPT INVITATION
-                buttonRight.setOnClickListener(v -> Action.acceptInvitation(listInvitations.get(position),userId,getApplicationContext()));
+                buttonRight.setOnClickListener(v -> {
+                    // TODO Action.acceptInvitation(listInvitations.get(position),userId,getApplicationContext());
+                    count--;
+                    listInvitations.remove(position);
+                    configureAndShowDisplayFragmentsInViewPager();
+                    Toast.makeText(getApplicationContext(), getApplicationContext().getResources().getString(R.string.accept_invitation), Toast.LENGTH_LONG).show();
+                });
                 break;
+        }
+    }
+
+    private void configureAddButton(){
+
+        if(typeDisplay.equals(DISPLAY_MY_ROUTES) || typeDisplay.equals(DISPLAY_MY_EVENTS)){
+            ImageButton buttonAdd = findViewById(R.id.button_add);
+            buttonAdd.setOnClickListener(v -> {
+                switch(typeDisplay){
+
+                    case DISPLAY_MY_ROUTES:
+                        launchTraceActivity(null);
+                        break;
+
+                    case DISPLAY_MY_EVENTS:
+                        launchEventActivity();
+                        break;
+                }
+            });
+        } else if (typeDisplay.equals(DISPLAY_MY_INVITS)){
+            ImageButton buttonAdd = findViewById(R.id.button_add);
+            buttonAdd.setVisibility(View.GONE);
         }
     }
 

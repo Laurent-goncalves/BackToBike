@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Entity(foreignKeys = {@ForeignKey(entity = BikeEvent.class,parentColumns = "id",childColumns = "idEvent"),
-        @ForeignKey(entity = Friend.class,parentColumns = "id",childColumns = "idFriend")},indices = {@Index("idEvent"),@Index("idFriend")})
+@Entity(foreignKeys = {@ForeignKey(entity = BikeEvent.class,parentColumns = "id",childColumns = "idEvent")},
+        indices = {@Index("idEvent")})
 public class EventFriends {
 
     @PrimaryKey(autoGenerate = true)

@@ -2,6 +2,10 @@ package com.g.laurent.backtobike.Controllers.Activities;
 
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+
 import com.g.laurent.backtobike.Controllers.Fragments.FriendFragment;
 import com.g.laurent.backtobike.Controllers.Fragments.InvitFragment;
 import com.g.laurent.backtobike.Models.CallbackEventActivity;
@@ -26,9 +30,10 @@ public class EventActivity extends BaseActivity implements CallbackEventActivity
         setContentView(R.layout.activity_event);
         invitation = new Invitation();
         userId = FirebaseAuth.getInstance().getUid();
+        assignToolbarViews();
 
         SaveAndRestoreDataInvitActivity.restoreData(savedInstanceState,this);
-        synchronizeDataWithFirebaseAndConfigureToolbar(MENU_CREATE_EVENT,this);
+        defineCountersAndConfigureToolbar(MENU_CREATE_EVENT);
 
         configureAndShowInvitFragment();
     }
@@ -41,7 +46,8 @@ public class EventActivity extends BaseActivity implements CallbackEventActivity
 
     public void configureAndShowInvitFragment(){
 
-        toolbarManager.configureButtonToolbar(false,this);
+        // Remove button OK
+        configureButtonToolbar(false);
 
         // Initialize variables
         invitFragment = new InvitFragment();
@@ -54,7 +60,8 @@ public class EventActivity extends BaseActivity implements CallbackEventActivity
 
     public void backToInvitFragment(){
 
-        toolbarManager.configureButtonToolbar(false,this);
+        // Remove button OK
+        configureButtonToolbar(false);
 
         // configure and show the invitFragment
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
@@ -64,7 +71,8 @@ public class EventActivity extends BaseActivity implements CallbackEventActivity
 
     public void configureAndShowFriendFragment(){
 
-        toolbarManager.configureButtonToolbar(true,this);
+        // Configure button OK
+        configureButtonToolbar(true);
 
         // Initialize variables
         friendFragment = new FriendFragment();
@@ -78,6 +86,25 @@ public class EventActivity extends BaseActivity implements CallbackEventActivity
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_invit, friendFragment, TAG_FRIEND_FRAGMENT);
         fragmentTransaction.commit();
+    }
+
+    public void configureButtonToolbar(Boolean buttonVisible){
+
+        Button buttonOK = toolbar.findViewById(R.id.button_toolbar);
+
+        if(!buttonVisible){ // if no button needed, remove it
+            buttonOK.setVisibility(View.GONE);
+        } else { // if button needed, make it visible and configure click
+
+            buttonOK.setText(getApplicationContext().getResources().getString(R.string.ok));
+            buttonOK.setVisibility(View.VISIBLE);
+
+            buttonOK.setOnClickListener(v -> {
+                // Display invitfragment and configure guests selected
+                getInvitation().setListIdFriends(getFriendFragment().getListFriendsSelected());
+                backToInvitFragment();
+            });
+        }
     }
 
     public Invitation getInvitation() {

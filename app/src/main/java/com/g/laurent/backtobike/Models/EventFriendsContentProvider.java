@@ -15,10 +15,12 @@ public class EventFriendsContentProvider extends ContentProvider {
     public static final Uri URI_ITEM = Uri.parse("content://" + AUTHORITY + "/" + TABLE_NAME);
     private Context context;
     private String idEvent;
+    private String idFriend;
     private String userId;
 
-    public void setUtils(Context context, String idEvent, String userId){
+    public void setUtils(Context context, String idFriend, String idEvent, String userId){
         this.context=context;
+        this.idFriend=idFriend;
         this.idEvent=idEvent;
         this.userId=userId;
     }
@@ -56,7 +58,10 @@ public class EventFriendsContentProvider extends ContentProvider {
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         if (context!= null){
-            return AppDatabase.getInstance(context, userId).eventFriendsDao().deleteEventFriends(idEvent);
+            if(idFriend!=null)
+                return AppDatabase.getInstance(context, userId).eventFriendsDao().deleteFriends(idFriend);
+            else if(idEvent!=null)
+                return AppDatabase.getInstance(context, userId).eventFriendsDao().deleteEventFriends(idEvent);
         }
         throw new IllegalArgumentException("Failed to delete row into " + uri);
     }

@@ -29,13 +29,4 @@ public class RouteFragment extends Fragment {
 
 }
 
-/*
 
-TO COLOR BUTTONS
-
-Drawable[] drawables = textView.getCompoundDrawables();
-       if (drawables[0] != null) {  // left drawable
-           drawables[0].setColorFilter(color, Mode.MULTIPLY);
-       }
-
- */

@@ -1,7 +1,11 @@
 package com.g.laurent.backtobike.Utils;
 
+import android.arch.persistence.room.Delete;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.EventLog;
+
+import com.g.laurent.backtobike.Models.EventFriendsContentProvider;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.FriendContentProvider;
 import java.util.List;
@@ -17,7 +21,7 @@ public class FriendsHandler {
 
         // Insert friend in database
         FriendContentProvider friendContentProvider = new FriendContentProvider();
-        friendContentProvider.setUtils(context, userId);
+        friendContentProvider.setUtils(context, null, userId);
 
         friendContentProvider.insert(FriendContentProvider.URI_ITEM, Friend.createContentValuesFromFriend(friend));
     }
@@ -30,7 +34,7 @@ public class FriendsHandler {
 
         // Update friend in database
         FriendContentProvider friendContentProvider = new FriendContentProvider();
-        friendContentProvider.setUtils(context, userId);
+        friendContentProvider.setUtils(context, null, userId);
 
         friendContentProvider.update(null, Friend.createContentValuesFromFriend(friend),null,null);
     }
@@ -41,10 +45,13 @@ public class FriendsHandler {
 
     public static void deleteFriend(Context context, String idFriend, String userId){
 
+        // Delete event friends
+        EventFriendsContentProvider eventFriendsContentProvider = new EventFriendsContentProvider();
+        eventFriendsContentProvider.setUtils(context, idFriend, null,userId);
+
         // Delete friend in database
         FriendContentProvider friendContentProvider = new FriendContentProvider();
-        friendContentProvider.setUtils(context, userId);
-        friendContentProvider.setIdFriend(idFriend);
+        friendContentProvider.setUtils(context,idFriend, userId);
 
         friendContentProvider.delete(null,null,null);
     }
@@ -56,7 +63,7 @@ public class FriendsHandler {
     public static List<Friend> getListFriends(Context context, String userId){
 
         FriendContentProvider friendContentProvider = new FriendContentProvider();
-        friendContentProvider.setUtils(context, userId);
+        friendContentProvider.setUtils(context, null, userId);
 
         final Cursor cursor = friendContentProvider.query(null, null, null, null, null);
 
@@ -66,8 +73,7 @@ public class FriendsHandler {
     public static Friend getFriend(Context context, String idFriend, String userId){
 
         FriendContentProvider friendContentProvider = new FriendContentProvider();
-        friendContentProvider.setUtils(context, userId);
-        friendContentProvider.setIdFriend(idFriend);
+        friendContentProvider.setUtils(context, idFriend, userId);
 
         final Cursor cursor = friendContentProvider.query(null, null, null, null, null);
 

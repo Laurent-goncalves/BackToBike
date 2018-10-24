@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <!-- TITLE -->
+    <TextView
+        android:id="@+id/title_add_friend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:text="@string/title_friend_request"
+        android:textStyle="italic|bold"
+        android:textAlignment="textStart"
+        android:textSize="@dimen/textsize_invitfragment"
+        android:paddingBottom="5dp"
+        android:paddingStart="10dp"
+        android:paddingTop="5dp"
+        android:textColor="@color/colorWhite"
+        tools:ignore="RtlSymmetry" />
+
+    <!-- PICTURE FRIEND -->
+    <ImageView
+        android:id="@+id/picture_friend"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@color/colorGray"
+        android:layout_below="@+id/title_add_friend"
+        android:layout_margin="20dp"/>
+
+    <!-- QUESTION -->
+    <TextView
+        android:id="@+id/question_add_friend"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="10dp"
+        android:gravity="start|top"
+        android:textSize="16sp"
+        android:layout_below="@+id/title_add_friend"
+        android:layout_toEndOf="@+id/picture_friend"
+        android:text="@string/add_name_route"/>
+
+
+    <!-- BUTTONS -->
+    <RelativeLayout
+        android:layout_below="@+id/picture_friend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/picture_friend"
+        android:layout_marginStart="20dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp">
+
+        <!-- BUTTON NO  -->
+        <Button
+            android:id="@+id/button_no"
+            android:layout_width="@dimen/width_buttons_cancel_and_save"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@+id/button_yes"
+            android:background="@android:color/white"
+            android:textColor="@color/colorPrimary"
+            android:text="@string/no_button"/>
+
+        <!-- BUTTON YES  -->
+        <Button
+            android:id="@+id/button_yes"
+            android:layout_width="@dimen/width_buttons_cancel_and_save"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="@dimen/buttons_spaces"
+            android:layout_marginEnd="@dimen/buttons_spaces"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white"
+            android:text="@string/yes_button"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

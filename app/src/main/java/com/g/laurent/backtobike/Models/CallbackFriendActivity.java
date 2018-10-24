@@ -5,4 +5,6 @@ import com.g.laurent.backtobike.Controllers.Fragments.FriendFragment;
 public interface CallbackFriendActivity {
 
     void showAlertDialogAddNewFriend(FriendFragment friendFragment);
+
+    void configureButtonToolbar(Boolean buttonVisible);
 }

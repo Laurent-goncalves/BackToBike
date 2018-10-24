@@ -32,76 +32,39 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
     private static final String DISPLAY_MY_INVITS ="display_my_invits";
     private final static String MENU_TRACE_ROUTE = "menu_trace_route";
     private final static String MENU_CREATE_EVENT = "menu_create_event";
-    private final static String MENU_SIGN_OUT= "menu_sign_out";
-    private static final int SIGN_OUT_TASK = 10;
-    private Toolbar toolbar;
-    private Context context;
-    private ImageButton hamburger;
-    private Button buttonToolbar;
-    private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
-    private BaseActivity baseActivity;
 
-    public void configureToolbar(BaseActivity baseActivity, String currentMenu, int countFriends, int countInvit){
+    private CallbackBaseActivity callbackBaseActivity;
 
-        this.baseActivity=baseActivity;
-        context = baseActivity.getApplicationContext();
+    public void configureToolbar(CallbackBaseActivity callbackBaseActivity, String currentMenu, int countFriends, int countInvit){
 
-        toolbar = baseActivity.findViewById(R.id.activity_main_toolbar);
-        baseActivity.setSupportActionBar(toolbar);
+        this.callbackBaseActivity=callbackBaseActivity;
 
-        drawerLayout = baseActivity.findViewById(R.id.activity_drawer_layout);
-        navigationView = baseActivity.findViewById(R.id.activity_nav_view);
-
-        finalizeToolbarConfiguration(currentMenu);
-        configureAddButton(currentMenu);
-
-        setCounterFriendsRequests(countFriends);
-        setCounterInvitation(countInvit);
-        //configureButtonToolbar(baseActivity, currentMenu);
+        finalizeToolbarConfiguration(currentMenu, callbackBaseActivity);
+        setCounterFriendsRequests(countFriends, callbackBaseActivity.getNavigationView());
+        setCounterInvitation(countInvit, callbackBaseActivity.getNavigationView());
     }
 
-    private void configureAddButton(String currentMenu){
+    private void finalizeToolbarConfiguration(String currentMenu, CallbackBaseActivity callbackBaseActivity){
 
-        if(currentMenu.equals(DISPLAY_MY_ROUTES) || currentMenu.equals(DISPLAY_MY_EVENTS)){
-            ImageButton buttonAdd = baseActivity.findViewById(R.id.button_add);
-            buttonAdd.setOnClickListener(v -> {
-                switch(currentMenu){
+        if(callbackBaseActivity.getToolbar()!=null){
 
-                    case DISPLAY_MY_ROUTES:
-                        baseActivity.launchTraceActivity(null);
-                        break;
-
-                    case DISPLAY_MY_EVENTS:
-                        baseActivity.launchEventActivity();
-                        break;
-                }
-            });
-        } else if (currentMenu.equals(DISPLAY_MY_INVITS)){
-            ImageButton buttonAdd = baseActivity.findViewById(R.id.button_add);
-            buttonAdd.setVisibility(View.GONE);
-        }
-    }
-
-    private void finalizeToolbarConfiguration(String currentMenu){
-
-        if(toolbar!=null){
+            Toolbar toolbar = callbackBaseActivity.getToolbar();
 
             // configure hamburger menu to open the navigation drawer
-            hamburger = toolbar.findViewById(R.id.button_hamburger);
+            ImageButton hamburger = toolbar.findViewById(R.id.button_hamburger);
+            DrawerLayout drawerLayout = callbackBaseActivity.getDrawerLayout();
+            NavigationView navigationView = callbackBaseActivity.getNavigationView();
+
             hamburger.setOnClickListener(v -> drawerLayout.openDrawer(Gravity.START));
             navigationView.setNavigationItemSelectedListener(this);
 
-            // Assign button from toolbar
-            buttonToolbar = toolbar.findViewById(R.id.button_toolbar);
-
             //Assign and edit toolbar title
             TextView title_toolbar = toolbar.findViewById(R.id.title_toolbar);
-            setTextTitleToolbar(currentMenu, title_toolbar);
+            setTextTitleToolbar(currentMenu, callbackBaseActivity.getContextBaseActivity(), title_toolbar);
         }
     }
 
-    private void setTextTitleToolbar(String currentMenu, TextView title){
+    private static void setTextTitleToolbar(String currentMenu, Context context, TextView title){
 
         switch(currentMenu){
 
@@ -137,45 +100,6 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
         }
     }
 
-    // ------------------------------------------------------------------------------------------------
-    // ---------------------------------- RIGHT BUTTON ------------------------------------------------
-    // ------------------------------------------------------------------------------------------------
-
-    public void configureButtonToolbar(Boolean buttonVisible, EventActivity eventActivity){
-
-        if(!buttonVisible){ // if no button needed, remove it
-            buttonToolbar.setVisibility(View.GONE);
-        } else { // if button needed, make it visible and configure click
-
-            buttonToolbar.setText(context.getResources().getString(R.string.ok));
-            buttonToolbar.setVisibility(View.VISIBLE);
-
-            buttonToolbar.setOnClickListener(v -> {
-                // Display invitfragment and configure guests selected
-                eventActivity.getInvitation().setListIdFriends(eventActivity.getFriendFragment().getListFriendsSelected());
-                eventActivity.backToInvitFragment();
-            });
-        }
-
-    }
-
-    public void configureButtonToolbar(Boolean buttonVisible, BaseActivity baseActivity, String currentMenu){
-
-        if(!buttonVisible){ // if no button needed, remove it
-            buttonToolbar.setVisibility(View.GONE);
-        } else { // if button needed, make it visible and configure click
-
-            buttonToolbar.setText(context.getResources().getString(R.string.ok));
-            buttonToolbar.setVisibility(View.VISIBLE);
-
-            buttonToolbar.setOnClickListener(v -> {
-                // Display invitfragment and configure guests selected
-                /*eventActivity.getInvitation().setListIdFriends(eventActivity.getFriendFragment().getListFriendsSelected());
-                eventActivity.backToInvitFragment();*/
-            });
-        }
-
-    }
 
     // ------------------------------------------------------------------------------------------------
     // ------------------------------- NAVIGATION DRAWER ----------------------------------------------
@@ -186,46 +110,50 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
 
         int id = item.getItemId();
 
-        if(baseActivity!=null) {
+        if (callbackBaseActivity != null) {
+            if (callbackBaseActivity.getBaseActivity() != null) {
 
-            switch (id) {
-                case R.id.my_friends_menu_item:
-                    baseActivity.launchFriendsActivity();
-                    break;
-                case R.id.my_events_menu_item:
-                    baseActivity.launchDisplayActivity(DISPLAY_MY_EVENTS, null);
-                    break;
-                case R.id.my_invitations_menu_item:
-                    baseActivity.launchDisplayActivity(DISPLAY_MY_INVITS, null);
-                    break;
-                case R.id.my_routes_menu_item:
-                    baseActivity.launchDisplayActivity(DISPLAY_MY_ROUTES, null);
-                    break;
-                case R.id.back_to_main_page_menu_item:
-                    baseActivity.launchMainActivity();
-                    break;
-                case R.id.sign_out_menu_item:
-                    signOutUserFromFirebase();
-                    break;
-                default:
-                    break;
+                switch (id) {
+
+                    case R.id.my_friends_menu_item:
+                        callbackBaseActivity.launchFriendsActivity();
+                        break;
+                    case R.id.my_events_menu_item:
+                        callbackBaseActivity.launchDisplayActivity(DISPLAY_MY_EVENTS, null);
+                        break;
+                    case R.id.my_invitations_menu_item:
+                        callbackBaseActivity.launchDisplayActivity(DISPLAY_MY_INVITS, null);
+                        break;
+                    case R.id.my_routes_menu_item:
+                        callbackBaseActivity.launchDisplayActivity(DISPLAY_MY_ROUTES, null);
+                        break;
+                    case R.id.back_to_main_page_menu_item:
+                        callbackBaseActivity.launchMainActivity();
+                        break;
+                    case R.id.sign_out_menu_item:
+                        callbackBaseActivity.signOutUserFromFirebase(callbackBaseActivity.getContextBaseActivity());
+                        break;
+                    default:
+                        break;
+                }
+
+                callbackBaseActivity.getDrawerLayout().closeDrawer(GravityCompat.START);
             }
-            drawerLayout.closeDrawer(GravityCompat.START);
         }
         return true;
     }
 
-    private void setCounterFriendsRequests(int count) {
+    private static void setCounterFriendsRequests(int count, NavigationView navigationView) {
         LinearLayout layoutCounter = (LinearLayout) navigationView.getMenu().findItem(R.id.my_friends_menu_item).getActionView();
         setCounter(count,layoutCounter);
     }
 
-    private void setCounterInvitation(int count) {
+    private static void setCounterInvitation(int count, NavigationView navigationView) {
         LinearLayout layoutCounter = (LinearLayout) navigationView.getMenu().findItem(R.id.my_invitations_menu_item).getActionView();
         setCounter(count,layoutCounter);
     }
 
-    private void setCounter(int count, LinearLayout layoutCounter) {
+    private static void setCounter(int count, LinearLayout layoutCounter) {
 
         TextView view = (TextView) layoutCounter.findViewById(R.id.count_invitation);
 
@@ -236,23 +164,5 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
         } else {
             view.setText(String.valueOf(count));
         }
-    }
-
-    private void signOutUserFromFirebase() {
-        AuthUI.getInstance()
-                .signOut(context)
-                .addOnSuccessListener(baseActivity, updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
-    }
-
-    private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin) {
-        return aVoid -> {
-            switch (origin) {
-                case SIGN_OUT_TASK:
-                    baseActivity.finish();
-                    break;
-                default:
-                    break;
-            }
-        };
     }
 }

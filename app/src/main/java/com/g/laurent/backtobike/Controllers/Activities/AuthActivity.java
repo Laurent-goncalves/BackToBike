@@ -162,6 +162,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                         Intent intent = new Intent(this, MainActivity.class);
                         startActivity(intent);
 
+                        finish();
+
                     } else {
                         // If sign in fails, display a message to the user.
                         //display_error_messages(null);

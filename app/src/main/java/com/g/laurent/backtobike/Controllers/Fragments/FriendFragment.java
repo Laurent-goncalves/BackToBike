@@ -41,12 +41,14 @@ public class FriendFragment extends Fragment {
     @BindView(R.id.my_id_view) TextView myIdView;
     private Context context;
     private List<Friend> listFriends;
+    private List<Friend> listFriendsAccepted;
     private ArrayList<String> listFriendsSelected;
     private CallbackFriendActivity callbackFriendActivity;
     private CallbackEventActivity mCallbackEventActivity;
     private FirebaseUser firebaseUser;
     private String myLogin;
     private Boolean SelectMode;
+    private FriendsAdapter adapter;
 
     public FriendFragment() {
         // Required empty public constructor
@@ -58,7 +60,7 @@ public class FriendFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_friend, container, false);
         ButterKnife.bind(this, view);
-        defineMode();
+        defineMode(view);
 
         SharedPreferences sharedPref = context.getSharedPreferences(
                 getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
@@ -76,15 +78,34 @@ public class FriendFragment extends Fragment {
 
     public void configureListFriendsAndView(){
 
+        listFriendsAccepted = new ArrayList<>();
         listFriends = FriendsHandler.getListFriends(context, firebaseUser.getUid());
-        listFriends.add(new Friend()); // add item for "add a friend"
 
+        if(listFriends!=null){
+            if(listFriends.size()>0){
+                for(Friend friend : listFriends){
+                    if(friend.getAccepted()!=null){
+                        if (friend.getAccepted())
+                            listFriendsAccepted.add(friend);
+                    }
+                }
+            }
+        }
         configureViews();
     }
 
-    private void defineMode(){
+    private void defineMode(View view){
         if(getArguments()!=null)
             SelectMode = getArguments().getBoolean(BUNDLE_SELECT_MODE);
+
+        view.setOnClickListener(v -> {
+            SelectMode = false;
+            if(adapter!=null) {
+                adapter.setSelectMode(false);
+                adapter.notifyDataSetChanged();
+                callbackFriendActivity.configureButtonToolbar(false);
+            }
+        });
     }
 
     @Override
@@ -105,10 +126,48 @@ public class FriendFragment extends Fragment {
         }
     }
 
+    public void proceedToFriendsDeletion(){
+
+        // change selectMode status to false
+        setSelectMode(false);
+        adapter.setSelectMode(false);
+
+        // Delete friends in database and Firebase
+        if(listFriendsSelected.size()>0){
+            for(String idFriend : listFriendsSelected){
+
+                int index = UtilsApp.findFriendIndexInListFriends(idFriend,listFriends);
+                if(index!=-1){
+                    // Delete friends in database and Firebase
+                    Action.deleteFriend(listFriends.get(index), FirebaseAuth.getInstance().getUid(),context);
+
+                    // Delete friends in listFriends
+                    listFriends.remove(index);
+                }
+
+                index = UtilsApp.findFriendIndexInListFriends(idFriend,listFriendsAccepted);
+                if(index!=-1){
+                    // Delete friends in listFriendsAccepted
+                    listFriendsAccepted.remove(index);
+                }
+            }
+        }
+
+        // Update adapter
+        if(adapter!=null) {
+            adapter.setListFriends(listFriendsAccepted);
+            adapter.notifyDataSetChanged();
+        }
+
+        // Remove all elements in listFriendsSelected
+        listFriendsSelected.clear();
+    }
+
     public void configureViews(){
 
         // configure gridView
-        gridView.setAdapter(new FriendsAdapter(context, listFriends, SelectMode, this));
+        adapter = new FriendsAdapter(context, listFriendsAccepted, SelectMode, this);
+        gridView.setAdapter(adapter);
 
         // configure login view
         String myLoginText = context.getResources().getString(R.string.my_login_is) + " " + myLogin;
@@ -146,8 +205,13 @@ public class FriendFragment extends Fragment {
         Action.addNewFriend(friend, UtilsApp.getUserFromFirebaseUser(myLogin, firebaseUser),firebaseUser.getUid(), context);
 
         // Update layout
-        listFriends.add(listFriends.size()-1, friend); // add new friend before the last item
-        configureViews();
+        listFriends.add(friend);
+        listFriendsAccepted.add(listFriends.size()-1, friend); // add new friend before the last item
+
+        adapter.setListFriends(listFriendsAccepted);
+
+        // Update adapter
+        adapter.notifyDataSetChanged();
     }
 
     public void setSelectMode(Boolean selectMode) {
@@ -164,5 +228,17 @@ public class FriendFragment extends Fragment {
 
     public CallbackFriendActivity getCallbackFriendActivity() {
         return callbackFriendActivity;
+    }
+
+    public List<Friend> getListFriends() {
+        return listFriends;
+    }
+
+    public List<Friend> getListFriendsAccepted() {
+        return listFriendsAccepted;
+    }
+
+    public FriendsAdapter getAdapter() {
+        return adapter;
     }
 }

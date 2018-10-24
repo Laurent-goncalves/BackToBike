@@ -65,10 +65,12 @@ public class ConfigureMap implements OnMapReadyCallback {
     }
 
     private void setTitleMap(String title){
-        if(title.length()<=50)
-            titleView.setText(title);
-        else
-            titleView.setText(title.substring(0,50));
+        if(title!=null) {
+            if (title.length() <= 50)
+                titleView.setText(title);
+            else
+                titleView.setText(title.substring(0, 50));
+        }
     }
 
     private void drawSegments(List<LatLng> listPoints) {

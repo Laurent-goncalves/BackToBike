@@ -37,7 +37,6 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
     private GoogleMap mMap;
     private Route route;
-    private String userId;
     private GetCurrentLocation getCurrentLocation;
     private SharedPreferences sharedPreferences;
     private ProgressBar progressBar;
@@ -47,15 +46,17 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trace);
+        assignToolbarViews();
 
+        userId = FirebaseAuth.getInstance().getUid();
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE); // open progressBar
 
         sharedPreferences = getSharedPreferences(SHAREDPREFERENCES,MODE_PRIVATE);
-        synchronizeDataWithFirebaseAndConfigureToolbar(MENU_TRACE_ROUTE,this);
+        defineCountersAndConfigureToolbar(MENU_TRACE_ROUTE);
 
 
-        userId = FirebaseAuth.getInstance().getUid();
+
         defineRouteToTrace(savedInstanceState, getIntent().getExtras());
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.

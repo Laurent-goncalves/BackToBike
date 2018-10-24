@@ -61,7 +61,7 @@
                         android:textSize="20sp"
                         android:textColor="@color/colorWhite"/>
 
-                    <!-- Button OK / SUPPR. -->
+                    <!-- Button SUPPR. -->
                     <Button
                         android:id="@+id/button_toolbar"
                         android:layout_width="80dp"
@@ -70,8 +70,21 @@
                         android:layout_centerInParent="true"
                         android:textSize="16sp"
                         android:maxLength="40"
+                        android:visibility="gone"
+                        android:layout_marginEnd="10dp"
                         android:background="@color/fui_transparent"
                         android:textColor="@color/colorWhite"/>
+
+                    <!-- Button ADD PERSON -->
+                    <ImageButton
+                        android:id="@+id/button_add_person"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerInParent="true"
+                        android:layout_marginEnd="10dp"
+                        android:background="@color/fui_transparent"
+                        android:src="@drawable/baseline_person_add_white_24"/>
 
                 </RelativeLayout>
 
@@ -83,9 +96,22 @@
                 android:layout_height="match_parent">
 
                 <FrameLayout
-                    android:id="@+id/fragment_friend"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/mountains"/>
+
+                    <FrameLayout
+                        android:id="@+id/fragment_friend"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/fui_transparent"/>
+
+                </FrameLayout>
 
             </android.support.v4.widget.SwipeRefreshLayout>
 

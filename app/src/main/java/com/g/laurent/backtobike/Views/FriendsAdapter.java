@@ -1,25 +1,20 @@
 package com.g.laurent.backtobike.Views;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.g.laurent.backtobike.Controllers.Fragments.FriendFragment;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.UtilsApp;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +25,6 @@ public class FriendsAdapter extends BaseAdapter {
     private List<Friend> listFriends;
     private ImageView image;
     private TextView name;
-    private LinearLayout addFriend;
     private CheckBox box;
     private FriendFragment friendFragment;
     private Boolean SelectMode;
@@ -52,15 +46,9 @@ public class FriendsAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.friend_item, parent,false);
 
             associateViews(view);
-
             configureFriendView(position);
-
             configureCheckbox(position);
-
             configureClickListener(view);
-
-            if(SelectMode && position==listFriends.size()-1)
-                view.setVisibility(View.GONE);
         }
 
         return view;
@@ -71,48 +59,39 @@ public class FriendsAdapter extends BaseAdapter {
         name.setVisibility(View.VISIBLE);
         image = view.findViewById(R.id.friend_picture);
         image.setVisibility(View.VISIBLE);
-        addFriend = view.findViewById(R.id.button_add_friend);
         box = view.findViewById(R.id.checkbox);
     }
 
     private void configureFriendView(int position){
 
-        if(position==listFriends.size()-1){ // if last item of the list
+        // Configure name
+        String nameFriend = listFriends.get(position).getName();
+        if(nameFriend.length()>15)
+            name.setText(nameFriend.substring(0,15));
+        else
+            name.setText(nameFriend);
 
-            // configure views
-            name.setVisibility(View.GONE);
-            image.setVisibility(View.GONE);
-            addFriend.setVisibility(View.VISIBLE);
+        // set color of name view
+        if(listFriends.get(position).getHasAgreed()==null){ // NO ANSWER
+            name.setBackgroundColor(context.getResources().getColor(R.color.colorGray));
+        } else if(listFriends.get(position).getAccepted() && listFriends.get(position).getHasAgreed()) // ACCEPT
+            name.setBackgroundColor(context.getResources().getColor(R.color.colorPrimary));
+        else if(!listFriends.get(position).getHasAgreed())                   // REJECTED
+            name.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_red_dark));
+        else // NO ANSWER
+            name.setBackgroundColor(context.getResources().getColor(R.color.colorGray));
 
-            // add onclicklistener
-            addFriend.setOnClickListener(v -> friendFragment.showDialogFriendAdd());
-
-        } else {
-
-            // configure views
-            addFriend.setVisibility(View.GONE);
-            name.setText(listFriends.get(position).getName());
-
-            if(listFriends.get(position).getHasAgreed()==null){
-                name.setBackgroundColor(context.getResources().getColor(R.color.colorGray));
-            } else if(!listFriends.get(position).getHasAgreed()){ // REJECTED or NO ANSWER
-                name.setBackgroundColor(context.getResources().getColor(R.color.colorGray));
-            } else {                                              // ACCEPTED
-                name.setBackgroundColor(context.getResources().getColor(R.color.colorValid));
-            }
-
-            Glide.with(context)
-                    .load(listFriends.get(position).getPhotoUrl())
-                    // TODO .apply(new RequestOptions().placeholder(R.drawable.placeholder))
-                    .into(image);
-        }
+        Glide.with(context)
+                .load(listFriends.get(position).getPhotoUrl())
+                .apply(new RequestOptions().placeholder(R.drawable.icon_friend))
+                .into(image);
     }
 
     private void configureCheckbox(int position){
 
         ArrayList<String> listFriendsId = friendFragment.getListFriendsSelected();
 
-        if(SelectMode && position!=listFriends.size()-1){
+        if(SelectMode){
 
             // if friend is among friend already selected, check the box
             int index = UtilsApp.findFriendIndexInListIds(listFriends.get(position).getId(), listFriendsId);
@@ -125,7 +104,7 @@ public class FriendsAdapter extends BaseAdapter {
                     friendFragment.getListFriendsSelected().add(listFriends.get(position).getId());
                 } else { // friend unselected
                     ArrayList<String> list = friendFragment.getListFriendsSelected();
-                    int indexList = UtilsApp.findFriendIndexInListIds(list.get(position), list);
+                    int indexList = UtilsApp.findFriendIndexInListIds(listFriends.get(position).getId(), list);
                     if(indexList!=-1)
                         friendFragment.getListFriendsSelected().remove(indexList);
                 }
@@ -138,6 +117,8 @@ public class FriendsAdapter extends BaseAdapter {
 
         // Long click listener : to actuate Select Mode and show checkboxes
         view.setOnLongClickListener(v -> {
+            friendFragment.getListFriendsSelected().clear();
+            friendFragment.getCallbackFriendActivity().configureButtonToolbar(true);
             friendFragment.setSelectMode(true);
             friendFragment.configureViews();
             return true;
@@ -145,9 +126,11 @@ public class FriendsAdapter extends BaseAdapter {
 
         // Click listener : to deactivate Select mode and remove checkboxes
         view.setOnClickListener(v -> {
-            if(friendFragment.getCallbackFriendActivity()!=null){
-                friendFragment.setSelectMode(false);
-                friendFragment.configureViews();
+            if(friendFragment.getCallbackFriendActivity()!=null && SelectMode){
+                if(box.isChecked())
+                    box.setChecked(false);
+                else
+                    box.setChecked(true);
             }
         });
     }
@@ -168,5 +151,13 @@ public class FriendsAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return 0;
+    }
+
+    public void setSelectMode(Boolean selectMode) {
+        SelectMode = selectMode;
+    }
+
+    public void setListFriends(List<Friend> listFriends) {
+        this.listFriends = listFriends;
     }
 }

@@ -20,7 +20,7 @@ public interface BikeEventDao {
     Cursor getMyBikeEvents(String organizerId, String status);
 
     @Query("SELECT * FROM BikeEvent WHERE organizerId != :user_id  AND status = :status")
-    Cursor getMyInvitiations(String user_id, String status);
+    Cursor getMyInvitations(String user_id, String status);
 
     @Insert (onConflict = OnConflictStrategy.REPLACE)
     long insertBikeEvent(BikeEvent bikeEvent);

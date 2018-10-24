@@ -6,6 +6,8 @@ import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.Route;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.List;
+
 public class Action {
 
     private static final String ACCEPTED = "accepted";
@@ -38,7 +40,7 @@ public class Action {
     public static void deleteFriend(Friend friend, String userId, Context context){
 
         // Update friend in database
-        FriendsHandler.deleteFriend(context, friend.getId(), userId);
+        FriendsHandler.deleteFriend(context, friend.getLogin(), userId);
 
         // Update friend in Firebase
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
@@ -65,6 +67,24 @@ public class Action {
         // Friend accepted in Firebase
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
         firebaseUpdate.rejectFriend(userId,friend);
+    }
+
+    public static int getNumberFriendRequests(String userId, Context context){
+
+        List<Friend> listFriendRequest = FriendsHandler.getListFriends(context,userId);
+        int counter = 0;
+        if(listFriendRequest.size()>0){
+            for(Friend friend : listFriendRequest){
+                if(friend.getAccepted()!=null){
+                    if(!friend.getAccepted()){
+                        counter++;
+                    }
+                } else
+                    counter++;
+            }
+        }
+
+        return counter;
     }
 
     // ---------------------------------------------------------------------------------------------------------
@@ -138,6 +158,11 @@ public class Action {
     // ---------------------------------------------------------------------------------------------------------
     // ----------------------------------------- INVITATION ----------------------------------------------------
     // ---------------------------------------------------------------------------------------------------------
+
+    public static int getNumberInvitations(String userId, Context context){
+        List<BikeEvent> listInvitations = BikeEventHandler.getAllInvitations(context,userId);
+        return listInvitations.size();
+    }
 
     public static void acceptInvitation(BikeEvent invitation, String userId, Context context){
 

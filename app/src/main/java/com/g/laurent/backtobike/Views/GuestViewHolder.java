@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.R;
 
@@ -33,15 +34,15 @@ public class GuestViewHolder extends RecyclerView.ViewHolder{
         // set picture
         Glide.with(context)
                 .load(friend.getPhotoUrl())
-                // TODO .apply(new RequestOptions().placeholder(R.drawable.placeholder))
+                .apply(new RequestOptions().placeholder(R.drawable.icon_friend))
                 .into(photoView);
 
         // set border of image
-        if(friend.getAccepted()==null) // NO ANSWER
-            photoView.setBackground(context.getResources().getDrawable(R.drawable.background_guest_no_answer));
-        else if (friend.getAccepted()) // ACCEPT
+        if(friend.getAccepted() && friend.getHasAgreed()) // ACCEPT
             photoView.setBackground(context.getResources().getDrawable(R.drawable.background_guest_accept));
-        else                           // REJECT
+        else if(!friend.getHasAgreed())                   // REJECTED
             photoView.setBackground(context.getResources().getDrawable(R.drawable.background_guest_reject));
+        else // NO ANSWER
+            photoView.setBackground(context.getResources().getDrawable(R.drawable.background_guest_no_answer));
     }
 }

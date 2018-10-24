@@ -21,13 +21,11 @@ public class BikeEventContentProvider extends ContentProvider {
     private String userId;
     private Context context;
     private String typeEvent;
-    private String organizerId;
     private String idBikeEvent;
 
-    public void setUtils(Context context, String typeEvent, String organizerId, String idBikeEvent, String userId){
+    public void setUtils(Context context, String typeEvent, String idBikeEvent, String userId){
         this.context=context;
         this.typeEvent=typeEvent;
-        this.organizerId=organizerId;
         this.idBikeEvent=idBikeEvent;
         this.userId=userId;
     }
@@ -44,9 +42,9 @@ public class BikeEventContentProvider extends ContentProvider {
 
             switch(typeEvent){
                 case TYPE_MY_EVENTS:
-                    return AppDatabase.getInstance(context, userId).bikeEventDao().getMyBikeEvents(organizerId, ONGOING);
+                    return AppDatabase.getInstance(context, userId).bikeEventDao().getMyBikeEvents(userId, ONGOING);
                 case TYPE_MY_INVITS:
-                    return AppDatabase.getInstance(context, userId).bikeEventDao().getMyInvitiations(organizerId, ONGOING);
+                    return AppDatabase.getInstance(context, userId).bikeEventDao().getMyInvitations(userId, ONGOING);
                 case TYPE_SINGLE_EVENT:
                     return AppDatabase.getInstance(context, userId).bikeEventDao().getBikeEvent(idBikeEvent);
             }
