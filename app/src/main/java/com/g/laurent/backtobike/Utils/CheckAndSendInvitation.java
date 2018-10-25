@@ -22,6 +22,7 @@ import butterknife.ButterKnife;
 
 public class CheckAndSendInvitation {
 
+    private static final String ACCEPTED = "accepted";
     private final static String DISPLAY_MY_EVENTS ="display_my_events";
     private final static String ONGOING = "ongoing";
     @BindView(R.id.date_view) TextView dateView;
@@ -47,6 +48,7 @@ public class CheckAndSendInvitation {
             List<RouteSegment> listRouteSegments = RouteHandler.getRouteSegments(context,route.getId(), firebaseUser.getUid());
             route.setListRouteSegment(listRouteSegments);
             bikeEvent.setRoute(route);
+            bikeEvent.setStatus(ACCEPTED);
 
             // Add an event in phone database and Firebase, and send invitation to guests
             Action.addBikeEvent(bikeEvent,firebaseUser.getUid(),context);
@@ -86,14 +88,17 @@ public class CheckAndSendInvitation {
         idEvent = idEvent.replace("/","_");
         String comments = invitation.getComments();
         int idRoute = invitation.getIdRoute();
+
         ArrayList<String> listIdFriends = invitation.getListIdFriends();
 
         List<EventFriends> listEventFriends = new ArrayList<>();
 
         if(listIdFriends!=null){
             if(listIdFriends.size()>0){
-                for(String idFriend : listIdFriends)
-                    listEventFriends.add(new EventFriends(0,idEvent,idFriend,ONGOING));
+                for(String idFriend : listIdFriends){
+                    String login = FriendsHandler.getFriend(context, idFriend,user_id).getLogin();
+                    listEventFriends.add(new EventFriends(0,idEvent,idFriend, login,ONGOING));
+                }
             }
         }
 

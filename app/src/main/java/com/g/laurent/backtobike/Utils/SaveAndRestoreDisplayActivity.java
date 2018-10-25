@@ -5,7 +5,9 @@ import android.os.Bundle;
 import com.g.laurent.backtobike.Controllers.Activities.DisplayActivity;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackSynchronizeEnd;
+import com.g.laurent.backtobike.Models.Difference;
 import com.g.laurent.backtobike.Models.EventFriends;
+import com.g.laurent.backtobike.Models.OnBikeEventDataGetListener;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
 import java.util.List;
@@ -53,13 +55,11 @@ public class SaveAndRestoreDisplayActivity {
                     List<Route> listRoutes = RouteHandler.getAllRoutes(context, user_id);
                     displayActivity.setListRoutes(listRoutes);
                     displayActivity.setCount(listRoutes.size());
-
-                    displayActivity.configureViews();
+                    displayActivity.configureAndShowDisplayFragmentsInViewPager();
                     break;
 
                 case DISPLAY_MY_EVENTS:
                     configureDisplayActivityForMyEvents(user_id,displayActivity);
-
                     break;
 
                 case DISPLAY_MY_INVITS:
@@ -69,11 +69,13 @@ public class SaveAndRestoreDisplayActivity {
                         @Override
                         public void onCompleted() {
                             configureDisplayActivityForMyInvits(user_id,displayActivity);
+                            displayActivity.configureAndShowDisplayFragmentsInViewPager();
                         }
 
                         @Override
                         public void onFailure(String error) {
                             configureDisplayActivityForMyInvits(user_id,displayActivity);
+                            displayActivity.configureAndShowDisplayFragmentsInViewPager();
                         }
                     });
 
@@ -82,39 +84,41 @@ public class SaveAndRestoreDisplayActivity {
         }
     }
 
-    private static void configureDisplayActivityForMyEvents(String user_id, DisplayActivity displayActivity){
+    private static void configureDisplayActivityForMyEvents(String user_id, DisplayActivity displayActivity) throws InterruptedException {
 
         Context context = displayActivity.getApplicationContext();
 
         // Get Bike Events
         List<BikeEvent> listEvents = BikeEventHandler.getAllFutureBikeEvents(context, user_id);
 
-        // Find event friends and route for each bikeEvent
-        if(listEvents!=null){
-            if(listEvents.size()>0){
-                for(BikeEvent event : listEvents){
+        // Recover list bike events on Firebase
+        FirebaseRecover firebaseRecover = new FirebaseRecover(context);
+        firebaseRecover.recoverBikeEventsUser(user_id, new OnBikeEventDataGetListener() {
+            @Override
+            public void onSuccess(BikeEvent bikeEvent) {}
 
-                    // Event friends
-                    List<EventFriends> listEventFriends = BikeEventHandler.getEventFriends(context,event.getId(),user_id);
-                    event.setListEventFriends(listEventFriends);
+            @Override
+            public void onSuccess(List<BikeEvent> newBikeEventList) {
 
-                    // Route and RouteSegments
-                    Route route = RouteHandler.getRoute(context,event.getIdRoute(),user_id);
-                    List<RouteSegment> listSegments = RouteHandler.getRouteSegments(context,event.getIdRoute(),user_id);
-                    route.setListRouteSegment(listSegments);
-                    event.setRoute(route);
-                }
+                // Get differences with list bike events on Firebase (status and friend acceptances)
+                List<Difference> differenceList = UtilsBikeEvent.getListDifferencesBetweenListEvents(listEvents, newBikeEventList, context);
+                displayActivity.setListDifferences(differenceList);
+
+                // Set list Events
+                displayActivity.setListEvents(newBikeEventList);
+
+                // Set count list Events
+                if(newBikeEventList!=null)
+                    displayActivity.setCount(newBikeEventList.size());
+                else
+                    displayActivity.setCount(0);
+
+                displayActivity.configureAndShowDisplayFragmentsInViewPager();
             }
-        }
 
-        displayActivity.setListEvents(listEvents);
-
-        if(listEvents!=null)
-            displayActivity.setCount(listEvents.size());
-        else
-            displayActivity.setCount(0);
-
-        displayActivity.configureViews();
+            @Override
+            public void onFailure(String error) {}
+        });
     }
 
     private static void configureDisplayActivityForMyInvits(String user_id, DisplayActivity displayActivity){
@@ -124,32 +128,12 @@ public class SaveAndRestoreDisplayActivity {
         // Get Invitations
         List<BikeEvent> listInvits = BikeEventHandler.getAllInvitations(context,user_id);
 
-        // Find event friends and route for each invitations
-        if(listInvits!=null){
-            if(listInvits.size()>0){
-                for(BikeEvent event : listInvits){
-
-                    // Event friends
-                    List<EventFriends> listEventFriends = BikeEventHandler.getEventFriends(context,event.getId(),user_id);
-                    event.setListEventFriends(listEventFriends);
-
-                    // Route and RouteSegments
-                    Route route = RouteHandler.getRoute(context,event.getIdRoute(),user_id);
-                    List<RouteSegment> listSegments = RouteHandler.getRouteSegments(context,event.getIdRoute(),user_id);
-                    route.setListRouteSegment(listSegments);
-                    event.setRoute(route);
-                }
-            }
-        }
-
         displayActivity.setListInvitations(listInvits);
 
         if(listInvits!=null)
             displayActivity.setCount(listInvits.size());
         else
             displayActivity.setCount(0);
-
-        displayActivity.configureViews();
     }
 
 }

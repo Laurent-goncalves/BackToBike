@@ -1,5 +1,6 @@
 package com.g.laurent.backtobike;
 
+import com.g.laurent.backtobike.Utils.UtilsBikeEvent;
 import com.g.laurent.backtobike.Utils.UtilsGoogleMaps;
 import junit.framework.Assert;
 import org.junit.Test;

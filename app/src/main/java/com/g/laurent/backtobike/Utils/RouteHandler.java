@@ -104,7 +104,10 @@ public class RouteHandler {
         Uri uriQuery = ContentUris.withAppendedId(RoutesContentProvider.URI_ITEM, idRoute);
         final Cursor cursor = routesContentProvider.query(uriQuery, null, null, null, null);
 
-        return Route.getRouteFromCursor(cursor);
+        Route route = Route.getRouteFromCursor(cursor);
+        route.setListRouteSegment(getRouteSegments(context, route.getId(), userId));
+
+        return route;
     }
 
     public static List<Route> getAllRoutes(Context context, String userId){
@@ -114,7 +117,17 @@ public class RouteHandler {
 
         final Cursor cursor = AppDatabase.getInstance(context, userId).routesDao().getAllRoutes(true);
 
-        return Route.getListRoutesFromCursor(cursor);
+        List<Route> listRoutes = Route.getListRoutesFromCursor(cursor);
+
+        if(listRoutes!=null){
+            if(listRoutes.size()>0){
+                for(Route route : listRoutes){
+                    route.setListRouteSegment(getRouteSegments(context, route.getId(), userId));
+                }
+            }
+        }
+
+        return listRoutes;
     }
 
     public static List<RouteSegment> getRouteSegments(Context context,int idRoute, String userId){

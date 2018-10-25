@@ -5,34 +5,37 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
-
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackDisplayActivity;
 import com.g.laurent.backtobike.Models.CallbackSynchronizeEnd;
+import com.g.laurent.backtobike.Models.Difference;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.Action;
 import com.g.laurent.backtobike.Utils.SaveAndRestoreDisplayActivity;
 import com.g.laurent.backtobike.Utils.SynchronizeWithFirebase;
 import com.g.laurent.backtobike.Utils.UtilsApp;
+import com.g.laurent.backtobike.Utils.UtilsBikeEvent;
 import com.g.laurent.backtobike.Views.PageAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
+
 public class DisplayActivity extends BaseActivity implements CallbackDisplayActivity {
 
+    private static final String CANCELLED = "cancelled";
     private List<Route> listRoutes;
     private List<BikeEvent> listEvents;
+    private List<Difference> listDifferences;
     private List<BikeEvent> listInvitations;
     private String typeDisplay;
     private ViewPager pager;
@@ -40,6 +43,7 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
     private String idSelected;
     private int count;
     private int position;
+    private SwipeRefreshLayout mySwipeRefreshLayout;
     @BindView(R.id.arrow_next) ImageView arrowNext;
     @BindView(R.id.arrow_back) ImageView arrowBack;
     @BindView(R.id.left_button)  Button buttonLeft;
@@ -56,6 +60,10 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         Bundle extras = getIntent().getExtras();
         assignToolbarViews();
 
+        // Configure swipe to refresh
+        mySwipeRefreshLayout = findViewById(R.id.swipe_to_refresh);
+        mySwipeRefreshLayout.setOnRefreshListener(this::synchronizeWithFirebaseAndRefreshFragment);
+
         // Recover datas
         try {
             SaveAndRestoreDisplayActivity.restoreData(extras, userId,this);
@@ -64,15 +72,58 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         }
     }
 
-    public void configureViews(){
+    public void synchronizeWithFirebaseAndRefreshFragment(){
 
-        defineCountersAndConfigureToolbar(typeDisplay);
+        if(typeDisplay!=null){
 
-        // Configure views
-        configureAndShowDisplayFragmentsInViewPager();
-        configureArrows();
-        configureButtons(count > 0);
-        configureAddButton();
+            if(typeDisplay.equals(DISPLAY_MY_ROUTES))
+                mySwipeRefreshLayout.setRefreshing(false);
+
+            else {
+                String idEvent;
+
+                try {
+
+                    if (typeDisplay.equals(DISPLAY_MY_EVENTS)) {
+                        idEvent = listEvents.get(position).getId();
+                        SynchronizeWithFirebase.synchronizeOneEvent(userId, idEvent, getApplicationContext(), new CallbackSynchronizeEnd() {
+                            @Override
+                            public void onCompleted() {
+                                configureAndShowDisplayFragmentsInViewPager();
+                                mySwipeRefreshLayout.setRefreshing(false);
+                            }
+
+                            @Override
+                            public void onFailure(String error) {
+                                configureAndShowDisplayFragmentsInViewPager();
+                                mySwipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+                    } else {
+                        idEvent = listInvitations.get(position).getId();
+                        SynchronizeWithFirebase.synchronizeOneInvitation(userId, idEvent, getApplicationContext(), new CallbackSynchronizeEnd() {
+                            @Override
+                            public void onCompleted() {
+                                configureAndShowDisplayFragmentsInViewPager();
+                                mySwipeRefreshLayout.setRefreshing(false);
+                            }
+
+                            @Override
+                            public void onFailure(String error) {
+                                configureAndShowDisplayFragmentsInViewPager();
+                                mySwipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+                    }
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    mySwipeRefreshLayout.setRefreshing(false);
+                }
+            }
+        } else {
+            mySwipeRefreshLayout.setRefreshing(false);
+        }
     }
 
     @Override
@@ -106,8 +157,12 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
 
             @Override
             public void onPageSelected(int position) {
+                if(typeDisplay.equals(DISPLAY_MY_EVENTS))
+                    showDifferences(position);
+
                 setPosition(position);
                 configureArrows();
+                configureButtons(count > 0, position);
             }
 
             @Override
@@ -120,7 +175,17 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         else
             position = 0;
 
+        configureViews(position);
+    }
+
+    public void configureViews(int position){
+
+        defineCountersAndConfigureToolbar(typeDisplay);
+
+        // Configure views
         configureArrows();
+        configureButtons(count > 0, position);
+        configureAddButton();
     }
 
     private void configureArrows(){
@@ -148,7 +213,7 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         UtilsApp.configureArrows(position, sizeList, arrowBack, arrowNext, this);
     }
 
-    private void configureButtons(Boolean showButtons){
+    private void configureButtons(Boolean showButtons, int position){
 
         Drawable iconRight[];
         Drawable iconLeft[];
@@ -182,12 +247,22 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
                 case DISPLAY_MY_EVENTS:
 
                     // CANCEL EVENT
-                    buttonLeft.setVisibility(View.VISIBLE);
-                    buttonLeft.setCompoundDrawablesWithIntrinsicBounds(null,context.getResources().getDrawable(R.drawable.round_cancel_white_48),null,null);
-                    iconLeft = buttonLeft.getCompoundDrawables();
-                    iconLeft[1].setColorFilter(context.getResources().getColor(R.color.colorGray),PorterDuff.Mode.SRC_IN);
-                    buttonLeft.setText(context.getResources().getString(R.string.cancel));
-                    buttonLeft.setTextColor(context.getResources().getColor(R.color.colorGray));
+                    if(listEvents.get(position).getOrganizerId().equals(userId)) { // If user is the organizer
+                        buttonLeft.setVisibility(View.VISIBLE);
+                        buttonLeft.setCompoundDrawablesWithIntrinsicBounds(null, context.getResources().getDrawable(R.drawable.round_cancel_white_48), null, null);
+                        iconLeft = buttonLeft.getCompoundDrawables();
+                        iconLeft[1].setColorFilter(context.getResources().getColor(R.color.colorReject), PorterDuff.Mode.SRC_IN);
+                        buttonLeft.setText(context.getResources().getString(R.string.cancel));
+                        buttonLeft.setTextColor(context.getResources().getColor(R.color.colorReject));
+                    } else if(listEvents.get(position).getStatus().equals(CANCELLED)){ // if event cancelled by organizer
+                        buttonLeft.setVisibility(View.VISIBLE);
+                        buttonLeft.setCompoundDrawablesWithIntrinsicBounds(null, context.getResources().getDrawable(R.drawable.baseline_delete_white_48), null, null);
+                        iconLeft = buttonLeft.getCompoundDrawables();
+                        iconLeft[1].setColorFilter(context.getResources().getColor(R.color.colorReject), PorterDuff.Mode.SRC_IN);
+                        buttonLeft.setText(context.getResources().getString(R.string.delete));
+                        buttonLeft.setTextColor(context.getResources().getColor(R.color.colorReject));
+                    } else
+                        buttonLeft.setVisibility(View.GONE);
 
                     buttonRight.setVisibility(View.GONE);
 
@@ -222,11 +297,7 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
             case DISPLAY_MY_ROUTES:
                 // DELETE ROUTE
                 buttonLeft.setOnClickListener(v -> {
-                    // TODO Action.deleteRoute(listRoutes.get(position), userId, getApplicationContext());
-                    count--;
-                    listRoutes.remove(position);
-                    configureAndShowDisplayFragmentsInViewPager();
-                    Toast.makeText(getApplicationContext(), getApplicationContext().getResources().getString(R.string.delete_route), Toast.LENGTH_LONG).show();
+                    Action.showAlertDialogDeleteRoute(listRoutes.get(position), position, userId, this);
                 });
                 // CHANGE ROUTE
                 buttonRight.setOnClickListener(v -> launchTraceActivity(listRoutes.get(position)));
@@ -234,29 +305,65 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
 
             case DISPLAY_MY_EVENTS:
                 // CANCEL EVENT
-                buttonLeft.setOnClickListener(v -> Action.cancelBikeEvent(listEvents.get(position),userId,getApplicationContext()));
+                buttonLeft.setOnClickListener(v -> {
+                    if(listEvents.get(position).getOrganizerId().equals(userId)) // If user is the organizer
+                        Action.showAlertDialogCancelBikeEvent(listEvents.get(position), position, userId,this);
+                    else if(listEvents.get(position).getStatus().equals(CANCELLED)) // if event cancelled by organizer
+                        Action.showAlertDialogRejectEvent(listEvents.get(position),position,userId,this);
+                });
                 break;
 
             case DISPLAY_MY_INVITS:
                 // REJECT INVITATION
                 buttonLeft.setOnClickListener(v -> {
-                    // TODO  Action.rejectInvitation(listInvitations.get(position),userId,getApplicationContext());
-                    count--;
-                    listInvitations.remove(position);
-                    configureAndShowDisplayFragmentsInViewPager();
-                    Toast.makeText(getApplicationContext(), getApplicationContext().getResources().getString(R.string.reject_invitation), Toast.LENGTH_LONG).show();
+                    Action.showAlertDialogRejectInvitation(listInvitations.get(position),position,userId,this);
                 });
 
                 // ACCEPT INVITATION
                 buttonRight.setOnClickListener(v -> {
-                    // TODO Action.acceptInvitation(listInvitations.get(position),userId,getApplicationContext());
-                    count--;
-                    listInvitations.remove(position);
-                    configureAndShowDisplayFragmentsInViewPager();
-                    Toast.makeText(getApplicationContext(), getApplicationContext().getResources().getString(R.string.accept_invitation), Toast.LENGTH_LONG).show();
+                    Action.acceptInvitation(listInvitations.get(position),userId,getApplicationContext());
+                    removeItemListInvits(position, getApplicationContext().getResources().getString(R.string.accept_invitation));
                 });
                 break;
         }
+    }
+
+    public void removeItemListRoutes(int position, String message){
+        count--;
+        listRoutes.remove(position);
+        configureAndShowDisplayFragmentsInViewPager();
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    }
+
+    public void removeItemListEvent(int position, String message){
+        count--;
+        listEvents.remove(position);
+        configureAndShowDisplayFragmentsInViewPager();
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    }
+
+    public void removeItemListInvits(int position, String message){
+        count--;
+        listInvitations.remove(position);
+        configureAndShowDisplayFragmentsInViewPager();
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    }
+
+    private void showDifferences(int position){
+
+        StringBuilder diffText = new StringBuilder();
+
+        List<Difference> listDiffEvent = UtilsBikeEvent.getListDifferencesFromBikeEvent(listEvents.get(position).getId(), listDifferences);
+
+        if(listDiffEvent.size()>0){
+            for(Difference diff : listDiffEvent){
+                diffText.append(diff.getDifference());
+                diffText.append("\n");
+            }
+        }
+
+        // Show text
+        Toast.makeText(getApplicationContext(), diffText, Toast.LENGTH_LONG).show();
     }
 
     private void configureAddButton(){
@@ -343,5 +450,13 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    public List<Difference> getListDifferences() {
+        return listDifferences;
+    }
+
+    public void setListDifferences(List<Difference> listDifferences) {
+        this.listDifferences = listDifferences;
     }
 }

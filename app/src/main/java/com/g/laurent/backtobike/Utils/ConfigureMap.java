@@ -44,16 +44,18 @@ public class ConfigureMap implements OnMapReadyCallback {
 
     public void configureMapLayout(Route route){
         this.route=route;
-        listRouteSegments = RouteHandler.getRouteSegments(context, route.getId(), userId);
-        mapView.onCreate(null);
-        mapView.onResume();
-        mapView.getMapAsync(this);
+
+        if(route!=null){
+            mapView.onCreate(null);
+            mapView.onResume();
+            mapView.getMapAsync(this);
+        }
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
-        List<LatLng> listPoints = UtilsGoogleMaps.extractListPointsFromListRouteSegments(listRouteSegments);
+        List<LatLng> listPoints = UtilsGoogleMaps.extractListPointsFromListRouteSegments(route.getListRouteSegment());
 
         if(listPoints.size()>0){
             setTitleMap(route.getName());

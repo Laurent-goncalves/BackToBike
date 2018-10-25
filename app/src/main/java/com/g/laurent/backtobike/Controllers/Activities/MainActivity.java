@@ -46,7 +46,7 @@ public class MainActivity extends BaseActivity {
         if(user!=null)
             userId = user.getUid();
 
-        clearDatabase(userId,getApplicationContext());
+        // clearDatabase(userId,getApplicationContext());
 
         // recover SharedPreferences
         sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
@@ -170,12 +170,11 @@ public class MainActivity extends BaseActivity {
     private void clearDatabase(String userId, Context context){
         AppDatabase.getInstance(context,userId).eventFriendsDao().deleteAllEventFriends();
         AppDatabase.getInstance(context,userId).friendsDao().deleteAllFriends();
-        AppDatabase.getInstance(context,userId).routeSegmentDao().deleteRouteSegment();
-        AppDatabase.getInstance(context,userId).routesDao().deleteAllRoutes();
+        //AppDatabase.getInstance(context,userId).routeSegmentDao().deleteRouteSegment();
+        //AppDatabase.getInstance(context,userId).routesDao().deleteAllRoutes();
         AppDatabase.getInstance(context,userId).bikeEventDao().deleteAllBikeEvents();
 
-        setFriendsDatabase(getApplicationContext(),userId);
-
+        /*setFriendsDatabase(getApplicationContext(),userId);
 
         Route route = new Route(0,"Trip to Paris",true);
         route.setListRouteSegment(getListRouteSegments());
@@ -188,7 +187,7 @@ public class MainActivity extends BaseActivity {
         bikeEvent.setListEventFriends(getListEventFriends());
 
         // ----------------------------------------------------- INSERT BIKE EVENT
-        Action.addBikeEvent(bikeEvent,"id1", getApplicationContext());
+        Action.addBikeEvent(bikeEvent,"id1", getApplicationContext());*/
     }
 
     private List<RouteSegment> getListRouteSegments(){
@@ -210,8 +209,8 @@ public class MainActivity extends BaseActivity {
     private List<EventFriends> getListEventFriends(){
 
         List<EventFriends> listEventFriends = new ArrayList<>();
-        EventFriends EVENT_FRIENDS_DEMO_1 = new EventFriends(0,"id1_01_01_2000_14:00","id2","ongoing");
-        EventFriends EVENT_FRIENDS_DEMO_2 = new EventFriends(0,"id1_01_01_2000_14:00","id3","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_1 = new EventFriends(0,"id1_01_01_2000_14:00","id2","id2","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_2 = new EventFriends(0,"id1_01_01_2000_14:00","id3","id3","ongoing");
 
         listEventFriends.add(EVENT_FRIENDS_DEMO_1);
         listEventFriends.add(EVENT_FRIENDS_DEMO_2);
@@ -221,9 +220,9 @@ public class MainActivity extends BaseActivity {
 
     private void setFriendsDatabase(Context context, String userId){
 
-        Friend friend1 = new Friend("id1","id1","Mat","photoUrl",true, null);
-        Friend friend2 = new Friend("id2","id2","Seb","photoUrl",true,null);
-        Friend friend3 = new Friend("id3","id3","Camille","photoUrl",null,true);
+        Friend friend1 = new Friend("id1","id1","Mat","photoUrl",true, true);
+        Friend friend2 = new Friend("id2","id2","Seb","photoUrl",true,true);
+        Friend friend3 = new Friend("id3","id3","Camille","photoUrl",true,true);
 
         FriendsHandler.insertNewFriend(context,friend1, userId);
         FriendsHandler.insertNewFriend(context,friend2, userId);

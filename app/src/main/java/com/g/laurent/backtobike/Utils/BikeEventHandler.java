@@ -7,6 +7,9 @@ import com.g.laurent.backtobike.Models.BikeEventContentProvider;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.EventFriendsContentProvider;
 import com.g.laurent.backtobike.Models.Friend;
+import com.g.laurent.backtobike.Models.Route;
+import com.g.laurent.backtobike.Models.RouteSegment;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +62,7 @@ public class BikeEventHandler {
         bikeEventContentProvider.update(null, BikeEvent.createContentValuesFromBikeEventUpdate(bikeEvent),null,null);
 
         EventFriendsContentProvider eventFriendsContentProvider = new EventFriendsContentProvider();
-        eventFriendsContentProvider.setUtils(context, null,bikeEvent.getId(),userId);
+        eventFriendsContentProvider.setUtils(context, null, bikeEvent.getId(),userId);
 
         // Delete event friends related to this idEvent
         eventFriendsContentProvider.delete(null,null,null);
@@ -100,7 +103,7 @@ public class BikeEventHandler {
         if(listFriends!=null){
             if(listFriends.size()>0){ // if at least 1 friend
                 for(Friend friend : listFriends){
-                    listEventFriends.add(new EventFriends(0, idEvent, friend.getId(),ONGOING));
+                    listEventFriends.add(new EventFriends(0, idEvent, friend.getId(),friend.getLogin(),ONGOING));
                 }
             }
         }
@@ -114,7 +117,12 @@ public class BikeEventHandler {
         bikeEventContentProvider.setUtils(context, TYPE_SINGLE_EVENT, idEvent, userId);
         final Cursor cursor = bikeEventContentProvider.query(null, null, null, null, null);
 
-        return BikeEvent.getBikeEventFromCursor(cursor);
+        BikeEvent bikeEvent = BikeEvent.getBikeEventFromCursor(cursor);
+
+        List<EventFriends> listEventFriends = getEventFriends(context,bikeEvent.getId(), userId);
+        bikeEvent.setListEventFriends(listEventFriends);
+
+        return bikeEvent;
     }
 
     public static List<BikeEvent> getAllFutureBikeEvents(Context context, String userId){
@@ -124,7 +132,25 @@ public class BikeEventHandler {
 
         final Cursor cursor = bikeEventContentProvider.query(null, null, null, null, null);
 
-        return BikeEvent.getListBikeEventsFromCursor(cursor);
+        List<BikeEvent> listBikeEvent = BikeEvent.getListBikeEventsFromCursor(cursor);
+
+        if(listBikeEvent.size()>0) {
+
+            for(BikeEvent event : listBikeEvent){
+
+                // Event friends
+                List<EventFriends> listEventFriends = BikeEventHandler.getEventFriends(context,event.getId(),userId);
+                event.setListEventFriends(listEventFriends);
+
+                // Route and RouteSegments
+                Route route = RouteHandler.getRoute(context,event.getIdRoute(),userId);
+                List<RouteSegment> listSegments = RouteHandler.getRouteSegments(context,event.getIdRoute(),userId);
+                route.setListRouteSegment(listSegments);
+                event.setRoute(route);
+            }
+        }
+
+        return listBikeEvent;
     }
 
     public static List<BikeEvent> getAllInvitations(Context context, String userId){
@@ -134,7 +160,24 @@ public class BikeEventHandler {
 
         final Cursor cursor = bikeEventContentProvider.query(null, null, null, null, null);
 
-        return BikeEvent.getListBikeEventsFromCursor(cursor);
+        List<BikeEvent> listInvitations = BikeEvent.getListBikeEventsFromCursor(cursor);
+
+        if(listInvitations.size()>0) {
+            for(BikeEvent invit : listInvitations){
+
+                // Event friends
+                List<EventFriends> listEventFriends = BikeEventHandler.getEventFriends(context,invit.getId(),userId);
+                invit.setListEventFriends(listEventFriends);
+
+                // Route and RouteSegments
+                Route route = RouteHandler.getRoute(context,invit.getIdRoute(),userId);
+                List<RouteSegment> listSegments = RouteHandler.getRouteSegments(context,invit.getIdRoute(),userId);
+                route.setListRouteSegment(listSegments);
+                invit.setRoute(route);
+            }
+        }
+
+        return listInvitations;
     }
 
     public static List<EventFriends> getEventFriends(Context context, String idEvent, String userId){

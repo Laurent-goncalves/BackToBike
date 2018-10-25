@@ -35,13 +35,14 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
 
     private CallbackBaseActivity callbackBaseActivity;
 
-    public void configureToolbar(CallbackBaseActivity callbackBaseActivity, String currentMenu, int countFriends, int countInvit){
+    public void configureToolbar(CallbackBaseActivity callbackBaseActivity, String currentMenu, int countFriends, int countEvent, int countInvit){
 
         this.callbackBaseActivity=callbackBaseActivity;
 
         finalizeToolbarConfiguration(currentMenu, callbackBaseActivity);
-        setCounterFriendsRequests(countFriends, callbackBaseActivity.getNavigationView());
-        setCounterInvitation(countInvit, callbackBaseActivity.getNavigationView());
+        setCounterMyFriendsRequests(countFriends, callbackBaseActivity.getNavigationView());
+        setCounterMyEvents(countEvent, callbackBaseActivity.getNavigationView());
+        setCounterMyInvitations(countInvit, callbackBaseActivity.getNavigationView());
     }
 
     private void finalizeToolbarConfiguration(String currentMenu, CallbackBaseActivity callbackBaseActivity){
@@ -143,13 +144,18 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
         return true;
     }
 
-    private static void setCounterFriendsRequests(int count, NavigationView navigationView) {
+    private static void setCounterMyFriendsRequests(int count, NavigationView navigationView) {
         LinearLayout layoutCounter = (LinearLayout) navigationView.getMenu().findItem(R.id.my_friends_menu_item).getActionView();
         setCounter(count,layoutCounter);
     }
 
-    private static void setCounterInvitation(int count, NavigationView navigationView) {
+    private static void setCounterMyInvitations(int count, NavigationView navigationView) {
         LinearLayout layoutCounter = (LinearLayout) navigationView.getMenu().findItem(R.id.my_invitations_menu_item).getActionView();
+        setCounter(count,layoutCounter);
+    }
+
+    private static void setCounterMyEvents(int count, NavigationView navigationView) {
+        LinearLayout layoutCounter = (LinearLayout) navigationView.getMenu().findItem(R.id.my_events_menu_item).getActionView();
         setCounter(count,layoutCounter);
     }
 

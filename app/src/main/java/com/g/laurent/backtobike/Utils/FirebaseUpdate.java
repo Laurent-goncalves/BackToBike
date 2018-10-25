@@ -39,6 +39,7 @@ public class FirebaseUpdate {
     private static final String HAS_ACCEPTED = "has_accepted";
     private static final String ACCEPTED = "accepted";
     private static final String REJECTED = "rejected";
+    private static final String CANCELLED = "cancelled";
     private static final String PHOTO_URL = "photoUrl";
     private static final String ID_ROUTE = "id_route";
     private static final String ID_EVENT = "id_event";
@@ -230,8 +231,10 @@ public class FirebaseUpdate {
         if(listEventFriends!=null){
             if(listEventFriends.size()>0){
                 for(EventFriends eventFriends : listEventFriends){
-                    databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_INVITATIONS).child(idInvitation).removeValue();
-                    databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_EVENTS).child(idInvitation).removeValue();
+                    databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_INVITATIONS)
+                            .child(idInvitation).child(STATUS).setValue(CANCELLED);
+                    databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_EVENTS)
+                            .child(idInvitation).child(STATUS).setValue(CANCELLED);
                 }
             }
         }
@@ -336,7 +339,7 @@ public class FirebaseUpdate {
         databaseReference.child(TIME).setValue(invitation.getTime());
         databaseReference.child(ID_ORGANIZER).setValue(invitation.getOrganizerId());
         databaseReference.child(COMMENTS).setValue(invitation.getComments());
-        databaseReference.child(STATUS).setValue(ONGOING);
+        databaseReference.child(STATUS).setValue(invitation.getStatus());
     }
 
 
@@ -350,6 +353,7 @@ public class FirebaseUpdate {
                     if(!eventFriends.getIdFriend().equals(guests_id)){
                         databaseReferenceEventFriends.child(eventFriends.getIdFriend()).child(ID_FRIEND).setValue(eventFriends.getIdFriend());
                         databaseReferenceEventFriends.child(eventFriends.getIdFriend()).child(ACCEPTED).setValue(eventFriends.getAccepted());
+                        databaseReferenceEventFriends.child(eventFriends.getIdFriend()).child(LOGIN).setValue(eventFriends.getLogin());
                     }
                 }
             }

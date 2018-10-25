@@ -20,6 +20,7 @@ import com.g.laurent.backtobike.Models.ToolbarManager;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.Action;
 import com.g.laurent.backtobike.Utils.FirebaseRecover;
+import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 public class BaseActivity extends AppCompatActivity implements CallbackBaseActivity{
@@ -64,16 +65,19 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
     public void launchMainActivity(){
         Intent intent = new Intent(this,DisplayActivity.class);
         startActivity(intent);
+        finish();
     }
 
     public void launchFriendsActivity(){
         Intent intent = new Intent(this,FriendsActivity.class);
         startActivity(intent);
+        finish();
     }
 
     public void launchEventActivity(){
         Intent intent = new Intent(this, EventActivity.class);
         startActivity(intent);
+        finish();
     }
 
     public void launchDisplayActivity(String typeDisplay, String id){
@@ -81,6 +85,7 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
         intent.putExtra(BUNDLE_TYPE_DISPLAY,typeDisplay);
         intent.putExtra(BUNDLE_ID, id);
         startActivity(intent);
+        finish();
     }
 
     public void launchTraceActivity(Route route){
@@ -89,17 +94,26 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
         if(route!=null)
             intent.putExtra(BUNDLE_ROUTE_ID, route.getId());
         startActivity(intent);
+        finish();
     }
 
     public void defineCountersAndConfigureToolbar(String typeDisplay){
 
-        int counterFriend;
-        int counterInvits;
+        FirebaseRecover firebaseRecover = new FirebaseRecover(getApplicationContext());
+        firebaseRecover.recoverDatasForCounters(userId, getApplicationContext(), new CallbackCounters() {
+            @Override
+            public void onCompleted(int counterFriend, int counterEvents, int counterInvits) {
+                toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, counterFriend, counterEvents, counterInvits);
+                int count = counterFriend + counterEvents + counterInvits;
+                UtilsApp.setBadge(getApplicationContext(), count);
+            }
 
-        counterFriend = Action.getNumberFriendRequests(userId, getApplicationContext());
-        counterInvits = Action.getNumberInvitations(userId, getApplicationContext());
-
-        toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, counterFriend, counterInvits);
+            @Override
+            public void onFailure(String error) {
+                toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, 0, 0,0);
+                UtilsApp.setBadge(getApplicationContext(), 0);
+            }
+        });
     }
 
     public static void showSnackBar(BaseActivity baseActivity, String text) {

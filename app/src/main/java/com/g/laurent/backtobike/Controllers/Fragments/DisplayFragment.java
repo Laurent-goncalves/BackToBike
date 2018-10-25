@@ -16,6 +16,9 @@ import com.g.laurent.backtobike.Utils.ConfigureDisplayFragment;
  */
 public class DisplayFragment extends Fragment {
 
+    private static final String DISPLAY_MY_ROUTES ="display_my_routes";
+    private static final String DISPLAY_MY_EVENTS ="display_my_events";
+    private static final String DISPLAY_MY_INVITS ="display_my_invits";
     private static final String BUNDLE_POSITION ="bundle_position";
     private static final String BUNDLE_TYPE_DISPLAY ="bundle_type_display";
     private ConfigureDisplayFragment config;
@@ -50,8 +53,23 @@ public class DisplayFragment extends Fragment {
         if(getArguments()!=null){
             position = getArguments().getInt(BUNDLE_POSITION);
             typeDisplay = getArguments().getString(BUNDLE_TYPE_DISPLAY);
+
+            if(typeDisplay!=null){
+                switch(typeDisplay){
+                    case DISPLAY_MY_ROUTES:
+                        config = new ConfigureDisplayFragment(context, view, typeDisplay, callbackInvitActivity.getListRoutes().get(position));
+                        break;
+
+                    case DISPLAY_MY_EVENTS:
+                        config = new ConfigureDisplayFragment(context, view, typeDisplay,callbackInvitActivity.getListEvents().get(position));
+                        break;
+
+                    case DISPLAY_MY_INVITS:
+                        config = new ConfigureDisplayFragment(context, view, typeDisplay,callbackInvitActivity.getListInvitations().get(position));
+                        break;
+                }
+            }
         }
-        config = new ConfigureDisplayFragment(context, view, typeDisplay,this);
         return view;
     }
 
@@ -62,10 +80,6 @@ public class DisplayFragment extends Fragment {
         if(context instanceof CallbackDisplayActivity){
             callbackInvitActivity = (CallbackDisplayActivity) context;
         }
-    }
-
-    public CallbackDisplayActivity getCallbackInvitActivity() {
-        return callbackInvitActivity;
     }
 
     public int getPosition() {

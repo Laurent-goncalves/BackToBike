@@ -155,4 +155,98 @@ public class SynchronizeWithFirebase {
             }
         });
     }
+
+    public static void synchronizeMyEvents(String userId, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) throws InterruptedException {
+
+        // Recover events on database
+        List<BikeEvent> listBikeEventApp = BikeEventHandler.getAllFutureBikeEvents(context, userId);
+
+        // Recover events from user on Firebase
+        FirebaseRecover firebaseRecover = new FirebaseRecover(context);
+
+        firebaseRecover.recoverBikeEventsUser(userId, new OnBikeEventDataGetListener() {
+            @Override
+            public void onSuccess(BikeEvent bikeEvent) {}
+
+            @Override
+            public void onSuccess(List<BikeEvent> listBikeEvent) {
+                if(listBikeEvent!=null){
+                    if(listBikeEvent.size()>0){
+                        for(BikeEvent bikeEvent : listBikeEvent){
+                            if(UtilsApp.findIndexEventInList(bikeEvent.getId(), listBikeEventApp) != -1) // if event in database
+                                BikeEventHandler.updateBikeEvent(context, bikeEvent, userId); // update event
+                        }
+                    }
+                }
+                if(callbackSynchronizeEnd!=null)
+                    callbackSynchronizeEnd.onCompleted();
+            }
+
+            @Override
+            public void onFailure(String error) {
+                if(callbackSynchronizeEnd!=null)
+                    callbackSynchronizeEnd.onFailure(error);
+            }
+        });
+    }
+
+    public static void synchronizeOneEvent(String userId, String idEvent, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) throws InterruptedException {
+
+        // Recover events on database
+        List<BikeEvent> listBikeEventApp = BikeEventHandler.getAllFutureBikeEvents(context, userId);
+
+        // Recover events from user on Firebase
+        FirebaseRecover firebaseRecover = new FirebaseRecover(context);
+
+        firebaseRecover.recoverSingleBikeEventsUser(userId, idEvent, new OnBikeEventDataGetListener() {
+            @Override
+            public void onSuccess(BikeEvent bikeEvent) {
+
+                if(UtilsApp.findIndexEventInList(bikeEvent.getId(), listBikeEventApp) != -1) // if event in database
+                    BikeEventHandler.updateBikeEvent(context, bikeEvent, userId); // update event
+
+                if(callbackSynchronizeEnd!=null)
+                    callbackSynchronizeEnd.onCompleted();
+            }
+
+            @Override
+            public void onSuccess(List<BikeEvent> listBikeEvent) {}
+
+            @Override
+            public void onFailure(String error) {
+                if(callbackSynchronizeEnd!=null)
+                    callbackSynchronizeEnd.onFailure(error);
+            }
+        });
+    }
+
+    public static void synchronizeOneInvitation(String userId, String idInvit, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) throws InterruptedException {
+
+        // Recover list invitation on database
+        List<BikeEvent> listInvitation = BikeEventHandler.getAllInvitations(context, userId);
+
+        // Recover invitation from user on Firebase
+        FirebaseRecover firebaseRecover = new FirebaseRecover(context);
+
+        firebaseRecover.recoverSingleInvitationUser(userId, idInvit, new OnBikeEventDataGetListener() {
+            @Override
+            public void onSuccess(BikeEvent bikeEvent) {
+
+                if(UtilsApp.findIndexEventInList(bikeEvent.getId(), listInvitation) != -1) // if invitation in database
+                    BikeEventHandler.updateBikeEvent(context, bikeEvent, userId); // update invitation
+
+                if(callbackSynchronizeEnd!=null)
+                    callbackSynchronizeEnd.onCompleted();
+            }
+
+            @Override
+            public void onSuccess(List<BikeEvent> listBikeEvent) {}
+
+            @Override
+            public void onFailure(String error) {
+                if(callbackSynchronizeEnd!=null)
+                    callbackSynchronizeEnd.onFailure(error);
+            }
+        });
+    }
 }

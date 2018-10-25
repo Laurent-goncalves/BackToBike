@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackCounters;
 import com.g.laurent.backtobike.Models.CallbackSynchronizeEnd;
+import com.g.laurent.backtobike.Models.Difference;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.OnBikeEventDataGetListener;
@@ -42,6 +43,7 @@ public class FirebaseRecover {
     private static final String ONGOING = "ongoing";
     private static final String VALID = "valid";
     private static final String HAS_ACCEPTED = "has_accepted";
+    private static final String CANCELLED = "cancelled";
     private static final String ACCEPTED = "accepted";
     private static final String REJECTED = "rejected";
     private static final String PHOTO_URL = "photoUrl";
@@ -164,6 +166,25 @@ public class FirebaseRecover {
                 }
 
                 onBikeEventDataGetListener.onSuccess(listBikeEvents);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                onBikeEventDataGetListener.onFailure(databaseError.toString());
+            }
+        });
+    }
+
+    public void recoverSingleBikeEventsUser(String user_id, String idEvent, OnBikeEventDataGetListener onBikeEventDataGetListener) throws InterruptedException {
+
+        DatabaseReference databaseReferenceEvents = databaseReferenceUsers.child(user_id).child(MY_EVENTS).child(idEvent);
+
+        databaseReferenceEvents.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                BikeEvent bikeEvent = buildBikeEvent(dataSnapshot);
+                onBikeEventDataGetListener.onSuccess(bikeEvent);
             }
 
             @Override
@@ -351,7 +372,7 @@ public class FirebaseRecover {
         databaseReferenceEventFriends.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                listEventFriends.addAll(buildListEventFriends(dataSnapshot));
+                listEventFriends.addAll(buildListEventFriends(dataSnapshot, bikeEvent.getId()));
                 writeSignal.countDown();
             }
 
@@ -364,7 +385,7 @@ public class FirebaseRecover {
         return listEventFriends;
     }
 
-    public void recoverDatasForCounters(String user_id, CallbackCounters callbackCounters) {
+    public void recoverDatasForCounters(String user_id, Context context, CallbackCounters callbackCounters) {
 
         DatabaseReference databaseReferenceFriend = databaseReferenceUsers.child(user_id);
 
@@ -373,10 +394,12 @@ public class FirebaseRecover {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 int counterFriends = 0;
-                int counterInvits = 0;
+                int counterEvents;
+                int counterInvits;
 
                 DataSnapshot datasFriends = dataSnapshot.child(MY_FRIENDS);
                 DataSnapshot datasInvits = dataSnapshot.child(MY_INVITATIONS);
+                DataSnapshot datasEvents = dataSnapshot.child(MY_EVENTS);
 
                 for (DataSnapshot datas : datasFriends.getChildren()) {
                     if(!datas.hasChild(ACCEPTED)){
@@ -384,16 +407,46 @@ public class FirebaseRecover {
                     }
                 }
 
-                for (DataSnapshot datas : datasInvits.getChildren()) {
-                    counterInvits++;
-                }
+                // Get current list of events
+                List<BikeEvent> oldListBikeEvent = BikeEventHandler.getAllFutureBikeEvents(context, user_id);
 
-                callbackCounters.onCompleted(counterFriends, counterInvits);
+                // Get list of events on Firebase
+                List<BikeEvent> newListBikeEvent = new ArrayList<>();
+
+                for (DataSnapshot datas : datasEvents.getChildren())
+                    newListBikeEvent.add(buildBikeEvent(datas));
+
+                // Compare both list to get counter of modifications
+                List<Difference> listDiff = UtilsBikeEvent.getListDifferencesBetweenListEvents(oldListBikeEvent,newListBikeEvent,context);
+                counterEvents = listDiff.size();
+
+                counterInvits = (int) datasInvits.getChildrenCount();
+
+                callbackCounters.onCompleted(counterFriends, counterEvents, counterInvits);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 callbackCounters.onFailure(databaseError.toString());
+            }
+        });
+    }
+
+    public void recoverSingleInvitationUser(String user_id, String idInvit, OnBikeEventDataGetListener onBikeEventDataGetListener) throws InterruptedException {
+
+        DatabaseReference databaseReferenceEvents = databaseReferenceUsers.child(user_id).child(MY_INVITATIONS).child(idInvit);
+
+        databaseReferenceEvents.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                BikeEvent bikeEvent = buildBikeEvent(dataSnapshot);
+                onBikeEventDataGetListener.onSuccess(bikeEvent);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                onBikeEventDataGetListener.onFailure(databaseError.toString());
             }
         });
     }
@@ -442,7 +495,7 @@ public class FirebaseRecover {
                 Integer.parseInt(idRoute),
                 (String) datas.child(COMMENTS).getValue(),
                 (String) datas.child(STATUS).getValue(),
-                buildListEventFriends(datas.child(GUESTS)));
+                buildListEventFriends(datas.child(GUESTS), datas.getKey()));
 
         if(datas.hasChild(ROUTE)){
             Route route = buildListRoute(datas.child(ROUTE));
@@ -452,20 +505,14 @@ public class FirebaseRecover {
         return bikeEvent;
     }
 
-    private List<EventFriends> buildListEventFriends(DataSnapshot guests) {
+    private List<EventFriends> buildListEventFriends(DataSnapshot guests, String idEvent) {
 
         List<EventFriends> listEventFriends = new ArrayList<>();
 
         for(DataSnapshot datas : guests.getChildren()){
-
-            String idEvent;
-            if(datas.child(ID_EVENT).getValue()!=null)
-                idEvent = datas.child(ID_EVENT).getValue().toString();
-            else
-                idEvent = "0";
-
             listEventFriends.add(new EventFriends(0,
                     idEvent, (String) datas.child(ID_FRIEND).getValue(),
+                    (String) datas.child(LOGIN).getValue(),
                     (String) datas.child(ACCEPTED).getValue()
             ));
         }

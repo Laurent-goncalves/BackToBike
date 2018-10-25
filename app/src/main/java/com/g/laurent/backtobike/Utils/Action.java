@@ -1,9 +1,21 @@
 package com.g.laurent.backtobike.Utils;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.g.laurent.backtobike.Controllers.Activities.BaseActivity;
+import com.g.laurent.backtobike.Controllers.Activities.DisplayActivity;
+import com.g.laurent.backtobike.Models.AnswerListener;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.Route;
+import com.g.laurent.backtobike.R;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
@@ -206,5 +218,89 @@ public class Action {
     public static void setLoginUser(String user_id, String name, String photoUrl, String login, Context context){
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
         firebaseUpdate.updateUserData(user_id,name,photoUrl,login);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------
+    // ------------------------------------------- ALERT DIALOG ------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------
+
+    public static void showAlertDialogCancelBikeEvent(BikeEvent event, int position, String userId, DisplayActivity displayActivity) {
+
+        Context context = displayActivity.getApplicationContext();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(displayActivity);
+        builder.setCancelable(true);
+        builder.setTitle(context.getResources().getString(R.string.warning_title));
+        builder.setMessage(context.getResources().getString(R.string.confirm_cancel_trip));
+        builder.setPositiveButton(context.getResources().getString(R.string.confirm), (dialog, id) -> {
+                    Action.cancelBikeEvent(event,userId,context);
+                    String message = context.getResources().getString(R.string.bike_event_cancelled);
+                    displayActivity.removeItemListEvent(position, message);
+                }
+        )
+                .setNegativeButton(R.string.cancel, (dialog, id) -> { });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public static void showAlertDialogDeleteRoute(Route route, int position, String userId, DisplayActivity displayActivity) {
+
+        Context context = displayActivity.getApplicationContext();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(displayActivity);
+        builder.setCancelable(true);
+        builder.setTitle(context.getResources().getString(R.string.warning_title));
+        builder.setMessage(context.getResources().getString(R.string.confirm_delete_route));
+        builder.setPositiveButton(context.getResources().getString(R.string.confirm), (dialog, id) -> {
+                    Action.deleteRoute(route,userId,context);
+                    String message = context.getResources().getString(R.string.delete_route);
+                    displayActivity.removeItemListRoutes(position, message);
+                }
+        )
+                .setNegativeButton(R.string.cancel, (dialog, id) -> { });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public static void showAlertDialogRejectEvent(BikeEvent event, int position, String userId, DisplayActivity displayActivity) {
+
+        Context context = displayActivity.getApplicationContext();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(displayActivity);
+        builder.setCancelable(true);
+        builder.setTitle(context.getResources().getString(R.string.warning_title));
+        builder.setMessage(context.getResources().getString(R.string.confirm_reject_event));
+        builder.setPositiveButton(context.getResources().getString(R.string.confirm), (dialog, id) -> {
+                    Action.rejectInvitation(event,userId,context);
+                    String message = context.getResources().getString(R.string.reject_event);
+                    displayActivity.removeItemListEvent(position, message);
+                }
+        )
+                .setNegativeButton(R.string.cancel, (dialog, id) -> { });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public static void showAlertDialogRejectInvitation(BikeEvent invit, int position, String userId, DisplayActivity displayActivity) {
+
+        Context context = displayActivity.getApplicationContext();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(displayActivity);
+        builder.setCancelable(true);
+        builder.setTitle(context.getResources().getString(R.string.warning_title));
+        builder.setMessage(context.getResources().getString(R.string.confirm_reject_invit));
+        builder.setPositiveButton(context.getResources().getString(R.string.confirm), (dialog, id) -> {
+                    Action.rejectInvitation(invit,userId,context);
+                    String message = context.getResources().getString(R.string.reject_invitation);
+                    displayActivity.removeItemListInvits(position, message);
+                }
+        )
+                .setNegativeButton(R.string.cancel, (dialog, id) -> { });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

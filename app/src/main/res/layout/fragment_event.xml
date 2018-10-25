@@ -226,7 +226,6 @@
                     android:layout_toStartOf="@+id/button_send"
                     android:layout_marginTop="@dimen/buttons_spaces"
                     android:layout_marginBottom="@dimen/buttons_spaces"
-                    android:visibility="gone"
                     android:background="@android:color/white"
                     android:textColor="@color/colorPrimary"
                     android:text="@string/cancel"/>
@@ -241,7 +240,6 @@
                     android:layout_marginEnd="@dimen/buttons_spaces"
                     android:layout_marginTop="@dimen/buttons_spaces"
                     android:layout_marginBottom="@dimen/buttons_spaces"
-                    android:visibility="gone"
                     android:background="@color/colorPrimary"
                     android:textColor="@android:color/white"
                     android:text="@string/send"/>

@@ -160,7 +160,7 @@ public class UtilsApp {
 
         if(listBikeEvent!=null && idEvent !=null){
             if(listBikeEvent.size()>0){
-                for(int i = 0; i < listBikeEvent.size()-1 ; i++){
+                for(int i = 0; i < listBikeEvent.size() ; i++){
                     if(listBikeEvent.get(i).getId()!=null){
                         if(listBikeEvent.get(i).getId().equals(idEvent)){
                             index = i;
@@ -180,7 +180,7 @@ public class UtilsApp {
 
         if(listRoutes!=null && idRoute !=null){
             if(listRoutes.size()>0){
-                for(int i = 0; i < listRoutes.size()-1 ; i++){
+                for(int i = 0; i < listRoutes.size(); i++){
                     if(listRoutes.get(i).getId()==Integer.parseInt(idRoute)){
                         index = i;
                         break;
@@ -266,21 +266,6 @@ public class UtilsApp {
         }
 
         return listRoutesNames;
-    }
-
-    public static List<Friend> getListFriendsFromEventFriends(List<EventFriends> listEventFriends, String userId, Context context){
-
-        List<Friend> listFriends = new ArrayList<>();
-
-        if(listEventFriends!=null){
-            if(listEventFriends.size()!=0){
-                for(EventFriends eventFriends : listEventFriends){
-                    listFriends.add(FriendsHandler.getFriend(context, eventFriends.getIdFriend(),userId));
-                }
-            }
-        }
-
-        return listFriends;
     }
 
     public static Friend getUserFromFirebaseUser(String mylogin, FirebaseUser user){

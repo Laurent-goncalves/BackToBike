@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 
 public class BikeEventContentProvider extends ContentProvider {
 
+    private static final String ACCEPTED = "accepted";
     private static final String ONGOING ="ongoing";
     private static final String TYPE_MY_EVENTS ="type_my_events";
     private static final String TYPE_MY_INVITS ="type_my_invits";
@@ -42,7 +43,7 @@ public class BikeEventContentProvider extends ContentProvider {
 
             switch(typeEvent){
                 case TYPE_MY_EVENTS:
-                    return AppDatabase.getInstance(context, userId).bikeEventDao().getMyBikeEvents(userId, ONGOING);
+                    return AppDatabase.getInstance(context, userId).bikeEventDao().getMyBikeEvents(ACCEPTED);
                 case TYPE_MY_INVITS:
                     return AppDatabase.getInstance(context, userId).bikeEventDao().getMyInvitations(userId, ONGOING);
                 case TYPE_SINGLE_EVENT:

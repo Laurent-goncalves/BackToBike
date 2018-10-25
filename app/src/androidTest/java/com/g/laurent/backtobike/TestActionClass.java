@@ -76,7 +76,7 @@ public class TestActionClass extends AndroidTestCase {
         int idRoute = Action.addNewRoute(route,auth.getUid(),getContext());
 
         // Check that route is well added to Database
-        Route routeTest = getRouteFromDatabase(idRoute);
+        Route routeTest = getRouteFromDatabase(idRoute, auth.getUid());
 
         Assert.assertEquals("trip to Lille", routeTest.getName());
         Assert.assertEquals(4, routeTest.getListRouteSegment().size());
@@ -108,7 +108,7 @@ public class TestActionClass extends AndroidTestCase {
         Action.updateRoute(route, auth.getUid(), getContext());
 
         // Check that route is well updated in Database
-        routeTest = getRouteFromDatabase(idRoute);
+        routeTest = getRouteFromDatabase(idRoute, auth.getUid());
         Assert.assertEquals("Trip to Marseille", routeTest.getName());
 
         // Check that route is well updated in Firebase
@@ -133,7 +133,7 @@ public class TestActionClass extends AndroidTestCase {
         Action.deleteRoute(route, auth.getUid(), getContext());
 
         // Check that route is well "deleted" in Database
-        routeTest = getRouteFromDatabase(idRoute);
+        routeTest = getRouteFromDatabase(idRoute, auth.getUid());
         Assert.assertFalse(routeTest.getValid());
 
         // Check that route is well "deleted" in Firebase
@@ -165,10 +165,10 @@ public class TestActionClass extends AndroidTestCase {
         Friend friend = new Friend("id1","id1","Michel","photo_url",null,null);
         Friend user = new Friend("id2","id2","Seb","photoUrl",true,null);
 
-        Action.addNewFriend(friend, user, getContext());
+        Action.addNewFriend(friend, user, "id2", getContext());
 
         // Check that the friend is well added to database
-        Friend friendTest = FriendsHandler.getFriend(getContext(),"id1");
+        Friend friendTest = FriendsHandler.getFriend(getContext(),"id1", "id2");
 
         Assert.assertEquals("Michel", friendTest.getName());
         Assert.assertEquals("id1", friendTest.getLogin());
@@ -197,7 +197,7 @@ public class TestActionClass extends AndroidTestCase {
         Action.updateFriend(friend, "id2", getContext());
 
         // Check that the friend is well updated in database
-        friendTest = FriendsHandler.getFriend(getContext(),"id1");
+        friendTest = FriendsHandler.getFriend(getContext(),"id1", "id2");
         Assert.assertEquals("Sean", friendTest.getName());
 
         // Check that the friend is well updated in Firebase
@@ -222,7 +222,7 @@ public class TestActionClass extends AndroidTestCase {
         waiting_time(2000);
 
         // Check that the friend is well deleted in database
-        friendTest = FriendsHandler.getFriend(getContext(),"id1");
+        friendTest = FriendsHandler.getFriend(getContext(),"id1", "id2");
         Assert.assertNull(friendTest.getId());
 
         // Check that the friend is well deleted in Firebase
@@ -248,7 +248,7 @@ public class TestActionClass extends AndroidTestCase {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
         databaseReference.child("id1").child("my_events").removeValue();
 
-        setFriendsDatabase(getContext());
+        setFriendsDatabase(getContext(), auth.getUid());
 
         BikeEvent bikeEvent = new BikeEvent("id1_01_01_2000_14:00", "id1", "01/01/2000", "14:00", 999, "Comments : take good shoes", "accepted");
         Route route = new Route();
@@ -372,7 +372,7 @@ public class TestActionClass extends AndroidTestCase {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
         databaseReference.child(auth.getUid()).child("my_events").removeValue();
 
-        setFriendsDatabase(getContext());
+        setFriendsDatabase(getContext(), auth.getUid());
 
         BikeEvent bikeEvent = new BikeEvent("id1_01_01_2000_14:00", "id1", "01/01/2000", "14:00", 999, "Comments : take good shoes", "accepted");
         Route route = new Route(999,"Trip to Paris",true);
@@ -495,7 +495,7 @@ public class TestActionClass extends AndroidTestCase {
         databaseReference.child("id2").child("my_routes").removeValue();
         databaseReference.child("id2").child("my_events").removeValue();
 
-        setFriendsDatabase(getContext());
+        setFriendsDatabase(getContext(), auth.getUid());
         BikeEvent bikeEvent = getBikeEventDEMO();
 
         // ----------------------------- INSERT BIKE EVENT and ID2 ACCEPT INVITATION
@@ -557,8 +557,8 @@ public class TestActionClass extends AndroidTestCase {
         Friend user = new Friend("id2","id2","Seb","photoUrl",true,null);
 
         // Add id3 and id1 as friend
-        Action.addNewFriend(friend3, user, getContext());
-        Action.addNewFriend(friend1, user, getContext());
+        Action.addNewFriend(friend3, user, user.getId(), getContext());
+        Action.addNewFriend(friend1, user,  user.getId(), getContext());
 
         // id3 accepted id2 as friend
         Action.acceptFriend(user,"id3", getContext());
@@ -681,12 +681,12 @@ public class TestActionClass extends AndroidTestCase {
         }
     }
 
-    private Route getRouteFromDatabase(int idRoute){
+    private Route getRouteFromDatabase(int idRoute, String userId){
 
-        Cursor cursor = AppDatabase.getInstance(getContext()).routesDao().getRoute(idRoute);
+        Cursor cursor = AppDatabase.getInstance(getContext(), userId).routesDao().getRoute(idRoute);
         Route route = Route.getRouteFromCursor(cursor);
 
-        Cursor cursorSegments = AppDatabase.getInstance(getContext()).routeSegmentDao().getRouteSegment(idRoute);
+        Cursor cursorSegments = AppDatabase.getInstance(getContext(), userId).routeSegmentDao().getRouteSegment(idRoute);
         List<RouteSegment> listRoutesSegments = RouteSegment.getRouteSegmentFromCursor(cursorSegments);
 
         route.setListRouteSegment(listRoutesSegments);
@@ -722,14 +722,14 @@ public class TestActionClass extends AndroidTestCase {
         return listEventFriends;
     }
 
-    private void setFriendsDatabase(Context context){
+    private void setFriendsDatabase(Context context, String userId){
 
         Friend friend1 = new Friend("id1","id1","Mat","photoUrl",true, null);
         Friend friend2 = new Friend("id2","id2","Seb","photoUrl",true,null);
         Friend friend3 = new Friend("id3","id3","Camille","photoUrl",false,null);
 
-        FriendsHandler.insertNewFriend(context,friend1);
-        FriendsHandler.insertNewFriend(context,friend2);
-        FriendsHandler.insertNewFriend(context,friend3);
+        FriendsHandler.insertNewFriend(context,friend1, userId);
+        FriendsHandler.insertNewFriend(context,friend2, userId);
+        FriendsHandler.insertNewFriend(context,friend3, userId);
     }
 }

@@ -21,12 +21,14 @@ public class EventFriends {
     private int id;
     private String idEvent;
     private String idFriend;
+    private String login;
     private String accepted;
 
-    public EventFriends(int id, String idEvent, String idFriend, String accepted) {
+    public EventFriends(int id, String idEvent, String idFriend, String login, String accepted) {
         this.id = id;
         this.idEvent = idEvent;
         this.idFriend = idFriend;
+        this.login=login;
         this.accepted = accepted;
     }
 
@@ -66,6 +68,14 @@ public class EventFriends {
         this.accepted = accepted;
     }
 
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
     // --- UTILS ---
     public static EventFriends fromContentValues(ContentValues values) {
 
@@ -74,6 +84,7 @@ public class EventFriends {
         if (values.containsKey("id")) eventFriends.setId(values.getAsInteger("id"));
         if (values.containsKey("idEvent")) eventFriends.setIdEvent(values.getAsString("idEvent"));
         if (values.containsKey("idFriend")) eventFriends.setIdFriend(values.getAsString("idFriend"));
+        if (values.containsKey("login")) eventFriends.setLogin(values.getAsString("login"));
         if (values.containsKey("accepted")) eventFriends.setAccepted(values.getAsString("accepted"));
 
         return eventFriends;
@@ -86,6 +97,7 @@ public class EventFriends {
         values.put("id",eventFriends.getId());
         values.put("idEvent",eventFriends.getIdEvent());
         values.put("idFriend",eventFriends.getIdFriend());
+        values.put("login",eventFriends.getLogin());
         values.put("accepted",eventFriends.getAccepted());
 
         return values;
@@ -98,6 +110,7 @@ public class EventFriends {
         values.put("id",eventFriends.getId());
         values.put("idEvent",eventFriends.getIdEvent());
         values.put("idFriend",eventFriends.getIdFriend());
+        values.put("login",eventFriends.getLogin());
         values.put("accepted",eventFriends.getAccepted());
 
         return values;
@@ -115,6 +128,7 @@ public class EventFriends {
                 eventFriends.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
                 eventFriends.setIdEvent(cursor.getString(cursor.getColumnIndexOrThrow("idEvent")));
                 eventFriends.setIdFriend(cursor.getString(cursor.getColumnIndexOrThrow("idFriend")));
+                eventFriends.setLogin(cursor.getString(cursor.getColumnIndexOrThrow("login")));
                 eventFriends.setAccepted(cursor.getString(cursor.getColumnIndexOrThrow("accepted")));
 
                 listEventFriends.add(eventFriends);

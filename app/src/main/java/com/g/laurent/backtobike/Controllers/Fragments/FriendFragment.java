@@ -99,8 +99,9 @@ public class FriendFragment extends Fragment {
             SelectMode = getArguments().getBoolean(BUNDLE_SELECT_MODE);
 
         view.setOnClickListener(v -> {
-            SelectMode = false;
-            if(adapter!=null) {
+
+            if(adapter!=null && callbackFriendActivity!=null) {
+                SelectMode = false;
                 adapter.setSelectMode(false);
                 adapter.notifyDataSetChanged();
                 callbackFriendActivity.configureButtonToolbar(false);
