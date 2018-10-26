@@ -713,8 +713,8 @@ public class TestActionClass extends AndroidTestCase {
     private List<EventFriends> getListEventFriends(){
 
         List<EventFriends> listEventFriends = new ArrayList<>();
-        EventFriends EVENT_FRIENDS_DEMO_1 = new EventFriends(0,"id1_01_01_2000_14:00","id2","ongoing");
-        EventFriends EVENT_FRIENDS_DEMO_2 = new EventFriends(0,"id1_01_01_2000_14:00","id3","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_1 = new EventFriends(0,"id1_01_01_2000_14:00","id2","id2","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_2 = new EventFriends(0,"id1_01_01_2000_14:00","id3","id3","ongoing");
 
         listEventFriends.add(EVENT_FRIENDS_DEMO_1);
         listEventFriends.add(EVENT_FRIENDS_DEMO_2);

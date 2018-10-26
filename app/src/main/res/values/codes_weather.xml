@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <integer name="c200">0</integer>
+    <integer name="c201">0</integer>
+    <integer name="c202">0</integer>
+    <integer name="c230">1</integer>
+    <integer name="c231">1</integer>
+    <integer name="c232">1</integer>
+    <integer name="c233">1</integer>
+    <integer name="c300">2</integer>
+    <integer name="c301">2</integer>
+    <integer name="c302">2</integer>
+    <integer name="c500">3</integer>
+    <integer name="c501">3</integer>
+    <integer name="c502">4</integer>
+    <integer name="c511">3</integer>
+    <integer name="c520">3</integer>
+    <integer name="c521">5</integer>
+    <integer name="c522">3</integer>
+    <integer name="c600">6</integer>
+    <integer name="c601">7</integer>
+    <integer name="c602">7</integer>
+    <integer name="c610">6</integer>
+    <integer name="c611">8</integer>
+    <integer name="c612">8</integer>
+    <integer name="c621">9</integer>
+    <integer name="c622">10</integer>
+    <integer name="c623">11</integer>
+    <integer name="c700">12</integer>
+    <integer name="c711">12</integer>
+    <integer name="c721">12</integer>
+    <integer name="c731">12</integer>
+    <integer name="c741">12</integer>
+    <integer name="c751">12</integer>
+    <integer name="c800">13</integer>
+    <integer name="c801">14</integer>
+    <integer name="c802">14</integer>
+    <integer name="c803">14</integer>
+    <integer name="c804">15</integer>
+    <integer name="c900">16</integer>
+
+</resources>

@@ -81,11 +81,11 @@ public class TestClassUtilsBikeEvent {
     private List<EventFriends> getOldListEventFriendsBikeEvent1(){
 
         List<EventFriends> listEventFriends = new ArrayList<>();
-        EventFriends EVENT_FRIENDS_DEMO_1 = new EventFriends(0,"bikeEvent1","id1","ongoing");
-        EventFriends EVENT_FRIENDS_DEMO_2 = new EventFriends(1,"bikeEvent1","id2","ongoing");
-        EventFriends EVENT_FRIENDS_DEMO_3 = new EventFriends(2,"bikeEvent1","id3","ongoing");
-        EventFriends EVENT_FRIENDS_DEMO_4 = new EventFriends(3,"bikeEvent1","id4","ongoing");
-        EventFriends EVENT_FRIENDS_DEMO_5 = new EventFriends(4,"bikeEvent1","id5","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_1 = new EventFriends(0,"bikeEvent1","id1","id1","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_2 = new EventFriends(1,"bikeEvent1","id2","id2","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_3 = new EventFriends(2,"bikeEvent1","id3","id3","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_4 = new EventFriends(3,"bikeEvent1","id4","id4","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_5 = new EventFriends(4,"bikeEvent1","id5","id5","ongoing");
 
         listEventFriends.add(EVENT_FRIENDS_DEMO_1);
         listEventFriends.add(EVENT_FRIENDS_DEMO_2);
@@ -99,9 +99,9 @@ public class TestClassUtilsBikeEvent {
     private List<EventFriends> getOldListEventFriendsBikeEvent2(){
 
         List<EventFriends> listEventFriends = new ArrayList<>();
-        EventFriends EVENT_FRIENDS_DEMO_1 = new EventFriends(0,"bikeEvent2","id6","ongoing");
-        EventFriends EVENT_FRIENDS_DEMO_2 = new EventFriends(1,"bikeEvent2","id7","ongoing");
-        EventFriends EVENT_FRIENDS_DEMO_3 = new EventFriends(2,"bikeEvent2","id8","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_1 = new EventFriends(0,"bikeEvent2","id6","id6","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_2 = new EventFriends(1,"bikeEvent2","id7","id7","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_3 = new EventFriends(2,"bikeEvent2","id8","id8","ongoing");
 
         listEventFriends.add(EVENT_FRIENDS_DEMO_1);
         listEventFriends.add(EVENT_FRIENDS_DEMO_2);
@@ -113,11 +113,11 @@ public class TestClassUtilsBikeEvent {
     private List<EventFriends> getNewListEventFriendsBikeEvent1(){
 
         List<EventFriends> listEventFriends = new ArrayList<>();
-        EventFriends EVENT_FRIENDS_DEMO_1 = new EventFriends(0,"bikeEvent1","id1","ongoing");
-        EventFriends EVENT_FRIENDS_DEMO_2 = new EventFriends(1,"bikeEvent1","id2","accepted");
-        EventFriends EVENT_FRIENDS_DEMO_3 = new EventFriends(2,"bikeEvent1","id3","accepted");
-        EventFriends EVENT_FRIENDS_DEMO_4 = new EventFriends(3,"bikeEvent1","id4","rejected");
-        EventFriends EVENT_FRIENDS_DEMO_5 = new EventFriends(4,"bikeEvent1","id5","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_1 = new EventFriends(0,"bikeEvent1","id1","id1","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_2 = new EventFriends(1,"bikeEvent1","id2","id2","accepted");
+        EventFriends EVENT_FRIENDS_DEMO_3 = new EventFriends(2,"bikeEvent1","id3","id3","accepted");
+        EventFriends EVENT_FRIENDS_DEMO_4 = new EventFriends(3,"bikeEvent1","id4","id4","rejected");
+        EventFriends EVENT_FRIENDS_DEMO_5 = new EventFriends(4,"bikeEvent1","id5","id5","ongoing");
 
         listEventFriends.add(EVENT_FRIENDS_DEMO_1);
         listEventFriends.add(EVENT_FRIENDS_DEMO_2);
@@ -131,9 +131,9 @@ public class TestClassUtilsBikeEvent {
     private List<EventFriends> getNewListEventFriendsBikeEvent2(){
 
         List<EventFriends> listEventFriends = new ArrayList<>();
-        EventFriends EVENT_FRIENDS_DEMO_1 = new EventFriends(0,"bikeEvent2","id6","ongoing");
-        EventFriends EVENT_FRIENDS_DEMO_2 = new EventFriends(1,"bikeEvent2","id7","rejected");
-        EventFriends EVENT_FRIENDS_DEMO_3 = new EventFriends(2,"bikeEvent2","id8","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_1 = new EventFriends(0,"bikeEvent2","id6","id6","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_2 = new EventFriends(1,"bikeEvent2","id7","id7","rejected");
+        EventFriends EVENT_FRIENDS_DEMO_3 = new EventFriends(2,"bikeEvent2","id8","id8","ongoing");
 
         listEventFriends.add(EVENT_FRIENDS_DEMO_1);
         listEventFriends.add(EVENT_FRIENDS_DEMO_2);

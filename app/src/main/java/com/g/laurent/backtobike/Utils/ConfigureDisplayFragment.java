@@ -96,7 +96,7 @@ public class ConfigureDisplayFragment {
 
     // -------------------------------- 3 - Configure map
     private void configureMap(){
-        ConfigureMap configMap = new ConfigureMap(context, mapLayout, userId);
+        ConfigureMap configMap = new ConfigureMap(context, mapLayout);
 
         switch(typeDisplay){
             case DISPLAY_MY_ROUTES:
@@ -139,7 +139,7 @@ public class ConfigureDisplayFragment {
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
 
-        adapter = new DisplayFriendsAdapter(context, userId, listEventFriends);
+        adapter = new DisplayFriendsAdapter(context, userId, bikeEvent.getOrganizerId(), listEventFriends);
         friendsView.setAdapter(adapter);
 
         // Set layout manager to position the items

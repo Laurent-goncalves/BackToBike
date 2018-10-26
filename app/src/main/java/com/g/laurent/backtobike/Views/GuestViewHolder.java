@@ -23,10 +23,12 @@ public class GuestViewHolder extends RecyclerView.ViewHolder{
         super(itemView);
     }
 
-    public void configureImagesViews(EventFriends eventFriend, Context context, String userId) {
+    public void configureImagesViews(EventFriends eventFriend, String organizerId, Context context, String userId) {
 
         ImageView photoView = itemView.findViewById(R.id.guest_picture);
         TextView nameView = itemView.findViewById(R.id.guest_name);
+        ImageView iconOrganizer = itemView.findViewById(R.id.icon_organizer);
+        iconOrganizer.setVisibility(View.GONE);
 
         // set login
         if(eventFriend.getLogin().length()<=15)
@@ -43,8 +45,13 @@ public class GuestViewHolder extends RecyclerView.ViewHolder{
                 .apply(new RequestOptions().placeholder(R.drawable.icon_friend))
                 .into(photoView);
 
-        // set border of image
-        if(eventFriend.getAccepted().equals(ONGOING))             // NO ANSWER
+        // set background nameView
+        if(eventFriend.getIdFriend().equals(organizerId)){  // ORGANIZER
+            iconOrganizer.setVisibility(View.VISIBLE);
+            iconOrganizer.setColorFilter(context.getResources().getColor(R.color.colorOrganizer));
+            photoView.setBackground(context.getResources().getDrawable(R.drawable.background_organizer));
+            nameView.setBackgroundColor(context.getResources().getColor(R.color.colorOrganizer));
+        } else if(eventFriend.getAccepted().equals(ONGOING))             // NO ANSWER
             nameView.setBackgroundColor(context.getResources().getColor(R.color.colorGray));
         else if(eventFriend.getAccepted().equals(ACCEPTED))       // ACCEPT
             nameView.setBackgroundColor(context.getResources().getColor(R.color.colorPrimary));

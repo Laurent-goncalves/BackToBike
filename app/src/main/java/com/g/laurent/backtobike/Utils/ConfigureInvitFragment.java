@@ -58,7 +58,7 @@ public class ConfigureInvitFragment {
         this.invitFragment=invitFragment;
         this.mCallbackEventActivity = callbackEventActivity;
         context = invitFragment.getContext();
-        configMap = new ConfigureMap(context, mapLayout, mCallbackEventActivity.getUserId());
+        configMap = new ConfigureMap(context, mapLayout);
     }
 
     public void configureViews(Invitation invitation){

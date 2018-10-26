@@ -76,12 +76,14 @@
 
             </android.support.v7.widget.Toolbar>
 
-            <android.support.v4.widget.SwipeRefreshLayout
+
+            <com.g.laurent.backtobike.Models.DisplaySwipeToRefresh
                 android:id="@+id/swipe_to_refresh"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <FrameLayout
+                    android:id="@+id/layout_fragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/background_display_activity">
@@ -108,8 +110,7 @@
                         android:src="@drawable/baseline_navigate_next_black_48"
                         android:contentDescription="@string/arrow_next_image" />
 
-                    <android.support.v4.view.ViewPager
-                        xmlns:android="http://schemas.android.com/apk/res/android"
+                    <com.g.laurent.backtobike.Models.DisplayViewPager
                         android:id="@+id/activity_display_viewpager"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"/>
@@ -152,7 +153,8 @@
 
                 </FrameLayout>
 
-            </android.support.v4.widget.SwipeRefreshLayout>
+
+            </com.g.laurent.backtobike.Models.DisplaySwipeToRefresh>
 
         </LinearLayout>
 

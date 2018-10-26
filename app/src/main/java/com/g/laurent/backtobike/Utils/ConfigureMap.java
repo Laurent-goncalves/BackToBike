@@ -10,6 +10,7 @@ import com.g.laurent.backtobike.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -29,13 +30,13 @@ public class ConfigureMap implements OnMapReadyCallback {
     private TextView timeView;
     private Context context;
     private GoogleMap googleMap;
-    private List<RouteSegment> listRouteSegments;
-    private String userId;
+
+
     private Route route;
 
-    public ConfigureMap(Context context, View view, String userId) {
+    public ConfigureMap(Context context, View view) {
         this.context = context;
-        this.userId = userId;
+
         mapView = view.findViewById(R.id.map);
         mileageView = view.findViewById(R.id.mileage_estimation);
         timeView = view.findViewById(R.id.time_estimation);
@@ -118,6 +119,5 @@ public class ConfigureMap implements OnMapReadyCallback {
             bounds.include(point);
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 50));
-        googleMap.getUiSettings().setAllGesturesEnabled(false);
     }
 }

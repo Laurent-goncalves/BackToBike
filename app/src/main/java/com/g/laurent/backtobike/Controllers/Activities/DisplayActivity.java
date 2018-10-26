@@ -5,7 +5,6 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -15,6 +14,8 @@ import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackDisplayActivity;
 import com.g.laurent.backtobike.Models.CallbackSynchronizeEnd;
 import com.g.laurent.backtobike.Models.Difference;
+import com.g.laurent.backtobike.Models.DisplaySwipeToRefresh;
+import com.g.laurent.backtobike.Models.DisplayViewPager;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.Action;
@@ -24,10 +25,10 @@ import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.g.laurent.backtobike.Utils.UtilsBikeEvent;
 import com.g.laurent.backtobike.Views.PageAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import java.util.ArrayList;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
 
 
 public class DisplayActivity extends BaseActivity implements CallbackDisplayActivity {
@@ -38,12 +39,12 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
     private List<Difference> listDifferences;
     private List<BikeEvent> listInvitations;
     private String typeDisplay;
-    private ViewPager pager;
+    private DisplayViewPager pager;
     private PageAdapter adapter;
     private String idSelected;
     private int count;
     private int position;
-    private SwipeRefreshLayout mySwipeRefreshLayout;
+    private DisplaySwipeToRefresh mySwipeRefreshLayout;
     @BindView(R.id.arrow_next) ImageView arrowNext;
     @BindView(R.id.arrow_back) ImageView arrowBack;
     @BindView(R.id.left_button)  Button buttonLeft;
@@ -63,6 +64,7 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         // Configure swipe to refresh
         mySwipeRefreshLayout = findViewById(R.id.swipe_to_refresh);
         mySwipeRefreshLayout.setOnRefreshListener(this::synchronizeWithFirebaseAndRefreshFragment);
+
 
         // Recover datas
         try {
@@ -149,8 +151,10 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
 
         // Configure pager
         pager = findViewById(R.id.activity_display_viewpager);
+        pager.setOffscreenPageLimit(0);
         adapter = new PageAdapter(getSupportFragmentManager(), typeDisplay, count);
         pager.setAdapter(adapter);
+
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
@@ -362,8 +366,34 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
             }
         }
 
+        // Remove all differences from bike event selected
+        String idEvent = listEvents.get(position).getId();
+        removeDifferences(idEvent);
+
         // Show text
-        Toast.makeText(getApplicationContext(), diffText, Toast.LENGTH_LONG).show();
+        if(diffText.length()>0)
+            Toast.makeText(getApplicationContext(), diffText, Toast.LENGTH_LONG).show();
+    }
+
+    private void removeDifferences(String idEvent){
+
+        List<Integer> listPositionsToDelete = new ArrayList<>();
+
+        if(listDifferences!=null){
+            if(listDifferences.size()>0){
+                for(int i = 0; i < listDifferences.size(); i++){
+                    if(listDifferences.get(i).getIdEvent().equals(idEvent)){
+                        listPositionsToDelete.add(i);
+                    }
+                }
+            }
+        }
+
+        if(listPositionsToDelete.size()>0 && listDifferences!=null){
+            for(int i : listPositionsToDelete){
+                listDifferences.remove(i);
+            }
+        }
     }
 
     private void configureAddButton(){

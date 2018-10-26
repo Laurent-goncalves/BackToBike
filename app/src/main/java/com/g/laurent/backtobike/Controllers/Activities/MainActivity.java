@@ -46,7 +46,7 @@ public class MainActivity extends BaseActivity {
         if(user!=null)
             userId = user.getUid();
 
-        // clearDatabase(userId,getApplicationContext());
+        //clearDatabase(userId,getApplicationContext());
 
         // recover SharedPreferences
         sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.sharedpreferences), Context.MODE_PRIVATE);

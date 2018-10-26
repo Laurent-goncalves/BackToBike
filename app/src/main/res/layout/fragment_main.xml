@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Controllers.Fragments.MainFragment">
+
+    <!-- TITLE NEXT BIKE TRIPS -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorWhite"
+        android:textStyle="italic|bold"
+        android:textSize="16sp"
+        android:padding="5dp"
+        android:paddingStart="15dp"
+        android:text="@string/my_next_bike_trips"
+        tools:ignore="RtlSymmetry" />
+
+    <!-- RECYCLERVIEW BIKE EVENTS -->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/bikeevents_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="30"/>
+
+    <!-- NEWS AND UPDATES -->
+    <RelativeLayout
+        android:background="@drawable/background_display_activity"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="30">
+
+        <!-- NEWS -->
+        <TextView
+            android:id="@+id/news_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="285dp"
+            android:maxWidth="200dp"
+            android:padding="5dp"
+            android:textSize="14sp" />
+
+        <!-- UPDATES -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/background_display_activity"
+            android:layout_marginEnd="10dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/baseline_mail_white_24"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/colorWhite"
+                android:text="@string/invitations"/>
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/baseline_person_add_white_24"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/colorWhite"
+                android:text="@string/new_friends"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <!-- TITLE WEATHER -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorWhite"
+        android:textStyle="italic|bold"
+        android:textSize="16sp"
+        android:padding="5dp"
+        android:paddingStart="15dp"
+        android:text="@string/weather_forecast"
+        tools:ignore="RtlSymmetry" />
+
+    <!-- RECYCLERVIEW WEATHER -->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/weather_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="30"/>
+
+</LinearLayout>
