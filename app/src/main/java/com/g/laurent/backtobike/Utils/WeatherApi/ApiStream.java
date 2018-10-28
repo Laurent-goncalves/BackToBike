@@ -8,7 +8,7 @@ public class ApiStream {
     public static Observable<Forecast> streamFetchgetForecast(String api_key, String lang, String lat, String lng){
         ApiService forecastRequest = ApiService.retrofit.create(ApiService.class);
 
-        return forecastRequest.getWeatherForecast(api_key, lang, lat, lng)
+        return forecastRequest.getWeatherForecast(api_key, lang, lat, lng, "14")
                 .subscribeOn(Schedulers.io())
                 //.observeOn(AndroidSchedulers.mainThread());
                 .observeOn(Schedulers.newThread());  // TEST

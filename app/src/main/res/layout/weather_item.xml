@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="120dp"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_margin="3dp">
+    android:layout_margin="10dp">
 
     <TextView
         android:id="@+id/date_weather"
@@ -13,37 +13,32 @@
         android:layout_gravity="center_horizontal"
         android:gravity="center"
         android:textStyle="bold"
-        android:textSize="14sp"/>
+        android:textSize="16sp"/>
 
-    <FrameLayout
-        android:layout_width="100dp"
-        android:layout_height="100dp">
+    <ImageView
+        android:id="@+id/weather_image"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="centerCrop"
+        android:padding="3dp"
+        android:src="@drawable/code_23x"/>
 
-        <ImageView
-            android:id="@+id/weather_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+    <TextView
+        android:id="@+id/temperature_sup_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:text="15°C"/>
 
-        <TextView
-            android:id="@+id/temperature_inf_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|start"
-            android:layout_margin="5dp"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:textColor="@android:color/holo_blue_light"/>
-
-        <TextView
-            android:id="@+id/temperature_sup_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="5dp"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:textColor="@android:color/holo_red_dark"/>
-
-    </FrameLayout>
+    <TextView
+        android:id="@+id/temperature_inf_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textSize="14sp"
+        android:text="15°C"/>
 
 </LinearLayout>

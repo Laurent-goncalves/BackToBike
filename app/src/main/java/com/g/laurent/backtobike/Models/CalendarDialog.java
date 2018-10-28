@@ -9,6 +9,8 @@ import android.widget.CalendarView;
 import com.g.laurent.backtobike.Controllers.Fragments.InvitFragment;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.UtilsApp;
+import com.g.laurent.backtobike.Utils.UtilsTime;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -38,7 +40,7 @@ public class CalendarDialog extends DialogFragment {
 
         calendarView.setOnDateChangeListener(((view, year, month, dayOfMonth) -> {
 
-            String date = UtilsApp.createStringDate(year, month, dayOfMonth);
+            String date = UtilsTime.createStringDate(year, month, dayOfMonth);
 
             InvitFragment invitFragment = (InvitFragment) getTargetFragment();
             invitFragment.getConfig().getDateView().setText(date); // change date selected into string

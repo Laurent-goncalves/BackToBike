@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import com.g.laurent.backtobike.Models.CallbackWeather;
 import com.g.laurent.backtobike.R;
+import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -36,8 +37,6 @@ public class GetForecast implements Disposable {
             public void onError(Throwable e) {
                 String text = context.getResources().getString(R.string.error_weather_api) + "\n" + e.toString();
                 callbackWeather.onFailure(text);
-                Toast toast = Toast.makeText(context,text,Toast.LENGTH_LONG);
-                toast.show();
             }
 
             @Override
@@ -64,8 +63,8 @@ public class GetForecast implements Disposable {
                         code = "800";
 
                     listWeathers.add(new WeatherForecast(code,
-                            String.valueOf(datum.getMinTemp()),
-                            String.valueOf(datum.getMaxTemp()),
+                            UtilsApp.getRoundValueTemperature(datum.getMinTemp()),
+                            UtilsApp.getRoundValueTemperature(datum.getMaxTemp()),
                             description,
                             datum.getDatetime()));
                 }

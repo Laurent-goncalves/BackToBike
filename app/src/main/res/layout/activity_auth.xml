@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/vtt_main3"/>
+        android:src="@drawable/vtt_main_pic"/>
 
     <!-- BUTTON SIGN IN WITH GOOGLE AND FACEBOOK -->
 

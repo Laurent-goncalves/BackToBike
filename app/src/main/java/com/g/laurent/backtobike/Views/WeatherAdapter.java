@@ -6,6 +6,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.WeatherApi.WeatherForecast;
 import java.util.List;
@@ -31,7 +33,9 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull WeatherViewHolder holder, int position) {
-        holder.configureImagesViews(listWeather.get(holder.getAdapterPosition()), context);
+        holder.configureViews(listWeather.get(holder.getAdapterPosition()), holder.getAdapterPosition()+1, context);
+
+        holder.itemView.setOnClickListener(v -> Toast.makeText(context, listWeather.get(holder.getAdapterPosition()).getDescription(), Toast.LENGTH_SHORT).show());
     }
 
     @Override

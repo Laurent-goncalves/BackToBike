@@ -25,13 +25,13 @@ public interface WeatherIcons {
     };
 
     Integer[] daysIds = {
+            R.string.sunday,
             R.string.monday,
             R.string.tuesday,
             R.string.wednesday,
             R.string.thursday,
             R.string.friday,
-            R.string.saturday,
-            R.string.sunday
+            R.string.saturday
     };
 
 }

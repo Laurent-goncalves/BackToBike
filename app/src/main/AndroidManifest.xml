@@ -75,14 +75,17 @@
 
 
         <activity android:name=".Controllers.Activities.AuthActivity">
+
+        </activity>
+        <activity android:name=".Controllers.Activities.BaseActivity"/>
+        <activity android:name=".Controllers.Activities.MainActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Controllers.Activities.BaseActivity"/>
-        <activity android:name=".Controllers.Activities.MainActivity"/>
         <activity android:name=".Controllers.Activities.EventActivity" />
         <activity android:name=".Controllers.Activities.FriendsActivity" />
         <activity android:name=".Controllers.Activities.DisplayActivity"/>

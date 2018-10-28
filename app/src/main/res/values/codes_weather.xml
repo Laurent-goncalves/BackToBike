@@ -40,4 +40,11 @@
     <integer name="c804">15</integer>
     <integer name="c900">16</integer>
 
+
+    <color name="colorWeather">#bb82b8dc</color>
+    <color name="colorWinter">#bbe4e6f3</color>
+    <color name="colorSpring">#bb699841</color>
+    <color name="colorSummer">#bbf1d464</color>
+    <color name="colorAutumn">#bbd7440c</color>
+
 </resources>

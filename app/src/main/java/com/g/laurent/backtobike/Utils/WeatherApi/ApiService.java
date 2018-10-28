@@ -17,7 +17,8 @@ public interface ApiService {
     Observable<Forecast> getWeatherForecast(@Query("key") String api,
                                             @Query("lang") String lang,
                                             @Query("lat") String lat,
-                                            @Query("lon") String lon);
+                                            @Query("lon") String lon,
+                                            @Query("days") String days);
 
 
     HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);

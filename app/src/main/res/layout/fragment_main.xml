@@ -1,111 +1,230 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".Controllers.Fragments.MainFragment">
+    android:layout_height="match_parent">
 
-    <!-- TITLE NEXT BIKE TRIPS -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/colorWhite"
-        android:textStyle="italic|bold"
-        android:textSize="16sp"
-        android:padding="5dp"
-        android:paddingStart="15dp"
-        android:text="@string/my_next_bike_trips"
-        tools:ignore="RtlSymmetry" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <!-- RECYCLERVIEW BIKE EVENTS -->
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/bikeevents_recyclerview"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="30"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="30"
+            android:visibility="invisible"/>
 
-    <!-- NEWS AND UPDATES -->
-    <RelativeLayout
-        android:background="@drawable/background_display_activity"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="30">
-
-        <!-- NEWS -->
-        <TextView
-            android:id="@+id/news_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="285dp"
-            android:maxWidth="200dp"
-            android:padding="5dp"
-            android:textSize="14sp" />
-
-        <!-- UPDATES -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:layout_alignParentEnd="true"
+        <!-- NEWS AND UPDATES -->
+        <RelativeLayout
+            android:id="@+id/middle_layout"
             android:background="@drawable/background_display_activity"
-            android:layout_marginEnd="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="30">
+
+            <!-- ICONS LEFT -->
+            <LinearLayout
+                android:id="@+id/layout_buttons_left"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:gravity="center_vertical"
+                android:layout_marginStart="10dp"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/button_invitations"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/invitations"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_marginBottom="20dp"
+                    android:textColor="@color/colorWhite"
+                    android:background="@color/fui_transparent"
+                    android:drawableTop="@drawable/baseline_mail_white_24"/>
+
+                <Button
+                    android:id="@+id/button_new_friends"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/new_friends"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textColor="@color/colorWhite"
+                    android:background="@color/fui_transparent"
+                    android:drawableTop="@drawable/baseline_person_add_white_24"/>
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/title_center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="centerCrop"
+                android:layout_centerInParent="true"
+                android:gravity="center_vertical"
+                android:layout_margin="10dp"
+                android:src="@drawable/white_title"/>
+
+            <!-- ICONS RIGHT -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="10dp"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/button_events"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/next_trips"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_marginBottom="20dp"
+                    android:textColor="@color/colorWhite"
+                    android:background="@color/fui_transparent"
+                    android:drawableTop="@drawable/baseline_directions_bike_white_24"/>
+
+                <Button
+                    android:id="@+id/button_disconnect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sign_out_menu"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textColor="@color/colorWhite"
+                    android:background="@color/fui_transparent"
+                    android:drawableTop="@drawable/baseline_power_settings_new_white_24"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <!-- WEATHER -->
+        <LinearLayout
+            android:id="@+id/framelayout_weather"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="30"
             android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center_horizontal"
-                android:src="@drawable/baseline_mail_white_24"/>
-
+            <!-- TITLE WEATHER -->
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/title_weather"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:layout_marginTop="5dp"
+                android:background="@color/colorPrimary"
                 android:textColor="@color/colorWhite"
-                android:text="@string/invitations"/>
+                android:textStyle="italic|bold"
+                android:textSize="16sp"
+                android:padding="5dp"
+                android:paddingStart="15dp"
+                android:text="@string/weather_forecast"
+                tools:ignore="RtlSymmetry" />
 
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="20dp"
-                android:layout_gravity="center_horizontal"
-                android:src="@drawable/baseline_person_add_white_24"/>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:layout_marginTop="5dp"
-                android:textColor="@color/colorWhite"
-                android:text="@string/new_friends"/>
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/sky"/>
+
+                <!-- RECYCLERVIEW WEATHER -->
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/weather_recyclerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"/>
+
+            </FrameLayout>
 
         </LinearLayout>
 
-    </RelativeLayout>
+    </LinearLayout>
 
-    <!-- TITLE WEATHER -->
-    <TextView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/colorWhite"
-        android:textStyle="italic|bold"
-        android:textSize="16sp"
-        android:padding="5dp"
-        android:paddingStart="15dp"
-        android:text="@string/weather_forecast"
-        tools:ignore="RtlSymmetry" />
+        android:layout_height="match_parent">
 
-    <!-- RECYCLERVIEW WEATHER -->
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/weather_recyclerview"
+        <ImageView
+            android:id="@+id/panel"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/panel_draw"/>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_top"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="30"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-</LinearLayout>
+        <!-- RECYCLERVIEW BIKE EVENTS -->
+        <LinearLayout
+            android:id="@+id/layout_bike_event"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="30"
+            android:orientation="vertical">
+
+            <!-- TITLE NEXT BIKE TRIPS -->
+            <TextView
+                android:id="@+id/title_next_bike_trips"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryDark"
+                android:textColor="@color/colorWhite"
+                android:textStyle="italic|bold"
+                android:textSize="16sp"
+                android:padding="5dp"
+                android:paddingStart="15dp"
+                android:layout_gravity="top"
+                android:text="@string/my_next_bike_trips"
+                tools:ignore="RtlSymmetry" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/image_season"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/autumn"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/bikeevents_recyclerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"/>
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="60"
+            android:visibility="invisible"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
+

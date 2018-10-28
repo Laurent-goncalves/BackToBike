@@ -125,4 +125,17 @@
     <string name="saturday">Sat.</string>
     <string name="sunday">Sun.</string>
 
+    <string name="this_monday">This Monday</string>
+    <string name="this_tuesday">This Tuesday</string>
+    <string name="this_wednesday">This Wednesday</string>
+    <string name="this_thursday">This Thursday</string>
+    <string name="this_friday">This Friday</string>
+    <string name="this_saturday">This Saturday</string>
+    <string name="this_sunday">This Sunday</string>
+
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="next_trips">NEXT TRIPS</string>
+
+
 </resources>

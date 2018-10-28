@@ -63,7 +63,7 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
     }
 
     public void launchMainActivity(){
-        Intent intent = new Intent(this,DisplayActivity.class);
+        Intent intent = new Intent(this,MainActivity.class);
         startActivity(intent);
         finish();
     }

@@ -8,6 +8,8 @@ import android.text.format.DateFormat;
 import android.widget.TimePicker;
 import com.g.laurent.backtobike.Controllers.Fragments.InvitFragment;
 import com.g.laurent.backtobike.Utils.UtilsApp;
+import com.g.laurent.backtobike.Utils.UtilsTime;
+
 import java.util.Calendar;
 
 
@@ -33,7 +35,7 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        String time = UtilsApp.createStringTime(hourOfDay, minute);
+        String time = UtilsTime.createStringTime(hourOfDay, minute);
         invitFragment.getConfig().getTimeView().setText(time); // change time selected
         invitFragment.getCallbackEventActivity().getInvitation().setTime(time);
     }

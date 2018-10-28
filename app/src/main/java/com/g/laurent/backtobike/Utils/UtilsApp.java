@@ -1,5 +1,6 @@
 package com.g.laurent.backtobike.Utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,9 +15,15 @@ import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
+import com.g.laurent.backtobike.Models.WeatherIcons;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class UtilsApp {
@@ -85,33 +92,12 @@ public class UtilsApp {
     }
 
     // ------------------------------------------------------------------------------------------------------------
-    // ------------------------------------  DATE FORMAT  ---------------------------------------------------------
+    // ------------------------------------  TEMPERATURE  ---------------------------------------------------------
     // ------------------------------------------------------------------------------------------------------------
 
-    public static String createStringDate(int year, int month, int dayOfMonth){
-
-        String Day;
-        int Month = month + 1;
-        String new_month;
-
-        if(dayOfMonth<10)
-            Day = "0" + dayOfMonth;
-        else
-            Day = String.valueOf(dayOfMonth);
-
-        if(Month<10)
-            new_month = "0" + Month;
-        else
-            new_month = String.valueOf(Month);
-
-        return Day + "/" + new_month + "/" + year;
-    }
-
-    public static String createStringTime(int hourOfDay, int minute){
-        if(minute<10)
-            return hourOfDay + ":0" + minute;
-        else
-            return hourOfDay + ":" + minute;
+    public static String getRoundValueTemperature(Double temperature){
+        DecimalFormat twoDForm = new DecimalFormat("#");
+        return String.valueOf(twoDForm.format(temperature)) + "°C";
     }
 
     // ------------------------------------------------------------------------------------------------------

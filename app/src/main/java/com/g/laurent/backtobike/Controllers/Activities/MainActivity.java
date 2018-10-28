@@ -1,6 +1,7 @@
 package com.g.laurent.backtobike.Controllers.Activities;
 
 import android.app.Dialog;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.g.laurent.backtobike.Controllers.Fragments.MainFragment;
 import com.g.laurent.backtobike.Models.AppDatabase;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackSynchronizeEnd;
@@ -53,6 +55,8 @@ public class MainActivity extends BaseActivity {
 
         // Check if the database has already been initialized (during the first use of the app on the phone)
         checkInitializationDatabase();
+
+        configureMainActivity();
     }
 
     private void checkInitializationDatabase(){
@@ -163,8 +167,12 @@ public class MainActivity extends BaseActivity {
 
     private void configureMainActivity(){
 
+        MainFragment mainFragment = new MainFragment();
 
-
+        // configure and show the invitFragment
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_main, mainFragment);
+        fragmentTransaction.commit();
     }
 
     private void clearDatabase(String userId, Context context){
