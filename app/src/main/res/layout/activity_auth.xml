@@ -14,26 +14,46 @@
 
     <!-- BUTTON SIGN IN WITH GOOGLE AND FACEBOOK -->
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/buttons_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="30dp">
+        android:layout_marginBottom="20dp"
+        android:orientation="vertical">
 
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/sign_in_button"
-            android:layout_width="220dp"
-            android:layout_height="40dp"
-            android:layout_above="@+id/login_button"/>
+        <!-- BUTTON CONNECT WITH GOOGLE -->
+        <Button
+            android:foreground="?attr/selectableItemBackground"
+            android:id="@+id/main_activity_button_login_google"
+            android:layout_width="250dp"
+            android:layout_height="45dp"
+            android:paddingStart="15dp"
+            android:gravity="center"
+            android:layout_marginBottom="10dp"
+            android:layout_gravity="center_horizontal"
+            android:drawableStart="@drawable/ic_google"
+            android:text="@string/connect_with_google"
+            android:textColor="#fff"
+            style="@style/AppTheme.RoundedCornerGoogleButton"
+            android:textSize="14sp"
+            tools:ignore="RtlSymmetry" />
 
         <com.facebook.login.widget.LoginButton
-            android:id="@+id/login_button"
-            android:layout_width="220dp"
+            xmlns:fb="http://schemas.android.com/apk/res-auto"
+            android:foreground="?attr/selectableItemBackground"
+            android:id="@+id/facebook_loginButton"
+            android:layout_width="250dp"
             android:layout_height="40dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginTop="10dp" />
+            android:layout_gravity="center_horizontal"
+            android:drawablePadding="15dp"
+            fb:com_facebook_login_text ="@string/connect_with_facebook"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:paddingLeft="25dp"
+            style="@style/AppTheme.RoundedCornerFacebookButton"
+            tools:ignore="RtlHardcoded,RtlSymmetry" />
 
-    </RelativeLayout>
-
+    </LinearLayout>
 
 </FrameLayout>

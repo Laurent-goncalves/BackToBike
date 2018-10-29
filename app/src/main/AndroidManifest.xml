@@ -27,6 +27,14 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/. 
         -->
+
+        <service
+            android:name=".Models.NotificationsService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
@@ -75,17 +83,14 @@
 
 
         <activity android:name=".Controllers.Activities.AuthActivity">
-
-        </activity>
-        <activity android:name=".Controllers.Activities.BaseActivity"/>
-        <activity android:name=".Controllers.Activities.MainActivity">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Controllers.Activities.BaseActivity"/>
+        <activity android:name=".Controllers.Activities.MainActivity"/>
         <activity android:name=".Controllers.Activities.EventActivity" />
         <activity android:name=".Controllers.Activities.FriendsActivity" />
         <activity android:name=".Controllers.Activities.DisplayActivity"/>

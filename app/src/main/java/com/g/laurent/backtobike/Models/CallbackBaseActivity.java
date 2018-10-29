@@ -17,15 +17,15 @@ public interface CallbackBaseActivity {
 
     void signOutUserFromFirebase(Context context);
 
-    public void launchMainActivity();
+    void launchMainActivity();
 
-    public void launchFriendsActivity();
+    void launchFriendsActivity();
 
-    public void launchEventActivity();
+    void launchEventActivity();
 
-    public void launchDisplayActivity(String typeDisplay, String id);
+    void launchDisplayActivity(String typeDisplay, String id);
 
-    public void launchTraceActivity(Route route);
+    void launchTraceActivity(Route route);
 
     Context getContextBaseActivity();
 

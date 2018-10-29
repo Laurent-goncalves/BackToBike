@@ -6,6 +6,7 @@ import android.support.test.filters.MediumTest;
 import android.support.test.runner.AndroidJUnit4;
 import com.g.laurent.backtobike.Models.CallbackWeather;
 import com.g.laurent.backtobike.Utils.UtilsApp;
+import com.g.laurent.backtobike.Utils.UtilsTime;
 import com.g.laurent.backtobike.Utils.WeatherApi.GetForecast;
 import com.g.laurent.backtobike.Utils.WeatherApi.WeatherForecast;
 import com.google.android.gms.maps.model.LatLng;
@@ -65,10 +66,10 @@ public class TestWeatherApi {
         Context context = getInstrumentation().getTargetContext();
 
         String date = "2018-10-21";
-        Assert.assertEquals("Sun. 21/10", UtilsApp.getDateWeather(context, date));
+        Assert.assertEquals("Sun. 21/10", UtilsTime.getDateWeather(context, date));
 
         date = "2018-10-27";
-        Assert.assertEquals("Sat. 27/10", UtilsApp.getDateWeather(context, date));
+        Assert.assertEquals("Sat. 27/10", UtilsTime.getDateWeather(context, date));
     }
 
     public static int getIntegerIdentifier(Context context, String name) {

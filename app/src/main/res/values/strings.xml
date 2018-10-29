@@ -72,6 +72,11 @@
     <string name="facebook_app_id">291137544820428</string>
     <string name="fb_login_protocol_scheme">fb291137544820428</string>
     <string name="title_activity_display">DisplayActivity</string>
+    <string name="connect_with_facebook">Connect with Facebook</string>
+    <string name="connect_with_google">Connect with Google</string>
+    <string name="error_connection">Problem occurred during connexion.</string>
+    <string name="cancel_connection">Authentication has been cancelled</string>
+    <string name="success_connection">You are connected</string>
 
     <!-- DISPLAYACTIVITY -->
     <string name="at">at</string>

@@ -17,4 +17,7 @@
     <color name="colorDrawer">#823719</color>
     <color name="colorOrganizer">#ffcc00</color>
 
+    <color name="colorGoogleButton">#ff3939</color>
+    <color name="colorFacebookButton">#45619d</color>
+
 </resources>

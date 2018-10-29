@@ -62,6 +62,12 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
         navigationView = findViewById(R.id.activity_nav_view);
     }
 
+    public void launchAuthActivity(){
+        Intent intent = new Intent(this,AuthActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     public void launchMainActivity(){
         Intent intent = new Intent(this,MainActivity.class);
         startActivity(intent);
@@ -124,6 +130,8 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
         AuthUI.getInstance()
                 .signOut(context)
                 .addOnSuccessListener(this, updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
+
+        launchAuthActivity();
     }
 
     protected OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin) {

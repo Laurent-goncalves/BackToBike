@@ -71,13 +71,18 @@ dependencies {
 
     // Firebase
     implementation 'com.google.firebase:firebase-core:16.0.4'
-    implementation 'com.google.firebase:firebase-auth:16.0.4'
+    implementation 'com.google.firebase:firebase-auth:16.0.5'
     implementation 'com.firebaseui:firebase-ui-auth:3.3.1'
     implementation 'com.firebaseui:firebase-ui-database:3.3.1'
-    implementation 'com.google.firebase:firebase-database:16.0.3'
+    implementation 'com.google.firebase:firebase-database:16.0.4'
     implementation 'com.facebook.android:facebook-android-sdk:4.30.0'
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
     implementation 'com.facebook.android:facebook-login:4.37.0'
+    implementation 'com.google.firebase:firebase-messaging:17.3.4'
+
+    implementation 'com.google.android.gms:play-services-auth:16.0.1'
+    implementation 'com.google.android.gms:play-services-analytics:16.0.4'
+    implementation 'com.google.android.gms:play-services-cast:16.1.0'
 
     // http requests
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'

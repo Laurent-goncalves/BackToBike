@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -25,8 +27,14 @@ import com.g.laurent.backtobike.Utils.FirebaseRecover;
 import com.g.laurent.backtobike.Utils.FirebaseUpdate;
 import com.g.laurent.backtobike.Utils.FriendsHandler;
 import com.g.laurent.backtobike.Utils.SynchronizeWithFirebase;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,9 +53,24 @@ public class MainActivity extends BaseActivity {
 
         user = FirebaseAuth.getInstance().getCurrentUser();
 
-        if(user!=null)
-            userId = user.getUid();
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
 
+                        return;
+                    }
+
+                    // Get new Instance ID token
+                    String token = task.getResult().getToken();
+                    System.out.println("eee  token=" + token);
+                });
+
+
+        if(user!=null) {
+            userId = user.getUid();
+        }
+        //RemoteMessage remoteMessage = new RemoteMessage();
+        //FirebaseMessaging.getInstance().send(remoteMessage);
         //clearDatabase(userId,getApplicationContext());
 
         // recover SharedPreferences

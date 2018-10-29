@@ -29,6 +29,7 @@ import com.g.laurent.backtobike.Models.CallbackMainActivity;
 import com.g.laurent.backtobike.Models.CallbackWeather;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.BikeEventHandler;
+import com.g.laurent.backtobike.Utils.UtilsTime;
 import com.g.laurent.backtobike.Utils.WeatherApi.GetForecast;
 import com.g.laurent.backtobike.Utils.WeatherApi.WeatherForecast;
 import com.g.laurent.backtobike.Views.EventAdapter;
@@ -136,12 +137,13 @@ public class MainFragment extends Fragment implements CallbackMainActivity {
 
     private void configureEventsRecyclerView(){
 
+        // Define which image to show according to current season
         int seasonNum = getSeasonNumber();
         int drawableId = EventViewHolder.SeasonPicture.seasonDrawables[seasonNum];
         seasonImage.setImageDrawable(context.getResources().getDrawable(drawableId));
 
         // Get list of bikeEvent to display
-        List<BikeEvent> listBikeEvent = BikeEventHandler.getAllFutureBikeEvents(context, userId);
+        List<BikeEvent> listBikeEvent = UtilsTime.getListBikeEventByChronologicalOrder(BikeEventHandler.getAllFutureBikeEvents(context, userId));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
 
