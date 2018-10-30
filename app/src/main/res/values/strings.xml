@@ -28,6 +28,7 @@
     <string name="invitations_pending">invitations are pending.</string>
     <string name="invitation_cancelled">invitation has been cancelled.</string>
     <string name="invitations_cancelled">invitations have been cancelled.</string>
+    <string name="no_new_information">No new information since your last visit...</string>
 
     <!-- INVITACTIVITY -->
     <string name="date">Date:</string>
@@ -121,6 +122,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="my_next_bike_trips">My next bike trips !</string>
     <string name="weather_forecast">Weather Forecast</string>
+    <string name="weather_forecast_at">Weather Forecast at </string>
     <string name="news">News</string>
     <string name="invitations">INVITATIONS</string>
     <string name="new_friends">NEW FRIENDS</string>

@@ -3,6 +3,7 @@ package com.g.laurent.backtobike.Controllers.Fragments;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
@@ -29,8 +30,11 @@ import com.g.laurent.backtobike.Controllers.Activities.MainActivity;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackMainActivity;
 import com.g.laurent.backtobike.Models.CallbackWeather;
+import com.g.laurent.backtobike.Models.OnCurrentLocationFound;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.BikeEventHandler;
+import com.g.laurent.backtobike.Utils.GetCurrentLocation;
+import com.g.laurent.backtobike.Utils.UtilsGoogleMaps;
 import com.g.laurent.backtobike.Utils.UtilsTime;
 import com.g.laurent.backtobike.Utils.WeatherApi.GetForecast;
 import com.g.laurent.backtobike.Utils.WeatherApi.WeatherForecast;
@@ -42,6 +46,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import net.bytebuddy.dynamic.scaffold.MethodRegistry;
 
+import java.io.IOException;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,21 +62,27 @@ public class MainFragment extends Fragment {
     @BindView(R.id.image_season) ImageView seasonImage;
     @BindView(R.id.title_center) ImageView centralTitle;
     @BindView(R.id.panel) RelativeLayout panel;
+    @BindView(R.id.image_panel) ImageView imagePanel;
+    @BindView(R.id.scrollview_panel) ScrollView panelScroll;
     @BindView(R.id.count_friends) TextView countFriends;
     @BindView(R.id.count_invitation) TextView countInvits;
     @BindView(R.id.count_events) TextView countEvents;
     @BindView(R.id.textview_differences) TextView differencesPanel;
     @BindView(R.id.layout_bike_event) LinearLayout bikeEventLayout;
+    @BindView(R.id.title_weather) TextView titleWeather;
     private static final String DISPLAY_MY_EVENTS ="display_my_events";
     private static final String DISPLAY_MY_INVITS ="display_my_invits";
     private static final String BUNDLE_COUNTER_EVENTS = "bundle_counter_events";
     private static final String BUNDLE_COUNTER_INVITS = "bundle_counter_invits";
     private static final String BUNDLE_COUNTER_FRIENDS = "bundle_counter_friends";
     private static final String BUNDLE_DIFFERENCES = "bundle_differences";
+    private static final String BUNDLE_LATITUDE = "bundle_latitude";
+    private static final String BUNDLE_LONGITUDE = "bundle_longitude";
     private Context context;
     private CallbackMainActivity callbackMainActivity;
     private String userId;
     private Boolean panelExpanded;
+    private LatLng currentLocation;
 
     public MainFragment() {
         // Required empty public constructor
@@ -87,6 +98,13 @@ public class MainFragment extends Fragment {
 
         panelExpanded = false;
         panel.setOnClickListener(onClickPanelListener);
+        panelScroll.setOnClickListener(onClickPanelListener);
+        differencesPanel.setOnClickListener(onClickPanelListener);
+        imagePanel.setOnClickListener(onClickPanelListener);
+
+        if(getArguments()!=null){
+            currentLocation = new LatLng(getArguments().getDouble(BUNDLE_LATITUDE),getArguments().getDouble(BUNDLE_LONGITUDE));
+        }
 
         configureMainFragment();
 
@@ -151,7 +169,10 @@ public class MainFragment extends Fragment {
             else
                 countEvents.setText(String.valueOf(counterEvents));
 
-            differencesPanel.setText(differences);
+            if(differences.equals("")) {
+                differencesPanel.setText(context.getResources().getString(R.string.no_new_information));
+            } else
+                differencesPanel.setText(differences);
         }
     }
 
@@ -224,13 +245,31 @@ public class MainFragment extends Fragment {
         });
     }
 
+    private void setTitleWeather(LatLng currentLocation){
+        String city = null;
+
+        try {
+            city = UtilsGoogleMaps.getCityWithLatLng(context, currentLocation);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if(city!=null) {
+            String text = context.getResources().getString(R.string.weather_forecast_at) + " " + city;
+            titleWeather.setText(text);
+        } else {
+            String text = context.getResources().getString(R.string.weather_forecast);
+            titleWeather.setText(text);
+        }
+    }
+
     private void configureMainFragment(){
 
+        setTitleWeather(currentLocation);
         GetForecast getForecast = new GetForecast();
         String apiKey = context.getResources().getString(R.string.weather_api_key);
         String language = context.getResources().getString(R.string.language);
-        LatLng location = new LatLng(48.857327,2.336151);
-        getForecast.getListWeathersByDay(apiKey, location, language, context, new CallbackWeather() {
+        getForecast.getListWeathersByDay(apiKey, currentLocation, language, context, new CallbackWeather() {
             @Override
             public void onCompleted(List<WeatherForecast> listWeatherForecast) {
                 configureWeatherRecyclerView(context, listWeatherForecast);
@@ -271,4 +310,6 @@ public class MainFragment extends Fragment {
             callbackMainActivity = (CallbackMainActivity) context;
         }
     }
+
+
 }

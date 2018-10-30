@@ -55,8 +55,6 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
         sharedPreferences = getSharedPreferences(SHAREDPREFERENCES,MODE_PRIVATE);
         defineCountersAndConfigureToolbar(MENU_TRACE_ROUTE);
 
-
-
         defineRouteToTrace(savedInstanceState, getIntent().getExtras());
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -96,7 +94,7 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         getCurrentLocation = new GetCurrentLocation();
-        getCurrentLocation.getLocationPermission(this,sharedPreferences,onCurrentLocationFound);
+        getCurrentLocation.getLocationPermission(this, sharedPreferences, onCurrentLocationFound);
     }
 
     OnCurrentLocationFound onCurrentLocationFound = currentLocation -> configureTraceActivity();

@@ -72,7 +72,19 @@
             <FrameLayout
                 android:id="@+id/fragment_main"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent">
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:visibility="gone"
+                    android:layout_gravity="center"
+                    android:indeterminateDrawable="@drawable/progress" >
+                </ProgressBar>
+
+            </FrameLayout>
 
         </LinearLayout>
 

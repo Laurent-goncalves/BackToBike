@@ -82,19 +82,35 @@
             android:exported="true" />
 
 
-        <activity android:name=".Controllers.Activities.AuthActivity">
+        <activity
+            android:name=".Controllers.Activities.AuthActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Controllers.Activities.BaseActivity"/>
-        <activity android:name=".Controllers.Activities.MainActivity"/>
-        <activity android:name=".Controllers.Activities.EventActivity" />
-        <activity android:name=".Controllers.Activities.FriendsActivity" />
-        <activity android:name=".Controllers.Activities.DisplayActivity"/>
-        <activity android:name=".Controllers.Activities.TraceActivity"/>
+        <activity
+            android:name=".Controllers.Activities.BaseActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Controllers.Activities.MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Controllers.Activities.EventActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Controllers.Activities.FriendsActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Controllers.Activities.DisplayActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Controllers.Activities.TraceActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
 
     </application>
 

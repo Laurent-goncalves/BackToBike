@@ -1,6 +1,9 @@
 package com.g.laurent.backtobike.Utils;
 
+import android.content.Context;
 import android.graphics.Point;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import com.g.laurent.backtobike.Models.RouteSegment;
 import com.google.android.gms.maps.GoogleMap;
@@ -8,6 +11,8 @@ import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
+
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -19,6 +24,17 @@ import java.util.TimeZone;
 
 
 public class UtilsGoogleMaps {
+
+
+    public static String getCityWithLatLng(Context context, LatLng latLng) throws IOException {
+
+        Geocoder gcd = new Geocoder(context, Locale.getDefault());
+        List<Address> addresses = gcd.getFromLocation(latLng.latitude, latLng.longitude, 1);
+        if (addresses.size() > 0)
+            return addresses.get(0).getLocality();
+        else
+            return null;
+    }
 
     public static int findIndexNearestPolyLinePoint(LatLng pointSelect, Polyline route){
 

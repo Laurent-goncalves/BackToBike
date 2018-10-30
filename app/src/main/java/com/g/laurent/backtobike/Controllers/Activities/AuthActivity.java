@@ -53,12 +53,6 @@ public class AuthActivity extends AppCompatActivity {
         };
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        //GoogleSignIn.getLastSignedInAccount(this);
-    }
-
     @OnClick(R.id.main_activity_button_login_google)
     public void launchSignInWithGoogle(){
         signInWithGoogle();

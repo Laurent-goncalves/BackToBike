@@ -7,7 +7,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
+
+import com.g.laurent.backtobike.Controllers.Activities.MainActivity;
 import com.g.laurent.backtobike.Controllers.Activities.TraceActivity;
+import com.g.laurent.backtobike.Controllers.Fragments.MainFragment;
 import com.g.laurent.backtobike.Models.OnCurrentLocationFound;
 import com.g.laurent.backtobike.R;
 import com.google.android.gms.location.places.PlaceDetectionClient;
@@ -41,7 +44,7 @@ public class GetCurrentLocation {
             if (ContextCompat.checkSelfPermission(context,
                     android.Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
-                getCurrentLocation(onCurrentLocationFound);
+                getCurrentLocation(traceActivity, onCurrentLocationFound);
             } else {
                 ActivityCompat.requestPermissions(traceActivity,
                         new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
@@ -50,7 +53,26 @@ public class GetCurrentLocation {
         }
     }
 
-    public void getCurrentLocation(OnCurrentLocationFound onCurrentLocationFound) {
+    public void getLocationPermission(MainActivity mainActivity, SharedPreferences sharedPreferences, OnCurrentLocationFound onCurrentLocationFound) {
+
+        this.context = mainActivity.getApplicationContext();
+        this.sharedPreferences=sharedPreferences;
+        currentLatLng = findLastCurrentLocation(sharedPreferences);
+
+        if (context != null) {
+            if (ContextCompat.checkSelfPermission(mainActivity,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                getCurrentLocation(onCurrentLocationFound);
+            } else {
+                ActivityCompat.requestPermissions(mainActivity,
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                        PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            }
+        }
+    }
+
+    public void getCurrentLocation(TraceActivity traceActivity, OnCurrentLocationFound onCurrentLocationFound) {
 
         PlaceDetectionClient mPlaceDetectionClient = Places.getPlaceDetectionClient(traceActivity);
 
@@ -83,7 +105,48 @@ public class GetCurrentLocation {
             });
 
         } catch (SecurityException e) {
-            Toast.makeText(context, context.getResources().getString(R.string.error_current_location) + "\n" + e.toString(), Toast.LENGTH_LONG).show();
+            String error = context.getResources().getString(R.string.error_current_location) + "\n" + e.toString();
+            moveCameraToCurrentPosition(currentLatLng, onCurrentLocationFound);
+            Toast.makeText(context, error, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void getCurrentLocation(OnCurrentLocationFound onCurrentLocationFound) {
+
+        PlaceDetectionClient mPlaceDetectionClient = Places.getPlaceDetectionClient(context);
+
+        try {
+
+            final Task<PlaceLikelihoodBufferResponse> placeResult = mPlaceDetectionClient.getCurrentPlace(null);
+            placeResult.addOnCompleteListener(task -> {
+
+                // ----------------------------- CURRENT LOCATION FOUND -----------------------------
+                if (task.isSuccessful() && task.getResult() != null) {
+
+                    // Recover the latitude and longitude of current location
+                    currentLatLng = findPlaceHighestLikelihood(task);
+
+                    // Save currentLatLng in sharedpreferrences
+                    saveLastCurrentLocation(sharedPreferences, currentLatLng);
+
+                    if (currentLatLng.longitude >= -123 && currentLatLng.longitude <= -122
+                            && currentLatLng.latitude >= 37 && currentLatLng.latitude <= 38) // for Travis integration tests
+                        currentLatLng = new LatLng(48.867267,2.385343); // for Travis integration tests
+
+                } else {
+                    // ----------------------------- CURRENT LOCATION NOT FOUND -----------------------------
+                    // Warn user
+                    Toast.makeText(context, context.getResources().getString(R.string.error_current_location), Toast.LENGTH_LONG).show();
+                }
+
+                // Send to MainFragment the currentLatLng
+                onCurrentLocationFound.onCurrentLocationFound(currentLatLng);
+            });
+
+        } catch (SecurityException e) {
+            String error = context.getResources().getString(R.string.error_current_location) + "\n" + e.toString();
+            onCurrentLocationFound.onCurrentLocationFound(currentLatLng);
+            Toast.makeText(context, error, Toast.LENGTH_LONG).show();
         }
     }
 
