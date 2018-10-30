@@ -256,19 +256,33 @@ public class UtilsTime {
     @SuppressLint("SimpleDateFormat")
     private static int getDayNumber(String dateString){
 
-        String format = "yyyy-MM-dd";
-        SimpleDateFormat df = new SimpleDateFormat(format);
-        Date date = null;
+        String format = null;
 
-        try {
-            date = df.parse(dateString);
-        } catch (ParseException e) {
-            e.printStackTrace();
+        if(dateString!=null){
+            if(dateString.substring(4,5).equals("-"))
+                format = "yyyy-MM-dd";
+            else if(dateString.substring(2,3).equals("/"))
+                format = "dd/MM/yyyy";
+
+            if(format!=null){
+                SimpleDateFormat df = new SimpleDateFormat(format);
+                Date date = null;
+
+                try {
+                    date = df.parse(dateString);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(date);
+
+                return cal.get(Calendar.DAY_OF_WEEK);
+
+            } else
+                return 0;
         }
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        return cal.get(Calendar.DAY_OF_WEEK);
+        return 0;
     }
 
 }

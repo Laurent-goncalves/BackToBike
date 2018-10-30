@@ -57,7 +57,7 @@ public class FriendsActivity extends BaseActivity implements CallbackFriendActiv
             checkForFriendRequests();
 
             // Configure and show fragment
-            configureAndShowFriendFragment();
+            synchronizeWithFirebaseAndRefreshFragment();
 
             // Configure toolbar
             configureButtonToolbar(false);

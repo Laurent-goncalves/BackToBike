@@ -15,6 +15,7 @@ import android.view.View;
 import com.firebase.ui.auth.AuthUI;
 import com.g.laurent.backtobike.Models.CallbackBaseActivity;
 import com.g.laurent.backtobike.Models.CallbackCounters;
+import com.g.laurent.backtobike.Models.Difference;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.ToolbarManager;
 import com.g.laurent.backtobike.R;
@@ -22,6 +23,8 @@ import com.g.laurent.backtobike.Utils.Action;
 import com.g.laurent.backtobike.Utils.FirebaseRecover;
 import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.util.List;
 
 public class BaseActivity extends AppCompatActivity implements CallbackBaseActivity{
 
@@ -108,7 +111,7 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
         FirebaseRecover firebaseRecover = new FirebaseRecover(getApplicationContext());
         firebaseRecover.recoverDatasForCounters(userId, getApplicationContext(), new CallbackCounters() {
             @Override
-            public void onCompleted(int counterFriend, int counterEvents, int counterInvits) {
+            public void onCompleted(List<Difference> differenceList, List<String> differenceStringList,int counterFriend, int counterEvents, int counterInvits) {
                 toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, counterFriend, counterEvents, counterInvits);
                 int count = counterFriend + counterEvents + counterInvits;
                 UtilsApp.setBadge(getApplicationContext(), count);

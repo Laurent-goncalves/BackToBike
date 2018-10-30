@@ -41,10 +41,12 @@ public class BikeEventHandler {
         eventFriendsContentProvider.setUtils(context, null, bikeEvent.getId(), userId);
 
         // Add event friends to database
-        if(listEventFriends.size()>0){
-            for(EventFriends eventFriends : listEventFriends){
-                eventFriends.setIdEvent(bikeEvent.getId());
-                eventFriendsContentProvider.insert(null, EventFriends.createContentValuesFromEventFriendsInsert(eventFriends));
+        if(listEventFriends!=null) {
+            if (listEventFriends.size() > 0) {
+                for (EventFriends eventFriends : listEventFriends) {
+                    eventFriends.setIdEvent(bikeEvent.getId());
+                    eventFriendsContentProvider.insert(null, EventFriends.createContentValuesFromEventFriendsInsert(eventFriends));
+                }
             }
         }
     }

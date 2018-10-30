@@ -37,7 +37,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
         holder.configureViews(listBikeEvent.get(holder.getAdapterPosition()), userId, context);
-        holder.itemView.setOnClickListener(v -> callbackMainActivity.showEvent(listBikeEvent.get(holder.getAdapterPosition())));
+        //holder.itemView.setOnClickListener(v -> callbackMainActivity.showEvent(listBikeEvent.get(holder.getAdapterPosition())));
     }
 
     @Override

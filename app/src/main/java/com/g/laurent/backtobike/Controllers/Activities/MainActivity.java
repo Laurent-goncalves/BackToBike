@@ -15,7 +15,10 @@ import android.widget.Toast;
 import com.g.laurent.backtobike.Controllers.Fragments.MainFragment;
 import com.g.laurent.backtobike.Models.AppDatabase;
 import com.g.laurent.backtobike.Models.BikeEvent;
+import com.g.laurent.backtobike.Models.CallbackCounters;
+import com.g.laurent.backtobike.Models.CallbackMainActivity;
 import com.g.laurent.backtobike.Models.CallbackSynchronizeEnd;
+import com.g.laurent.backtobike.Models.Difference;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.OnUserDataGetListener;
@@ -27,6 +30,8 @@ import com.g.laurent.backtobike.Utils.FirebaseRecover;
 import com.g.laurent.backtobike.Utils.FirebaseUpdate;
 import com.g.laurent.backtobike.Utils.FriendsHandler;
 import com.g.laurent.backtobike.Utils.SynchronizeWithFirebase;
+import com.g.laurent.backtobike.Utils.UtilsApp;
+import com.g.laurent.backtobike.Utils.UtilsCounters;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,9 +44,13 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements CallbackMainActivity {
 
     private static final String SHAREDPREFERENCES_INIT = "database_init_sharedpreferences";
+    private static final String BUNDLE_COUNTER_EVENTS = "bundle_counter_events";
+    private static final String BUNDLE_COUNTER_INVITS = "bundle_counter_invits";
+    private static final String BUNDLE_COUNTER_FRIENDS = "bundle_counter_friends";
+    private static final String BUNDLE_DIFFERENCES = "bundle_differences";
     private SharedPreferences sharedPref;
     private FirebaseUser user;
 
@@ -52,8 +61,11 @@ public class MainActivity extends BaseActivity {
         assignToolbarViews();
 
         user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user!=null) {
+            userId = user.getUid();
+        }
 
-        FirebaseInstanceId.getInstance().getInstanceId()
+        /*FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
 
@@ -63,15 +75,16 @@ public class MainActivity extends BaseActivity {
                     // Get new Instance ID token
                     String token = task.getResult().getToken();
                     System.out.println("eee  token=" + token);
-                });
-
-
-        if(user!=null) {
-            userId = user.getUid();
-        }
+                });*/
         //RemoteMessage remoteMessage = new RemoteMessage();
         //FirebaseMessaging.getInstance().send(remoteMessage);
+
         //clearDatabase(userId,getApplicationContext());
+
+        //FirebaseUpdate firebaseUpdate = new FirebaseUpdate(getApplicationContext());
+        //firebaseUpdate.setTestData(getApplicationContext(), userId);
+
+
 
         // recover SharedPreferences
         sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
@@ -79,7 +92,6 @@ public class MainActivity extends BaseActivity {
         // Check if the database has already been initialized (during the first use of the app on the phone)
         checkInitializationDatabase();
 
-        configureMainActivity();
     }
 
     private void checkInitializationDatabase(){
@@ -90,25 +102,22 @@ public class MainActivity extends BaseActivity {
                 SynchronizeWithFirebase.buildDatabaseWithDatasFromFirebase(userId, sharedPref, getApplicationContext(), new CallbackSynchronizeEnd() {
                     @Override
                     public void onCompleted() {
-                        startConfigurationMainActivity();
+                        checkIfUserHasLoginOnFirebase();
                     }
 
                     @Override
                     public void onFailure(String error) {
-
+                        checkIfUserHasLoginOnFirebase();
                     }
                 });
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            } finally {
+                checkIfUserHasLoginOnFirebase();
             }
         } else {
-            startConfigurationMainActivity();
+            checkIfUserHasLoginOnFirebase();
         }
-    }
-
-    public void startConfigurationMainActivity(){
-        defineCountersAndConfigureToolbar(MENU_MAIN_PAGE);
-        checkIfUserHasLoginOnFirebase();
     }
 
     private void checkIfUserHasLoginOnFirebase(){
@@ -120,11 +129,10 @@ public class MainActivity extends BaseActivity {
                 if(datasOK) { // if userId is on firebase and login has been provided
 
                     // Save login in sharedpreferences
-
                     sharedPref.edit().putString(LOGIN_SHARED,login).apply();
 
                     // Configure MainActivity
-                    configureMainActivity();
+                    defineCountersAndConfigureToolbar(MENU_MAIN_PAGE);
 
                 } else { // login needs to be provided by user
                     showDialogToDefineLogin(); // show dialog
@@ -134,9 +142,9 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onFailure(String error) {
                 Toast.makeText(getApplicationContext(),error,Toast.LENGTH_LONG).show();
+                defineCountersAndConfigureToolbar(MENU_MAIN_PAGE);
             }
         });
-
     }
 
     private void showDialogToDefineLogin(){
@@ -177,7 +185,7 @@ public class MainActivity extends BaseActivity {
                     FirebaseUpdate firebaseUpdate = new FirebaseUpdate(getApplicationContext());
                     firebaseUpdate.updateUserData(userId, user.getDisplayName(), user.getPhotoUrl().toString(),login);
                     dialog.dismiss();
-                    configureMainActivity();
+                    defineCountersAndConfigureToolbar(MENU_MAIN_PAGE);
                 }
             }
 
@@ -188,14 +196,51 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    private void configureMainActivity(){
+    private void configureMainFragment(String differences, int countEvent, int countFriends, int countInvits){
 
         MainFragment mainFragment = new MainFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putInt(BUNDLE_COUNTER_EVENTS, countEvent);
+        bundle.putInt(BUNDLE_COUNTER_INVITS, countInvits);
+        bundle.putInt(BUNDLE_COUNTER_FRIENDS, countFriends);
+        bundle.putString(BUNDLE_DIFFERENCES, differences);
+
+        mainFragment.setArguments(bundle);
 
         // configure and show the invitFragment
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_main, mainFragment);
         fragmentTransaction.commit();
+    }
+
+    @Override
+    public void defineCountersAndConfigureToolbar(String typeDisplay){
+
+        FirebaseRecover firebaseRecover = new FirebaseRecover(getApplicationContext());
+        firebaseRecover.recoverDatasForCounters(userId, getApplicationContext(), new CallbackCounters() {
+            @Override
+            public void onCompleted(List<Difference> differenceList, List<String> listDifferencesFriendsAndInvits, int counterFriend, int counterEvents, int counterInvits) {
+                toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, counterFriend, counterEvents, counterInvits);
+                int count = counterFriend + counterEvents + counterInvits;
+                UtilsApp.setBadge(getApplicationContext(), count);
+
+                configureMainFragment(UtilsCounters.transformListDifferencesToString(differenceList, listDifferencesFriendsAndInvits),
+                        counterEvents, counterFriend, counterInvits);
+            }
+
+            @Override
+            public void onFailure(String error) {
+                toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, 0, 0,0);
+                UtilsApp.setBadge(getApplicationContext(), 0);
+                configureMainFragment(null,0,0,0);
+            }
+        });
+    }
+
+
+    public MainActivity getMainActivity(){
+        return this;
     }
 
     private void clearDatabase(String userId, Context context){

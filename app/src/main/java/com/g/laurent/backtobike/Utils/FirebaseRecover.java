@@ -210,13 +210,11 @@ public class FirebaseRecover {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 // check data
-                if(dataSnapshot.getChildren()!=null){
-                    for (DataSnapshot datas : dataSnapshot.getChildren()) {
-                        if(datas.child(LOGIN).getValue()!=null){
-                            if(datas.child(LOGIN).getValue().toString().equals(login)){
-                                answer.add(0,false);
-                                break;
-                            }
+                for (DataSnapshot datas : dataSnapshot.getChildren()) {
+                    if(datas.child(LOGIN).getValue()!=null){
+                        if(datas.child(LOGIN).getValue().toString().equals(login)){
+                            answer.add(0,false);
+                            break;
                         }
                     }
                 }
@@ -396,33 +394,31 @@ public class FirebaseRecover {
                 int counterFriends = 0;
                 int counterEvents;
                 int counterInvits;
+                List<String> fullListDifferences = new ArrayList<>();
 
                 DataSnapshot datasFriends = dataSnapshot.child(MY_FRIENDS);
                 DataSnapshot datasInvits = dataSnapshot.child(MY_INVITATIONS);
                 DataSnapshot datasEvents = dataSnapshot.child(MY_EVENTS);
 
-                for (DataSnapshot datas : datasFriends.getChildren()) {
-                    if(!datas.hasChild(ACCEPTED)){
-                        counterFriends++;
-                    }
-                }
-
                 // Get current list of events
                 List<BikeEvent> oldListBikeEvent = BikeEventHandler.getAllFutureBikeEvents(context, user_id);
+                List<BikeEvent> oldListInvitations = BikeEventHandler.getAllInvitations(context, user_id);
+                List<Friend> oldListFriends = FriendsHandler.getListFriends(context, user_id);
 
-                // Get list of events on Firebase
-                List<BikeEvent> newListBikeEvent = new ArrayList<>();
+                // Compare lists to get counters of modifications
+                List<Difference> listDiffEvents = UtilsCounters.getListDifferencesBetweenListEvents(oldListBikeEvent,datasEvents,context);
+                List<String> listDiffFriends = UtilsCounters.getListDifferencesForFriendRequests(context,datasFriends,oldListFriends);
+                List<String> listDiffInvitations = UtilsCounters.getListDifferencesForInvitations(context, datasInvits, oldListInvitations);
 
-                for (DataSnapshot datas : datasEvents.getChildren())
-                    newListBikeEvent.add(buildBikeEvent(datas));
+                // Get counters
+                counterEvents = listDiffEvents.size();
+                counterFriends = listDiffFriends.size();
+                counterInvits = listDiffInvitations.size();
 
-                // Compare both list to get counter of modifications
-                List<Difference> listDiff = UtilsBikeEvent.getListDifferencesBetweenListEvents(oldListBikeEvent,newListBikeEvent,context);
-                counterEvents = listDiff.size();
+                fullListDifferences.addAll(listDiffFriends);
+                fullListDifferences.addAll(listDiffInvitations);
 
-                counterInvits = (int) datasInvits.getChildrenCount();
-
-                callbackCounters.onCompleted(counterFriends, counterEvents, counterInvits);
+                callbackCounters.onCompleted(listDiffEvents, fullListDifferences, counterFriends, counterEvents, counterInvits);
             }
 
             @Override

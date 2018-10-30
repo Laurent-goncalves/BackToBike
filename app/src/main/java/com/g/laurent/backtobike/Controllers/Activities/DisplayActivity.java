@@ -22,7 +22,7 @@ import com.g.laurent.backtobike.Utils.Action;
 import com.g.laurent.backtobike.Utils.SaveAndRestoreDisplayActivity;
 import com.g.laurent.backtobike.Utils.SynchronizeWithFirebase;
 import com.g.laurent.backtobike.Utils.UtilsApp;
-import com.g.laurent.backtobike.Utils.UtilsBikeEvent;
+import com.g.laurent.backtobike.Utils.UtilsCounters;
 import com.g.laurent.backtobike.Views.PageAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import java.util.ArrayList;
@@ -161,8 +161,8 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
 
             @Override
             public void onPageSelected(int position) {
-                if(typeDisplay.equals(DISPLAY_MY_EVENTS))
-                    showDifferences(position);
+                /*if(typeDisplay.equals(DISPLAY_MY_EVENTS))
+                    showDifferences(position);*/
 
                 setPosition(position);
                 configureArrows();
@@ -353,11 +353,11 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 
-    private void showDifferences(int position){
+    /*private void showDifferences(int position){
 
         StringBuilder diffText = new StringBuilder();
 
-        List<Difference> listDiffEvent = UtilsBikeEvent.getListDifferencesFromBikeEvent(listEvents.get(position).getId(), listDifferences);
+        List<Difference> listDiffEvent = UtilsCounters.getListDifferencesFromBikeEvent(listEvents.get(position).getId(), listDifferences);
 
         if(listDiffEvent.size()>0){
             for(Difference diff : listDiffEvent){
@@ -394,7 +394,7 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
                 listDifferences.remove(i);
             }
         }
-    }
+    }*/
 
     private void configureAddButton(){
 

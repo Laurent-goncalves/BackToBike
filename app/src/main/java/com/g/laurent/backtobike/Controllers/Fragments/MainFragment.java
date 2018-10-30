@@ -20,6 +20,8 @@ import android.view.animation.Transformation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,21 +45,31 @@ import net.bytebuddy.dynamic.scaffold.MethodRegistry;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static com.g.laurent.backtobike.Utils.UtilsTime.getSeasonNumber;
 
 
-public class MainFragment extends Fragment implements CallbackMainActivity {
+public class MainFragment extends Fragment {
 
     @BindView(R.id.weather_recyclerview) RecyclerView weatherView;
     @BindView(R.id.bikeevents_recyclerview) RecyclerView bikeEventView;
     @BindView(R.id.image_season) ImageView seasonImage;
     @BindView(R.id.title_center) ImageView centralTitle;
-    @BindView(R.id.panel) ImageView panel;
+    @BindView(R.id.panel) RelativeLayout panel;
+    @BindView(R.id.count_friends) TextView countFriends;
+    @BindView(R.id.count_invitation) TextView countInvits;
+    @BindView(R.id.count_events) TextView countEvents;
+    @BindView(R.id.textview_differences) TextView differencesPanel;
     @BindView(R.id.layout_bike_event) LinearLayout bikeEventLayout;
+    private static final String DISPLAY_MY_EVENTS ="display_my_events";
+    private static final String DISPLAY_MY_INVITS ="display_my_invits";
+    private static final String BUNDLE_COUNTER_EVENTS = "bundle_counter_events";
+    private static final String BUNDLE_COUNTER_INVITS = "bundle_counter_invits";
+    private static final String BUNDLE_COUNTER_FRIENDS = "bundle_counter_friends";
+    private static final String BUNDLE_DIFFERENCES = "bundle_differences";
     private Context context;
     private CallbackMainActivity callbackMainActivity;
-    private MainActivity mMainActivity;
     private String userId;
     private Boolean panelExpanded;
 
@@ -71,24 +83,10 @@ public class MainFragment extends Fragment implements CallbackMainActivity {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
-
-        panel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(panelExpanded) {
-                    slideUp(panel);
-                    panelExpanded=false;
-                } else {
-                    slideDown(panel);
-                    panelExpanded = true;
-                }
-            }
-        });
+        userId = FirebaseAuth.getInstance().getUid();
 
         panelExpanded = false;
-        userId = FirebaseAuth.getInstance().getUid();
-        mMainActivity = (MainActivity) getActivity();
-        callbackMainActivity = this;
+        panel.setOnClickListener(onClickPanelListener);
 
         configureMainFragment();
 
@@ -98,15 +96,63 @@ public class MainFragment extends Fragment implements CallbackMainActivity {
                 int heightLayout = bikeEventLayout.getHeight();
                 int heightPanel = panel.getHeight();
 
-                FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                lp.gravity = Gravity.CENTER_HORIZONTAL;
+                RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 lp.setMargins(0, heightLayout - 9 * heightPanel / 10, 0, 0);
+                lp.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
                 panel.setLayoutParams(lp);
-
             }
         }, 500);
 
         return view;
+    }
+
+    View.OnClickListener onClickPanelListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            if(panelExpanded) {
+                slideUp(panel);
+                panelExpanded=false;
+            } else {
+                slideDown(panel);
+                panelExpanded = true;
+            }
+        }
+    };
+
+    private void configureCountersAndPanel(){
+
+        if(getArguments()!=null){
+
+            int counterEvents = getArguments().getInt(BUNDLE_COUNTER_EVENTS, 0);
+            int counterInvits = getArguments().getInt(BUNDLE_COUNTER_INVITS, 0);
+            int counterFriends = getArguments().getInt(BUNDLE_COUNTER_FRIENDS, 0);
+            String differences = getArguments().getString(BUNDLE_DIFFERENCES, null);
+
+            if(counterFriends>9){
+                String text = "+9";
+                countFriends.setText(text);
+            } else if(counterFriends==0)
+                countFriends.setVisibility(View.GONE);
+            else
+                countFriends.setText(String.valueOf(counterFriends));
+
+            if(counterInvits>9){
+                String text = "+9";
+                countInvits.setText(text);
+            } else if(counterInvits==0)
+                countInvits.setVisibility(View.GONE);
+            else
+                countInvits.setText(String.valueOf(counterInvits));
+
+            if(counterEvents>9){
+                String text = "+9";
+                countEvents.setText(text);
+            } else if(counterEvents==0)
+                countEvents.setVisibility(View.GONE);
+            else
+                countEvents.setText(String.valueOf(counterEvents));
+
+            differencesPanel.setText(differences);
+        }
     }
 
     // slide the view from its current position to below itself
@@ -135,6 +181,26 @@ public class MainFragment extends Fragment implements CallbackMainActivity {
         animation.start();
     }
 
+    @OnClick(R.id.button_invitations)
+    public void clickOnInvitationButton(){
+        callbackMainActivity.launchDisplayActivity(DISPLAY_MY_INVITS, null);
+    }
+
+    @OnClick(R.id.button_new_friends)
+    public void clickOnFriendsButton(){
+        callbackMainActivity.launchFriendsActivity();
+    }
+
+    @OnClick(R.id.button_events)
+    public void clickOnEventsButton(){
+        callbackMainActivity.launchDisplayActivity(DISPLAY_MY_EVENTS, null);
+    }
+
+    @OnClick(R.id.button_disconnect)
+    public void clickOnSignOutButton(){
+        callbackMainActivity.signOutUserFromFirebase(context);
+    }
+
     private void configureEventsRecyclerView(){
 
         // Define which image to show according to current season
@@ -149,7 +215,7 @@ public class MainFragment extends Fragment implements CallbackMainActivity {
 
         EventAdapter eventAdapter = new EventAdapter(context, listBikeEvent, userId, callbackMainActivity);
 
-        mMainActivity.runOnUiThread(() -> {
+        callbackMainActivity.getMainActivity().runOnUiThread(() -> {
             // set adapter to recyclerView
             bikeEventView.setAdapter(eventAdapter);
 
@@ -172,11 +238,12 @@ public class MainFragment extends Fragment implements CallbackMainActivity {
 
             @Override
             public void onFailure(String error) {
-                mMainActivity.runOnUiThread(() -> Toast.makeText(context, error, Toast.LENGTH_LONG).show());
+                callbackMainActivity.getMainActivity().runOnUiThread(() -> Toast.makeText(context, error, Toast.LENGTH_LONG).show());
             }
         });
 
         configureEventsRecyclerView();
+        configureCountersAndPanel();
     }
 
     private void configureWeatherRecyclerView(Context context, List<WeatherForecast> listWeatherForecast){
@@ -185,7 +252,7 @@ public class MainFragment extends Fragment implements CallbackMainActivity {
 
         WeatherAdapter adapter = new WeatherAdapter(listWeatherForecast, context);
 
-        mMainActivity.runOnUiThread(() -> {
+        callbackMainActivity.getMainActivity().runOnUiThread(() -> {
             // set adapter to recyclerView
             weatherView.setAdapter(adapter);
 
@@ -197,15 +264,11 @@ public class MainFragment extends Fragment implements CallbackMainActivity {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
         this.context=context;
-        /*if(context instanceof CallbackEventActivity){
-            mCallbackEventActivity = (CallbackEventActivity) context;
-        }*/
-    }
 
-    @Override
-    public void showEvent(BikeEvent bikeEvent) {
-
-
+        if(context instanceof CallbackMainActivity){
+            callbackMainActivity = (CallbackMainActivity) context;
+        }
     }
 }

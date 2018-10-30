@@ -101,17 +101,14 @@ public class SaveAndRestoreDisplayActivity {
             public void onSuccess(List<BikeEvent> newBikeEventList) {
 
                 // Get differences with list bike events on Firebase (status and friend acceptances)
-                List<Difference> differenceList = UtilsBikeEvent.getListDifferencesBetweenListEvents(listEvents, newBikeEventList, context);
+                List<Difference> differenceList = UtilsCounters.getListDifferencesBetweenListEvents(listEvents, newBikeEventList, context);
                 displayActivity.setListDifferences(differenceList);
 
                 // Set list Events
                 displayActivity.setListEvents(newBikeEventList);
 
                 // Set count list Events
-                if(newBikeEventList!=null)
-                    displayActivity.setCount(newBikeEventList.size());
-                else
-                    displayActivity.setCount(0);
+                displayActivity.setCount(newBikeEventList.size());
 
                 displayActivity.configureAndShowDisplayFragmentsInViewPager();
             }

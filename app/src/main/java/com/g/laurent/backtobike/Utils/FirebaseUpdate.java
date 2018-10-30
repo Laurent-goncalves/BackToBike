@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FirebaseUpdate {
@@ -358,6 +359,56 @@ public class FirebaseUpdate {
                 }
             }
         }
+    }
+
+
+    public void setTestData(Context context, String userId){
+
+        databaseReferenceUsers.child(userId).child(MY_FRIENDS).removeValue();
+        databaseReferenceUsers.child(userId).child(MY_EVENTS).removeValue();
+        databaseReferenceUsers.child(userId).child(MY_INVITATIONS).removeValue();
+
+        // manu has accepted user friend request
+        // malik has sent a new friend request
+
+        Friend friend = new Friend("id1","id1","manu","photoUrl", true, null);
+
+        FriendsHandler.insertNewFriend(context,friend,userId);
+
+        databaseReferenceUsers.child(userId).child(MY_FRIENDS).child("id1").child(LOGIN).setValue("id1");
+        databaseReferenceUsers.child(userId).child(MY_FRIENDS).child("id1").child(NAME).setValue("manu");
+        databaseReferenceUsers.child(userId).child(MY_FRIENDS).child("id1").child(ACCEPTED).setValue(true);
+        databaseReferenceUsers.child(userId).child(MY_FRIENDS).child("id1").child(HAS_ACCEPTED).setValue(true);
+
+        databaseReferenceUsers.child(userId).child(MY_FRIENDS).child("id2").child(LOGIN).setValue("id2");
+        databaseReferenceUsers.child(userId).child(MY_FRIENDS).child("id2").child(NAME).setValue("malik");
+        databaseReferenceUsers.child(userId).child(MY_FRIENDS).child("id2").child(HAS_ACCEPTED).setValue(true);
+
+
+        // Response received from EventFriends
+        BikeEvent event = new BikeEvent(userId + "_16_02_2018_14:00",userId,"16/02/2018","14:00",0,"comments","accepted");
+        List<EventFriends> listEventFriends = new ArrayList<>();
+        EventFriends EVENT_FRIENDS_DEMO_1 = new EventFriends(0,userId + "_16_02_2018_14:00","id1","id1","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_2 = new EventFriends(0,userId + "_16_02_2018_14:00","id2","id2","ongoing");
+        listEventFriends.add(EVENT_FRIENDS_DEMO_1);
+        listEventFriends.add(EVENT_FRIENDS_DEMO_2);
+        event.setListEventFriends(listEventFriends);
+        BikeEventHandler.insertNewBikeEvent(context, event, userId);
+
+        EVENT_FRIENDS_DEMO_1.setAccepted("accepted");
+        EVENT_FRIENDS_DEMO_2.setAccepted("rejected");
+
+        setBikeEvent(databaseReferenceUsers.child(userId).child(MY_EVENTS).child(userId + "_16_02_2018_14:00"),event);
+        setEventFriends(databaseReferenceUsers.child(userId).child(MY_EVENTS).child(userId + "_16_02_2018_14:00"), userId, listEventFriends);
+
+        // Invitation waiting for user response
+        BikeEvent invitation1 = new BikeEvent("id1_14_02_2018_14:00","id1","14/02/2018","14:00",0,"comments","ongoing");
+        BikeEventHandler.insertNewBikeEvent(context, invitation1, userId);
+        setInvitation(databaseReferenceUsers.child(userId).child(MY_INVITATIONS).child("id1_14_02_2018_14:00"),invitation1);
+
+        // Receive a new invitation from id2
+        BikeEvent invitation2 = new BikeEvent("id2_15_02_2018_15:00","id2","15/02/2018","15:00",0,"comments","ongoing");
+        setInvitation(databaseReferenceUsers.child(userId).child(MY_INVITATIONS).child("id2_15_02_2018_15:00"),invitation2);
 
     }
 }

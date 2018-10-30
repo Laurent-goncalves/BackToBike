@@ -34,30 +34,69 @@
                 android:layout_marginStart="10dp"
                 android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/button_invitations"
+                <FrameLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/invitations"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:gravity="center"
-                    android:layout_marginBottom="20dp"
-                    android:textColor="@color/colorWhite"
-                    android:background="@color/fui_transparent"
-                    android:drawableTop="@drawable/baseline_mail_white_24"/>
+                    android:layout_marginBottom="20dp">
 
-                <Button
-                    android:id="@+id/button_new_friends"
+                    <Button
+                        android:id="@+id/button_invitations"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/fui_transparent"
+                        android:drawableTop="@drawable/baseline_mail_white_36"
+                        android:gravity="center"
+                        android:text="@string/invitations"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/count_invitation"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:elevation="2dp"
+                        android:background="@drawable/circle"
+                        android:gravity="center"
+                        android:layout_marginStart="15dp"
+                        android:layout_gravity="center_horizontal"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold"
+                        android:textSize="14sp" />
+
+                </FrameLayout>
+
+                <FrameLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/new_friends"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:gravity="center"
-                    android:textColor="@color/colorWhite"
-                    android:background="@color/fui_transparent"
-                    android:drawableTop="@drawable/baseline_person_add_white_24"/>
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:id="@+id/button_new_friends"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/new_friends"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textColor="@color/colorWhite"
+                        android:background="@color/fui_transparent"
+                        android:drawableTop="@drawable/baseline_person_add_white_36"/>
+
+                    <TextView
+                        android:id="@+id/count_friends"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:elevation="2dp"
+                        android:background="@drawable/circle"
+                        android:gravity="center"
+                        android:layout_marginStart="15dp"
+                        android:layout_gravity="center_horizontal"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold"
+                        android:textSize="14sp" />
+
+                </FrameLayout>
 
             </LinearLayout>
 
@@ -80,18 +119,37 @@
                 android:layout_marginEnd="10dp"
                 android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/button_events"
+                <FrameLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/next_trips"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:gravity="center"
-                    android:layout_marginBottom="20dp"
-                    android:textColor="@color/colorWhite"
-                    android:background="@color/fui_transparent"
-                    android:drawableTop="@drawable/baseline_directions_bike_white_24"/>
+                    android:layout_marginBottom="20dp">
+
+                    <Button
+                        android:id="@+id/button_events"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/next_trips"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textColor="@color/colorWhite"
+                        android:background="@color/fui_transparent"
+                        android:drawableTop="@drawable/baseline_directions_bike_white_36"/>
+
+                    <TextView
+                        android:id="@+id/count_events"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:elevation="2dp"
+                        android:background="@drawable/circle"
+                        android:gravity="center"
+                        android:layout_marginStart="15dp"
+                        android:layout_gravity="center_horizontal"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold"
+                        android:textSize="14sp" />
+
+                </FrameLayout>
 
                 <Button
                     android:id="@+id/button_disconnect"
@@ -103,7 +161,7 @@
                     android:gravity="center"
                     android:textColor="@color/colorWhite"
                     android:background="@color/fui_transparent"
-                    android:drawableTop="@drawable/baseline_power_settings_new_white_24"/>
+                    android:drawableTop="@drawable/baseline_power_settings_new_white_36"/>
 
             </LinearLayout>
 
@@ -154,19 +212,33 @@
 
     </LinearLayout>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/panel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
 
         <ImageView
-            android:id="@+id/panel"
-            android:layout_marginTop="30dp"
-            android:layout_gravity="top|center_horizontal"
+            android:id="@+id/image_panel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/panel_draw"/>
 
-    </FrameLayout>
+        <TextView
+            android:id="@+id/textview_differences"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/image_panel"
+            android:layout_alignBottom="@+id/image_panel"
+            android:layout_alignStart="@+id/image_panel"
+            android:layout_alignEnd="@+id/image_panel"
+            android:padding="5dp"
+            android:paddingBottom="20dp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/layout_top"
