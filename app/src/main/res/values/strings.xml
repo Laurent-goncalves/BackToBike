@@ -90,6 +90,7 @@
     <string name="accept">ACCEPT</string>
     <string name="change">CHANGE</string>
     <string name="delete">DELETE</string>
+    <string name="add_to_my_routes">Add to my routes</string>
     <string name="delete_route">The route has been deleted</string>
     <string name="accept_invitation">The invitation has been accepted</string>
     <string name="reject_invitation">The invitation has been rejected</string>

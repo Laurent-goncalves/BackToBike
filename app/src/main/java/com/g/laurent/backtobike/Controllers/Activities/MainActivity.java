@@ -92,7 +92,7 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
         //RemoteMessage remoteMessage = new RemoteMessage();
         //FirebaseMessaging.getInstance().send(remoteMessage);
 
-        //clearDatabase(userId,getApplicationContext());
+        clearDatabase(userId,getApplicationContext());
 
         //FirebaseUpdate firebaseUpdate = new FirebaseUpdate(getApplicationContext());
         //firebaseUpdate.setTestData(getApplicationContext(), userId);

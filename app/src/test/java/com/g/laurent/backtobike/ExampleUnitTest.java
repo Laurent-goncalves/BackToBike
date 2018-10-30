@@ -1,16 +1,16 @@
 package com.g.laurent.backtobike;
 
 import com.g.laurent.backtobike.Models.BikeEvent;
+import com.g.laurent.backtobike.Models.Route;
+import com.g.laurent.backtobike.Models.RouteSegment;
 import com.g.laurent.backtobike.Utils.UtilsApp;
-import com.g.laurent.backtobike.Utils.UtilsBikeEvent;
 import com.g.laurent.backtobike.Utils.UtilsGoogleMaps;
 import com.g.laurent.backtobike.Utils.UtilsTime;
-
 import junit.framework.Assert;
 import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
+
 
 import static org.junit.Assert.assertEquals;
 
@@ -101,6 +101,54 @@ public class ExampleUnitTest {
         Assert.assertEquals("id1", listBikeEventSorted.get(2).getId());
         Assert.assertEquals("id4", listBikeEventSorted.get(3).getId());
 
+    }
+
+    @Test
+    public void test_comparison_route() {
+
+        Route route1 = new Route(0,"Trip to Las Vegas",true);
+        Route route2 = new Route(0,"Trip to Las Vegas",false);
+        Route route3 = new Route(0,"Trip to Las Vegas 2",true);
+        Route route4 = new Route(0,"Trip to Las Vegas",true);
+
+        List<RouteSegment> listRouteSegments1 = new ArrayList<>();
+
+        RouteSegment ROUTE_SEG1_DEMO = new RouteSegment(0,1,48.819446, 2.344624,999);
+        RouteSegment ROUTE_SEG2_DEMO = new RouteSegment(0,2,48.885412, 2.336589,999);
+        RouteSegment ROUTE_SEG3_DEMO = new RouteSegment(0,3,48.874563, 2.312778,999);
+        RouteSegment ROUTE_SEG4_DEMO = new RouteSegment(0,4,48.895220, 2.321511,999);
+        RouteSegment ROUTE_SEG5_DEMO = new RouteSegment(0,5,48.929888, 2.321511,999);
+        RouteSegment ROUTE_SEG6_DEMO = new RouteSegment(0,6,48.820336, 2.321511,999);
+
+        listRouteSegments1.add(ROUTE_SEG1_DEMO);
+        listRouteSegments1.add(ROUTE_SEG2_DEMO);
+        listRouteSegments1.add(ROUTE_SEG3_DEMO);
+        listRouteSegments1.add(ROUTE_SEG4_DEMO);
+        listRouteSegments1.add(ROUTE_SEG5_DEMO);
+        listRouteSegments1.add(ROUTE_SEG6_DEMO);
+
+        List<RouteSegment> listRouteSegments2 = new ArrayList<>(listRouteSegments1);
+        List<RouteSegment> listRouteSegments3 = new ArrayList<>(listRouteSegments1);
+        List<RouteSegment> listRouteSegments4 = new ArrayList<>(listRouteSegments1);
+
+        route1.setListRouteSegment(listRouteSegments1);
+        route2.setListRouteSegment(listRouteSegments2);
+        route3.setListRouteSegment(listRouteSegments3);
+        route4.setListRouteSegment(listRouteSegments4);
+
+        Assert.assertTrue(UtilsApp.areRoutesEquals(route1,route4));
+        Assert.assertFalse(UtilsApp.areRoutesEquals(route1,route2));
+        Assert.assertFalse(UtilsApp.areRoutesEquals(route1,route3));
+
+        listRouteSegments4.remove(0);
+        listRouteSegments4.remove(1);
+
+        Assert.assertFalse(UtilsApp.areRoutesEquals(route1,route4));
+
+        listRouteSegments4 = new ArrayList<>(listRouteSegments1);
+        listRouteSegments4.get(0).setLat(48.819500);
+
+        Assert.assertFalse(UtilsApp.areRoutesEquals(route1,route4));
     }
 
 }

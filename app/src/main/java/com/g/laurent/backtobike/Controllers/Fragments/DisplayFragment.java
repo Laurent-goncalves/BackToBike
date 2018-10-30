@@ -25,8 +25,6 @@ public class DisplayFragment extends Fragment {
     private CallbackDisplayActivity callbackInvitActivity;
     private Context context;
     private int position;
-    private String typeDisplay;
-    private View view;
 
     public DisplayFragment() {
         // Required empty public constructor
@@ -49,12 +47,12 @@ public class DisplayFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_display, container, false);
+        View view = inflater.inflate(R.layout.fragment_display, container, false);
         if(getArguments()!=null){
             position = getArguments().getInt(BUNDLE_POSITION);
-            typeDisplay = getArguments().getString(BUNDLE_TYPE_DISPLAY);
+            String typeDisplay = getArguments().getString(BUNDLE_TYPE_DISPLAY);
 
-            if(typeDisplay!=null){
+            if(typeDisplay !=null){
                 switch(typeDisplay){
                     case DISPLAY_MY_ROUTES:
                         config = new ConfigureDisplayFragment(context, view, typeDisplay, callbackInvitActivity.getListRoutes().get(position));

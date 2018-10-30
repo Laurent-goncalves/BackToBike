@@ -1,37 +1,22 @@
 package com.g.laurent.backtobike;
 
-import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.MediumTest;
 import android.support.test.runner.AndroidJUnit4;
-
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.Difference;
 import com.g.laurent.backtobike.Models.EventFriends;
-import com.g.laurent.backtobike.Utils.UtilsBikeEvent;
-
+import com.g.laurent.backtobike.Utils.UtilsCounters;
 import junit.framework.Assert;
-
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
+
 
 @RunWith(AndroidJUnit4.class)
 @MediumTest
 public class TestClassUtilsBikeEvent {
-
-    private Context instrumentationCtx;
-
-    @Before
-    public void setup() {
-        instrumentationCtx = InstrumentationRegistry.getContext();
-    }
-
 
     @Test
     public void test_compare_bike_events(){
@@ -68,15 +53,14 @@ public class TestClassUtilsBikeEvent {
         listBikeEventNew.add(bikeEvent3);
         listBikeEventNew.add(bikeEvent4);
 
-        List<Difference> differenceList = UtilsBikeEvent.getListDifferencesBetweenListEvents(listBikeEventOld,listBikeEventNew, getInstrumentation().getTargetContext());
+        List<Difference> differenceList = UtilsCounters.getListDifferencesBetweenListEvents(listBikeEventOld,listBikeEventNew, getInstrumentation().getTargetContext());
 
         Assert.assertEquals("2 friends have accepted the trip!", differenceList.get(0).getDifference());
         Assert.assertEquals("1 friend has refused the trip!", differenceList.get(1).getDifference());
-        Assert.assertEquals("The trip has been cancelled by the organizer.", differenceList.get(2).getDifference());
+        Assert.assertEquals("The trip has been cancelled.", differenceList.get(2).getDifference());
         Assert.assertEquals("1 friend has refused the trip!", differenceList.get(3).getDifference());
         Assert.assertEquals(4, differenceList.size());
     }
-
 
     private List<EventFriends> getOldListEventFriendsBikeEvent1(){
 

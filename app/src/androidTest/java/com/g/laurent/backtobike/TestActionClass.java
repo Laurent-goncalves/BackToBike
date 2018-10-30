@@ -534,7 +534,7 @@ public class TestActionClass extends AndroidTestCase {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                waiting_time(5000);
+                waiting_time(10000);
             }
 
             @Override
@@ -542,7 +542,7 @@ public class TestActionClass extends AndroidTestCase {
             }
         });
 
-        waiting_time(10000);
+        waiting_time(20000);
     }
 
     @Test
@@ -576,7 +576,7 @@ public class TestActionClass extends AndroidTestCase {
 
             @Override
             public void onSuccess(List<Friend> listFriend) {
-                Assert.assertFalse(listFriend.get(0).getAccepted());
+                Assert.assertNull(listFriend.get(0).getAccepted());
             }
 
             @Override

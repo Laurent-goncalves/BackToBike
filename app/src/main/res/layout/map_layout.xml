@@ -80,6 +80,18 @@
 
         </FrameLayout>
 
+        <Button
+            android:id="@+id/button_add_my_routes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@color/colorPrimary"
+            android:text="@string/add_to_my_routes"
+            android:padding="5dp"
+            android:visibility="gone"
+            android:drawableStart="@drawable/baseline_add_white_24"/>
+
+
     </LinearLayout>
 
 

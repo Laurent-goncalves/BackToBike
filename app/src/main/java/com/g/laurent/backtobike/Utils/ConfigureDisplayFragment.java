@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.g.laurent.backtobike.Models.BikeEvent;
@@ -104,6 +105,7 @@ public class ConfigureDisplayFragment {
                 break;
             case DISPLAY_MY_EVENTS:
                 configMap.configureMapLayout(bikeEvent.getRoute());
+                configMap.configureButtonAddToMyRoutes(context, userId, bikeEvent);
                 break;
             case DISPLAY_MY_INVITS:
                 configMap.configureMapLayout(bikeEvent.getRoute());
@@ -163,4 +165,6 @@ public class ConfigureDisplayFragment {
         }
         return listFriends;
     }
+
+
 }

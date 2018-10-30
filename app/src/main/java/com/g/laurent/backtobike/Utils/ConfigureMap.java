@@ -2,8 +2,11 @@ package com.g.laurent.backtobike.Utils;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
 import com.g.laurent.backtobike.R;
@@ -28,11 +31,11 @@ public class ConfigureMap implements OnMapReadyCallback {
     private TextView titleView;
     private TextView mileageView;
     private TextView timeView;
+    private Button buttonAddRoute;
     private Context context;
     private GoogleMap googleMap;
-
-
     private Route route;
+
 
     public ConfigureMap(Context context, View view) {
         this.context = context;
@@ -41,6 +44,7 @@ public class ConfigureMap implements OnMapReadyCallback {
         mileageView = view.findViewById(R.id.mileage_estimation);
         timeView = view.findViewById(R.id.time_estimation);
         titleView = view.findViewById(R.id.title_route);
+        buttonAddRoute= view.findViewById(R.id.button_add_my_routes);
     }
 
     public void configureMapLayout(Route route){
@@ -119,5 +123,37 @@ public class ConfigureMap implements OnMapReadyCallback {
             bounds.include(point);
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 50));
+    }
+
+    public void configureButtonAddToMyRoutes(Context context, String userId, BikeEvent bikeEvent) {
+
+        if(routeNotInDatabase(context, userId, bikeEvent.getRoute())) {
+            buttonAddRoute.setVisibility(View.VISIBLE);
+            buttonAddRoute.setOnClickListener(v -> {
+                Action.addInvitRouteToMyRoutes(bikeEvent, userId, context);
+                buttonAddRoute.setVisibility(View.INVISIBLE);
+            });
+        }
+    }
+
+    private Boolean routeNotInDatabase(Context context, String userId, Route route){
+
+        Boolean answer = true;
+
+        List<Route> listRouteDatabase = RouteHandler.getAllRoutes(context, userId);
+
+        if(listRouteDatabase!=null){
+            if(listRouteDatabase.size()>0){
+                for(Route routeDB : listRouteDatabase){
+                    if(UtilsApp.areRoutesEquals(routeDB, route)) {
+                        answer = false;
+                        break;
+                    }
+                }
+                return answer;
+            } else
+                return true;
+        } else
+            return true;
     }
 }
