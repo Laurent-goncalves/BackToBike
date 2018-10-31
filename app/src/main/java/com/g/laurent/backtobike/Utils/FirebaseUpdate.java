@@ -241,6 +241,11 @@ public class FirebaseUpdate {
         }
     }
 
+    public void deleteEvent(String userId, BikeEvent event) {
+        // Delete BikeEvent from my_events
+        databaseReferenceUsers.child(userId).child(MY_EVENTS).child(String.valueOf(event.getId())).removeValue();
+    }
+
     // ------------------------------------------------------------------------------------------------
     // ---------------------- CREATE / UPDATE / DELETE FRIEND or USER ---------------------------------
     // ------------------------------------------------------------------------------------------------
@@ -271,31 +276,31 @@ public class FirebaseUpdate {
         databaseReferenceFriend.child(HAS_ACCEPTED).setValue(true);
     }
 
-    public void acceptFriend(String user_id, Friend requester){
+    public void acceptFriend(String user_id, String friendId){
         // Change status accepted from user
         DatabaseReference databaseReferenceUser = databaseReferenceUsers.child(user_id).child(MY_FRIENDS);
-        databaseReferenceUser.child(requester.getId()).child(ACCEPTED).setValue(true);
+        databaseReferenceUser.child(friendId).child(ACCEPTED).setValue(true);
 
         // Change status has_accepted from requester
-        DatabaseReference databaseReferenceRequester = databaseReferenceUsers.child(requester.getId()).child(MY_FRIENDS);
+        DatabaseReference databaseReferenceRequester = databaseReferenceUsers.child(friendId).child(MY_FRIENDS);
         databaseReferenceRequester.child(user_id).child(HAS_ACCEPTED).setValue(true);
     }
 
-    public void rejectFriend(String user_id, Friend requester){
+    public void rejectFriend(String user_id, String friendId){
 
         // Delete requester from user
-        deleteFriend(user_id,requester);
+        deleteFriend(user_id,friendId);
 
         // Change status has_accepted from requester
-        DatabaseReference databaseReferenceRequester = databaseReferenceUsers.child(requester.getId()).child(MY_FRIENDS);
+        DatabaseReference databaseReferenceRequester = databaseReferenceUsers.child(friendId).child(MY_FRIENDS);
         databaseReferenceRequester.child(user_id).child(HAS_ACCEPTED).setValue(false);
     }
 
-    public void deleteFriend(String user_id, Friend friend){
+    public void deleteFriend(String user_id, String friendId){
         DatabaseReference databaseReferenceMyFriends = databaseReferenceUsers.child(user_id).child(MY_FRIENDS);
-        databaseReferenceMyFriends.child(friend.getId()).removeValue();
+        databaseReferenceMyFriends.child(friendId).removeValue();
 
-        DatabaseReference databaseReferenceFriend = databaseReferenceUsers.child(friend.getId()).child(MY_FRIENDS);
+        DatabaseReference databaseReferenceFriend = databaseReferenceUsers.child(friendId).child(MY_FRIENDS);
         databaseReferenceFriend.child(user_id).child(HAS_ACCEPTED).setValue(false);
     }
 
@@ -330,19 +335,18 @@ public class FirebaseUpdate {
         databaseReference.child(DATE).setValue(bikeEvent.getDate());
         databaseReference.child(TIME).setValue(bikeEvent.getTime());
         databaseReference.child(ID_ORGANIZER).setValue(bikeEvent.getOrganizerId());
-        databaseReference.child(ID_ROUTE).setValue(bikeEvent.getIdRoute());
         databaseReference.child(COMMENTS).setValue(bikeEvent.getComments());
         databaseReference.child(STATUS).setValue(bikeEvent.getStatus());
     }
 
-    private void setInvitation(DatabaseReference databaseReference, BikeEvent invitation){
-        databaseReference.child(DATE).setValue(invitation.getDate());
-        databaseReference.child(TIME).setValue(invitation.getTime());
-        databaseReference.child(ID_ORGANIZER).setValue(invitation.getOrganizerId());
-        databaseReference.child(COMMENTS).setValue(invitation.getComments());
-        databaseReference.child(STATUS).setValue(invitation.getStatus());
-    }
+    private void setInvitation(DatabaseReference databaseReference, BikeEvent bikeEvent){
 
+        databaseReference.child(DATE).setValue(bikeEvent.getDate());
+        databaseReference.child(TIME).setValue(bikeEvent.getTime());
+        databaseReference.child(ID_ORGANIZER).setValue(bikeEvent.getOrganizerId());
+        databaseReference.child(COMMENTS).setValue(bikeEvent.getComments());
+        databaseReference.child(STATUS).setValue(ONGOING);
+    }
 
     private void setEventFriends(DatabaseReference databaseReference, String guests_id, List<EventFriends> listEventFriends){
 
@@ -404,11 +408,13 @@ public class FirebaseUpdate {
         // Invitation waiting for user response
         BikeEvent invitation1 = new BikeEvent("id1_14_02_2018_14:00","id1","14/02/2018","14:00",0,"comments","ongoing");
         BikeEventHandler.insertNewBikeEvent(context, invitation1, userId);
-        setInvitation(databaseReferenceUsers.child(userId).child(MY_INVITATIONS).child("id1_14_02_2018_14:00"),invitation1);
+        setBikeEvent(databaseReferenceUsers.child(userId).child(MY_INVITATIONS).child("id1_14_02_2018_14:00"),invitation1);
 
         // Receive a new invitation from id2
         BikeEvent invitation2 = new BikeEvent("id2_15_02_2018_15:00","id2","15/02/2018","15:00",0,"comments","ongoing");
-        setInvitation(databaseReferenceUsers.child(userId).child(MY_INVITATIONS).child("id2_15_02_2018_15:00"),invitation2);
+        setBikeEvent(databaseReferenceUsers.child(userId).child(MY_INVITATIONS).child("id2_15_02_2018_15:00"),invitation2);
 
     }
+
+
 }

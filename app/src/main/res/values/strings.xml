@@ -28,7 +28,8 @@
     <string name="invitations_pending">invitations are pending.</string>
     <string name="invitation_cancelled">invitation has been cancelled.</string>
     <string name="invitations_cancelled">invitations have been cancelled.</string>
-    <string name="no_new_information">No new information since your last visit...</string>
+    <string name="no_new_information">No new information since your last visit…</string>
+    <string name="error_synchronization">Error. Impossible to finish synchronization.</string>
 
     <!-- INVITACTIVITY -->
     <string name="date">Date:</string>

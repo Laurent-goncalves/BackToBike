@@ -3,7 +3,6 @@ package com.g.laurent.backtobike.Utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.g.laurent.backtobike.Models.AppDatabase;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackSynchronizeEnd;
 import com.g.laurent.backtobike.Models.Friend;
@@ -11,6 +10,7 @@ import com.g.laurent.backtobike.Models.OnBikeEventDataGetListener;
 import com.g.laurent.backtobike.Models.OnFriendDataGetListener;
 import com.g.laurent.backtobike.Models.OnRouteDataGetListener;
 import com.g.laurent.backtobike.Models.Route;
+import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 
 import java.util.List;
 

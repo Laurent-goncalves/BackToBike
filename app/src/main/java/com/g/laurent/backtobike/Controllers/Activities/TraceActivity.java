@@ -17,18 +17,16 @@ import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.Action;
-import com.g.laurent.backtobike.Utils.ConfigureTraceActivity;
-import com.g.laurent.backtobike.Utils.GetCurrentLocation;
-import com.g.laurent.backtobike.Utils.RouteHandler;
-import com.g.laurent.backtobike.Utils.UtilsGoogleMaps;
+import com.g.laurent.backtobike.Utils.Configurations.ConfigureTraceActivity;
+import com.g.laurent.backtobike.Utils.MapTools.GetCurrentLocation;
+import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
+import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import java.util.List;
-
-import butterknife.ButterKnife;
 
 
 public class TraceActivity extends BaseActivity implements OnMapReadyCallback {

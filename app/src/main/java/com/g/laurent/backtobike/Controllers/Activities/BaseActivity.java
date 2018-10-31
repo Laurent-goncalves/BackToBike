@@ -1,12 +1,21 @@
 package com.g.laurent.backtobike.Controllers.Activities;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -16,6 +25,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.g.laurent.backtobike.Models.CallbackBaseActivity;
 import com.g.laurent.backtobike.Models.CallbackCounters;
 import com.g.laurent.backtobike.Models.Difference;
+import com.g.laurent.backtobike.Models.NetworkSchedulerService;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.ToolbarManager;
 import com.g.laurent.backtobike.R;
@@ -41,6 +51,7 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
     protected static final String LOGIN_SHARED ="login_shared";
     protected static final int SIGN_OUT_TASK = 10;
     protected final static String MENU_SIGN_OUT= "menu_sign_out";
+    protected static final int PERMISSIONS_REQUEST_ACCESS_WIFI_STATE = 44;
     protected CallbackBaseActivity callbackBaseActivity;
     protected ToolbarManager toolbarManager;
     protected String userId;
@@ -54,7 +65,55 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
         setContentView(R.layout.activity_base);
         toolbarManager = new ToolbarManager();
         callbackBaseActivity = this;
+
+        if (getApplicationContext() != null) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_WIFI_STATE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.ACCESS_WIFI_STATE},
+                        PERMISSIONS_REQUEST_ACCESS_WIFI_STATE);
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            scheduleJob();
+        }
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void scheduleJob() {
+        JobInfo myJob = new JobInfo.Builder(0, new ComponentName(this, NetworkSchedulerService.class))
+                .setRequiresCharging(true)
+                .setMinimumLatency(1000)
+                .setOverrideDeadline(2000)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setPersisted(true)
+                .build();
+
+        JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.schedule(myJob);
+    }
+
+    @Override
+    protected void onStop() {
+        // A service can be "started" and/or "bound". In this case, it's "started" by this Activity
+        // and "bound" to the JobScheduler (also called "Scheduled" by the JobScheduler). This call
+        // to stopService() won't prevent scheduled jobs to be processed. However, failing
+        // to call stopService() would keep it alive indefinitely.
+        stopService(new Intent(this, NetworkSchedulerService.class));
+        super.onStop();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Start service and provide it a way to communicate with this class.
+        Intent startServiceIntent = new Intent(this, NetworkSchedulerService.class);
+        startService(startServiceIntent);
+    }
+
 
     protected void assignToolbarViews(){
 
@@ -108,21 +167,27 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
 
     public void defineCountersAndConfigureToolbar(String typeDisplay){
 
-        FirebaseRecover firebaseRecover = new FirebaseRecover(getApplicationContext());
-        firebaseRecover.recoverDatasForCounters(userId, getApplicationContext(), new CallbackCounters() {
-            @Override
-            public void onCompleted(List<Difference> differenceList, List<String> differenceStringList,int counterFriend, int counterEvents, int counterInvits) {
-                toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, counterFriend, counterEvents, counterInvits);
-                int count = counterFriend + counterEvents + counterInvits;
-                UtilsApp.setBadge(getApplicationContext(), count);
-            }
+        if(UtilsApp.isInternetAvailable(getApplicationContext())){
 
-            @Override
-            public void onFailure(String error) {
-                toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, 0, 0,0);
-                UtilsApp.setBadge(getApplicationContext(), 0);
-            }
-        });
+            FirebaseRecover firebaseRecover = new FirebaseRecover(getApplicationContext());
+            firebaseRecover.recoverDatasForCounters(userId, getApplicationContext(), new CallbackCounters() {
+                @Override
+                public void onCompleted(List<Difference> differenceList, List<String> differenceStringList,int counterFriend, int counterEvents, int counterInvits) {
+                    toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, counterFriend, counterEvents, counterInvits);
+                    int count = counterFriend + counterEvents + counterInvits;
+                    UtilsApp.setBadge(getApplicationContext(), count);
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, 0, 0,0);
+                    UtilsApp.setBadge(getApplicationContext(), 0);
+                }
+            });
+        } else {
+            toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, 0, 0,0);
+        }
+
     }
 
     public static void showSnackBar(BaseActivity baseActivity, String text) {

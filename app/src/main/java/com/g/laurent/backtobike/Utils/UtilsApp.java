@@ -1,10 +1,15 @@
 package com.g.laurent.backtobike.Utils;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -345,5 +350,35 @@ public class UtilsApp {
             arrowRight.setOnClickListener(v -> activity.getPager().setCurrentItem(position+1));
         } else
             arrowRight.setVisibility(View.INVISIBLE);
+    }
+
+    // -------------------------------------------------------------------------------------------------
+    // --------------------------------------- INTERNET ------------------------------------------------
+    // -------------------------------------------------------------------------------------------------
+
+    private static Boolean isWifiEnabled(Context context) {
+        if (ContextCompat.checkSelfPermission(context,
+                Manifest.permission.ACCESS_WIFI_STATE)
+                == PackageManager.PERMISSION_GRANTED) {
+            WifiManager wifi = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            return wifi != null && wifi.isWifiEnabled();
+        } else
+            return false;
+    }
+
+    private static Boolean isNetworkEnabled(Context context) {
+
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo netInfo = null;
+        if (cm != null) {
+            netInfo = cm.getActiveNetworkInfo();
+        }
+
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    public static Boolean isInternetAvailable(Context context){
+        return isNetworkEnabled(context) || isWifiEnabled(context);
     }
 }

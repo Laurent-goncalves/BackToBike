@@ -1,10 +1,9 @@
-package com.g.laurent.backtobike.Utils;
+package com.g.laurent.backtobike.Utils.Configurations;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.g.laurent.backtobike.Models.BikeEvent;
@@ -12,6 +11,9 @@ import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
+import com.g.laurent.backtobike.Utils.FriendsHandler;
+import com.g.laurent.backtobike.Utils.SynchronizeWithFirebase;
+import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.g.laurent.backtobike.Views.DisplayFriendsAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import java.util.ArrayList;
@@ -61,14 +63,16 @@ public class ConfigureDisplayFragment {
         configureGuests();
     }
 
-    // -------------------------------- 1 - Synchronize datas
+    // -------------------------------- 1 - SynchronizeWithDatabase datas
     private void recoverDatasToDisplay() {
 
         if(typeDisplay.equals(DISPLAY_MY_EVENTS)){
-            try {
-                SynchronizeWithFirebase.synchronizeOneEvent(userId, bikeEvent.getId(), context, null);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if(UtilsApp.isInternetAvailable(context)){
+                try {
+                    SynchronizeWithFirebase.synchronizeOneEvent(userId, bikeEvent.getId(), context, null);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

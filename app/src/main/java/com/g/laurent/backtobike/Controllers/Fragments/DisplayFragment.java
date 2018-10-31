@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.g.laurent.backtobike.Models.CallbackDisplayActivity;
 import com.g.laurent.backtobike.R;
-import com.g.laurent.backtobike.Utils.ConfigureDisplayFragment;
+import com.g.laurent.backtobike.Utils.Configurations.ConfigureDisplayFragment;
 
 /**
  * A simple {@link Fragment} subclass.

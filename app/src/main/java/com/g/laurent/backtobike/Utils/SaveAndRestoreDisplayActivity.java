@@ -6,10 +6,10 @@ import com.g.laurent.backtobike.Controllers.Activities.DisplayActivity;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackSynchronizeEnd;
 import com.g.laurent.backtobike.Models.Difference;
-import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.OnBikeEventDataGetListener;
 import com.g.laurent.backtobike.Models.Route;
-import com.g.laurent.backtobike.Models.RouteSegment;
+import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
+
 import java.util.List;
 
 
@@ -64,20 +64,26 @@ public class SaveAndRestoreDisplayActivity {
 
                 case DISPLAY_MY_INVITS:
 
-                    // Synchronize with Firebase if invitations are displayed
-                    SynchronizeWithFirebase.synchronizeInvitations(user_id, context, new CallbackSynchronizeEnd() {
-                        @Override
-                        public void onCompleted() {
-                            configureDisplayActivityForMyInvits(user_id,displayActivity);
-                            displayActivity.configureAndShowDisplayFragmentsInViewPager();
-                        }
+                    // SynchronizeWithDatabase with Firebase if invitations are displayed
+                    if(UtilsApp.isInternetAvailable(context)) {
 
-                        @Override
-                        public void onFailure(String error) {
-                            configureDisplayActivityForMyInvits(user_id,displayActivity);
-                            displayActivity.configureAndShowDisplayFragmentsInViewPager();
-                        }
-                    });
+                        SynchronizeWithFirebase.synchronizeInvitations(user_id, context, new CallbackSynchronizeEnd() {
+                            @Override
+                            public void onCompleted() {
+                                configureDisplayActivityForMyInvits(user_id, displayActivity);
+                                displayActivity.configureAndShowDisplayFragmentsInViewPager();
+                            }
+
+                            @Override
+                            public void onFailure(String error) {
+                                configureDisplayActivityForMyInvits(user_id, displayActivity);
+                                displayActivity.configureAndShowDisplayFragmentsInViewPager();
+                            }
+                        });
+                    } else {
+                        configureDisplayActivityForMyInvits(user_id, displayActivity);
+                        displayActivity.configureAndShowDisplayFragmentsInViewPager();
+                    }
 
                     break;
             }
@@ -92,30 +98,46 @@ public class SaveAndRestoreDisplayActivity {
         List<BikeEvent> listEvents = BikeEventHandler.getAllFutureBikeEvents(context, user_id);
 
         // Recover list bike events on Firebase
-        FirebaseRecover firebaseRecover = new FirebaseRecover(context);
-        firebaseRecover.recoverBikeEventsUser(user_id, new OnBikeEventDataGetListener() {
-            @Override
-            public void onSuccess(BikeEvent bikeEvent) {}
+        if(UtilsApp.isInternetAvailable(context)){
 
-            @Override
-            public void onSuccess(List<BikeEvent> newBikeEventList) {
+            FirebaseRecover firebaseRecover = new FirebaseRecover(context);
+            firebaseRecover.recoverBikeEventsUser(user_id, new OnBikeEventDataGetListener() {
+                @Override
+                public void onSuccess(BikeEvent bikeEvent) {}
 
-                // Get differences with list bike events on Firebase (status and friend acceptances)
-                List<Difference> differenceList = UtilsCounters.getListDifferencesBetweenListEvents(listEvents, newBikeEventList, context);
-                displayActivity.setListDifferences(differenceList);
+                @Override
+                public void onSuccess(List<BikeEvent> newBikeEventList) {
 
-                // Set list Events
-                displayActivity.setListEvents(newBikeEventList);
+                    // Get differences with list bike events on Firebase (status and friend acceptances)
+                    List<Difference> differenceList = UtilsCounters.getListDifferencesBetweenListEvents(listEvents, newBikeEventList, context);
+                    displayActivity.setListDifferences(differenceList);
 
-                // Set count list Events
-                displayActivity.setCount(newBikeEventList.size());
+                    // Set list Events
+                    displayActivity.setListEvents(newBikeEventList);
 
-                displayActivity.configureAndShowDisplayFragmentsInViewPager();
-            }
+                    // Set count list Events
+                    displayActivity.setCount(newBikeEventList.size());
 
-            @Override
-            public void onFailure(String error) {}
-        });
+                    displayActivity.configureAndShowDisplayFragmentsInViewPager();
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    displayActivity.setListEvents(listEvents);
+                    // Set count list Events
+                    displayActivity.setCount(listEvents.size());
+
+                    displayActivity.configureAndShowDisplayFragmentsInViewPager();
+                }
+            });
+
+        } else {
+            displayActivity.setListEvents(listEvents);
+            // Set count list Events
+            displayActivity.setCount(listEvents.size());
+
+            displayActivity.configureAndShowDisplayFragmentsInViewPager();
+        }
     }
 
     private static void configureDisplayActivityForMyInvits(String user_id, DisplayActivity displayActivity){

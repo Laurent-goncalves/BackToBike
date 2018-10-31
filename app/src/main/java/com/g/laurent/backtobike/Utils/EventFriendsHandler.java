@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.R;
+import com.g.laurent.backtobike.Utils.Configurations.ConfigureInvitFragment;
 
 
 public class EventFriendsHandler {

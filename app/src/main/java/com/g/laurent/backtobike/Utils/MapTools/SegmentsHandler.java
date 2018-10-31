@@ -1,4 +1,4 @@
-package com.g.laurent.backtobike.Utils;
+package com.g.laurent.backtobike.Utils.MapTools;
 
 
 import android.content.Context;

@@ -15,7 +15,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import com.g.laurent.backtobike.Models.CallbackEventActivity;
 import com.g.laurent.backtobike.R;
-import com.g.laurent.backtobike.Utils.ConfigureInvitFragment;
+import com.g.laurent.backtobike.Utils.Configurations.ConfigureInvitFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

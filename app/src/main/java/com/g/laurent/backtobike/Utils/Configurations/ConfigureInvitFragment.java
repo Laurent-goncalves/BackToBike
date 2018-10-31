@@ -1,4 +1,4 @@
-package com.g.laurent.backtobike.Utils;
+package com.g.laurent.backtobike.Utils.Configurations;
 
 import android.app.DialogFragment;
 import android.app.Fragment;
@@ -21,6 +21,11 @@ import com.g.laurent.backtobike.Models.Invitation;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.TimePickerFragment;
 import com.g.laurent.backtobike.R;
+import com.g.laurent.backtobike.Utils.CheckAndSendInvitation;
+import com.g.laurent.backtobike.Utils.EventFriendsHandler;
+import com.g.laurent.backtobike.Utils.FriendsHandler;
+import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
+import com.g.laurent.backtobike.Utils.UtilsApp;
 
 import java.util.ArrayList;
 import java.util.List;

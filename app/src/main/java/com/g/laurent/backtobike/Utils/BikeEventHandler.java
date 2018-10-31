@@ -9,6 +9,7 @@ import com.g.laurent.backtobike.Models.EventFriendsContentProvider;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
+import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,6 +136,7 @@ public class BikeEventHandler {
         final Cursor cursor = bikeEventContentProvider.query(null, null, null, null, null);
 
         List<BikeEvent> listBikeEvent = BikeEvent.getListBikeEventsFromCursor(cursor);
+        List<BikeEvent> finalListBikeEvent = new ArrayList<>();
 
         if(listBikeEvent.size()>0) {
 
@@ -149,10 +151,13 @@ public class BikeEventHandler {
                 List<RouteSegment> listSegments = RouteHandler.getRouteSegments(context,event.getIdRoute(),userId);
                 route.setListRouteSegment(listSegments);
                 event.setRoute(route);
+
+                finalListBikeEvent.add(event);
+
             }
         }
 
-        return listBikeEvent;
+        return finalListBikeEvent;
     }
 
     public static List<BikeEvent> getAllInvitations(Context context, String userId){
@@ -163,6 +168,7 @@ public class BikeEventHandler {
         final Cursor cursor = bikeEventContentProvider.query(null, null, null, null, null);
 
         List<BikeEvent> listInvitations = BikeEvent.getListBikeEventsFromCursor(cursor);
+        List<BikeEvent> finalListInvitations = new ArrayList<>();
 
         if(listInvitations.size()>0) {
             for(BikeEvent invit : listInvitations){
@@ -176,10 +182,12 @@ public class BikeEventHandler {
                 List<RouteSegment> listSegments = RouteHandler.getRouteSegments(context,invit.getIdRoute(),userId);
                 route.setListRouteSegment(listSegments);
                 invit.setRoute(route);
+
+                finalListInvitations.add(invit);
             }
         }
 
-        return listInvitations;
+        return finalListInvitations;
     }
 
     public static List<EventFriends> getEventFriends(Context context, String idEvent, String userId){

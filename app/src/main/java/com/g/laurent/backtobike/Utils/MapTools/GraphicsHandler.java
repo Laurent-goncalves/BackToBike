@@ -1,4 +1,4 @@
-package com.g.laurent.backtobike.Utils;
+package com.g.laurent.backtobike.Utils.MapTools;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -7,16 +7,12 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
+import com.g.laurent.backtobike.Utils.Configurations.ConfigureTraceActivity;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
-import java.util.ArrayList;
+
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;

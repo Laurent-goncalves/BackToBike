@@ -11,6 +11,8 @@ import com.g.laurent.backtobike.Models.Invitation;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
 import com.g.laurent.backtobike.R;
+import com.g.laurent.backtobike.Utils.Configurations.ConfigureInvitFragment;
+import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 

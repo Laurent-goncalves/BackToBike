@@ -1,19 +1,20 @@
-package com.g.laurent.backtobike.Utils;
+package com.g.laurent.backtobike.Utils.Configurations;
 
 import android.content.Context;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.Route;
-import com.g.laurent.backtobike.Models.RouteSegment;
 import com.g.laurent.backtobike.R;
+import com.g.laurent.backtobike.Utils.Action;
+import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
+import com.g.laurent.backtobike.Utils.UtilsApp;
+import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -21,8 +22,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.List;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 
 public class ConfigureMap implements OnMapReadyCallback {
@@ -127,12 +126,14 @@ public class ConfigureMap implements OnMapReadyCallback {
 
     public void configureButtonAddToMyRoutes(Context context, String userId, BikeEvent bikeEvent) {
 
-        if(routeNotInDatabase(context, userId, bikeEvent.getRoute())) {
-            buttonAddRoute.setVisibility(View.VISIBLE);
-            buttonAddRoute.setOnClickListener(v -> {
-                Action.addInvitRouteToMyRoutes(bikeEvent, userId, context);
-                buttonAddRoute.setVisibility(View.INVISIBLE);
-            });
+        if(bikeEvent.getRoute()!=null) {
+            if (routeNotInDatabase(context, userId, bikeEvent.getRoute())) {
+                buttonAddRoute.setVisibility(View.VISIBLE);
+                buttonAddRoute.setOnClickListener(v -> {
+                    Action.addInvitRouteToMyRoutes(bikeEvent, userId, context);
+                    buttonAddRoute.setVisibility(View.INVISIBLE);
+                });
+            }
         }
     }
 

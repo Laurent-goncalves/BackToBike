@@ -1,4 +1,4 @@
-package com.g.laurent.backtobike.Utils;
+package com.g.laurent.backtobike.Utils.Configurations;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -11,6 +11,8 @@ import android.widget.Toast;
 import com.g.laurent.backtobike.Controllers.Activities.TraceActivity;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
+import com.g.laurent.backtobike.Utils.MapTools.GraphicsHandler;
+import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;

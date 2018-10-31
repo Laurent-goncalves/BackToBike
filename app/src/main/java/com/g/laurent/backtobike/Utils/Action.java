@@ -1,29 +1,22 @@
 package com.g.laurent.backtobike.Utils;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.content.SharedPreferences;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.g.laurent.backtobike.Controllers.Activities.BaseActivity;
 import com.g.laurent.backtobike.Controllers.Activities.DisplayActivity;
-import com.g.laurent.backtobike.Models.AnswerListener;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
-import com.google.firebase.auth.FirebaseUser;
+import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 
-import java.util.List;
 
 public class Action {
 
     private static final String ACCEPTED = "accepted";
     private static final String REJECTED = "rejected";
+    private static final String NEED_SYNCHRONIZATION = "need_synchronization";
 
     // ---------------------------------------------------------------------------------------------------------
     // -------------------------------------------- FRIEND -----------------------------------------------------
@@ -31,72 +24,84 @@ public class Action {
 
     public static void addNewFriend(Friend friend, Friend user, String userId, Context context){
 
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
+
         // Insert friend in database
         FriendsHandler.insertNewFriend(context, friend, userId);
 
         // Insert friend in Firebase
-        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-        firebaseUpdate.addNewFriend(friend, user);
+        if(UtilsApp.isInternetAvailable(context)) {
+            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+            firebaseUpdate.addNewFriend(friend, user);
+        } else {
+            sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
+        }
     }
 
     public static void updateFriend(Friend friend, String userId, Context context){
+
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
         // Update friend in database
         FriendsHandler.updateFriend(context, friend, userId);
 
         // Update friend in Firebase
-        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-        firebaseUpdate.updateFriendsFromUser(userId, friend);
+        if(UtilsApp.isInternetAvailable(context)) {
+            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+            firebaseUpdate.updateFriendsFromUser(userId, friend);
+        } else {
+            sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
+        }
     }
 
     public static void deleteFriend(Friend friend, String userId, Context context){
+
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
         // Update friend in database
         FriendsHandler.deleteFriend(context, friend.getLogin(), userId);
 
         // Update friend in Firebase
-        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-        firebaseUpdate.deleteFriend(userId, friend);
+        if(UtilsApp.isInternetAvailable(context)) {
+            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+            firebaseUpdate.deleteFriend(userId, friend.getId());
+        } else {
+            sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
+        }
     }
 
     public static void acceptFriend(Friend friend, String userId, Context context){
+
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
         // Friend accepted in database
         friend.setAccepted(true);
         FriendsHandler.updateFriend(context, friend, userId);
 
         // Friend accepted in Firebase
-        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-        firebaseUpdate.acceptFriend(userId, friend);
+        if(UtilsApp.isInternetAvailable(context)) {
+            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+            firebaseUpdate.acceptFriend(userId, friend.getId());
+        } else {
+            sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
+        }
     }
 
     public static void rejectFriend(Friend friend, String userId, Context context){
+
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
         // Friend accepted in database
         friend.setAccepted(false);
         FriendsHandler.updateFriend(context, friend, userId);
 
         // Friend accepted in Firebase
-        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-        firebaseUpdate.rejectFriend(userId,friend);
-    }
-
-    public static int getNumberFriendRequests(String userId, Context context){
-
-        List<Friend> listFriendRequest = FriendsHandler.getListFriends(context,userId);
-        int counter = 0;
-        if(listFriendRequest.size()>0){
-            for(Friend friend : listFriendRequest){
-                if(friend.getAccepted()!=null){
-                    if(!friend.getAccepted()){
-                        counter++;
-                    }
-                } else
-                    counter++;
-            }
+        if(UtilsApp.isInternetAvailable(context)) {
+            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+            firebaseUpdate.rejectFriend(userId, friend.getId());
+        } else {
+            sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
         }
-
-        return counter;
     }
 
     // ---------------------------------------------------------------------------------------------------------
@@ -105,28 +110,42 @@ public class Action {
 
     public static int addNewRoute(Route route, String userId, Context context){
 
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
+
         // Insert route in database
         int idRoute = RouteHandler.insertNewRoute(context, route, userId);
         route.setId(idRoute);
 
         // Insert route in Firebase
-        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-        firebaseUpdate.updateMyRoutes(userId, route, route.getListRouteSegment());
+        if(UtilsApp.isInternetAvailable(context)) {
+            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+            firebaseUpdate.updateMyRoutes(userId, route, route.getListRouteSegment());
+        } else {
+            sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
+        }
 
         return idRoute;
     }
 
     public static void updateRoute(Route route, String userId, Context context){
 
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
+
         // Update route in database
         RouteHandler.updateRoute(context, route, userId);
 
         // Update route in Firebase
-        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-        firebaseUpdate.updateMyRoutes(userId, route, route.getListRouteSegment());
+        if(UtilsApp.isInternetAvailable(context)) {
+            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+            firebaseUpdate.updateMyRoutes(userId, route, route.getListRouteSegment());
+        } else {
+            sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
+        }
     }
 
     public static void deleteRoute(Route route, String userId, Context context){
+
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
         route.setValid(false);
 
@@ -134,8 +153,12 @@ public class Action {
         RouteHandler.updateRoute(context, route, userId);
 
         // Delete route in Firebase
-        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-        firebaseUpdate.updateMyRoutes(userId, route, route.getListRouteSegment());
+        if(UtilsApp.isInternetAvailable(context)) {
+            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+            firebaseUpdate.updateMyRoutes(userId, route, route.getListRouteSegment());
+        } else {
+            sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
+        }
     }
 
     // ---------------------------------------------------------------------------------------------------------
@@ -144,39 +167,64 @@ public class Action {
 
     public static void addBikeEvent(BikeEvent event, String userId, Context context){
 
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
+
         // Insert event in database
         String idEvent = UtilsApp.getIdEvent(event);
         event.setId(idEvent);
         BikeEventHandler.insertNewBikeEvent(context,event, userId);
 
-        // Insert event in Firebase
-        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-        firebaseUpdate.updateMyBikeEvent(userId, event);
+        if(UtilsApp.isInternetAvailable(context)) {
+            // Insert event in Firebase
+            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+            firebaseUpdate.updateMyBikeEvent(userId, event);
 
-        // Send invitations to guests
-        firebaseUpdate.addInvitationGuests(event);
+            // Send invitations to guests
+            firebaseUpdate.addInvitationGuests(event);
+        } else {
+            sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
+        }
     }
 
     public static void cancelBikeEvent(BikeEvent event, String userId, Context context){
+
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
         // Delete event in database
         BikeEventHandler.deleteBikeEvent(context, event, userId);
 
         // Cancel event and invitations in Firebase
-        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-        firebaseUpdate.cancelMyBikeEvent(userId, event.getListEventFriends(), event);
+        if(UtilsApp.isInternetAvailable(context)) {
+            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+            firebaseUpdate.cancelMyBikeEvent(userId, event.getListEventFriends(), event);
+        } else {
+            sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
+        }
+    }
+
+    public static void deleteBikeEvent(BikeEvent event, String userId, Context context){
+
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
+
+        // Delete event in database
+        BikeEventHandler.deleteBikeEvent(context, event, userId);
+
+        // Cancel event and invitations in Firebase
+        if(UtilsApp.isInternetAvailable(context)) {
+            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+            firebaseUpdate.deleteEvent(userId, event);
+        } else {
+            sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
+        }
     }
 
     // ---------------------------------------------------------------------------------------------------------
     // ----------------------------------------- INVITATION ----------------------------------------------------
     // ---------------------------------------------------------------------------------------------------------
 
-    public static int getNumberInvitations(String userId, Context context){
-        List<BikeEvent> listInvitations = BikeEventHandler.getAllInvitations(context,userId);
-        return listInvitations.size();
-    }
-
     public static void acceptInvitation(BikeEvent invitation, String userId, Context context){
+
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
         invitation.setStatus(ACCEPTED);
 
@@ -184,11 +232,17 @@ public class Action {
         BikeEventHandler.updateBikeEvent(context, invitation, userId);
 
         // Accept invitation in Firebase
-        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-        firebaseUpdate.giveAnswerToInvitation(userId, invitation,ACCEPTED);
+        if(UtilsApp.isInternetAvailable(context)) {
+            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+            firebaseUpdate.giveAnswerToInvitation(userId, invitation, ACCEPTED);
+        } else {
+            sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
+        }
     }
 
     public static void rejectInvitation(BikeEvent invitation, String userId, Context context){
+
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
         invitation.setStatus(REJECTED);
 
@@ -196,28 +250,29 @@ public class Action {
         BikeEventHandler.updateBikeEvent(context,invitation, userId);
 
         // Reject invitation in Firebase
-        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-        firebaseUpdate.giveAnswerToInvitation(userId,invitation,REJECTED);
+        if(UtilsApp.isInternetAvailable(context)) {
+            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+            firebaseUpdate.giveAnswerToInvitation(userId, invitation, REJECTED);
+        } else {
+            sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
+        }
     }
 
     public static void addInvitRouteToMyRoutes(BikeEvent invitation, String userId, Context context){
+
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
         // Add route in database
         int idRoute = RouteHandler.insertNewRoute(context, invitation.getRoute(), userId);
         invitation.getRoute().setId(idRoute);
 
         // Add route in Firebase
-        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-        firebaseUpdate.acceptRoute(userId, invitation.getRoute(), invitation);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------
-    // ----------------------------------------------- USER ----------------------------------------------------
-    // ---------------------------------------------------------------------------------------------------------
-
-    public static void setLoginUser(String user_id, String name, String photoUrl, String login, Context context){
-        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-        firebaseUpdate.updateUserData(user_id,name,photoUrl,login);
+        if(UtilsApp.isInternetAvailable(context)) {
+            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+            firebaseUpdate.acceptRoute(userId, invitation.getRoute(), invitation);
+        } else {
+            sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
+        }
     }
 
     // ---------------------------------------------------------------------------------------------------------
