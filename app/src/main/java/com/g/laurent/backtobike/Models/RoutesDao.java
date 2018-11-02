@@ -2,6 +2,7 @@ package com.g.laurent.backtobike.Models;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 import android.database.Cursor;
@@ -16,10 +17,10 @@ public interface RoutesDao {
     @Query("SELECT * FROM Route WHERE valid =:valid")
     Cursor getAllRoutes(Boolean valid);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertRoute(Route route);
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     int updateRoute(Route route);
 
     @Query("DELETE FROM Route WHERE id = :id")

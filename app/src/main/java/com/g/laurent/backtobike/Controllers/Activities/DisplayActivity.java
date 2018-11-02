@@ -329,6 +329,9 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
                             Action.showAlertDialogRejectEvent(listEvents.get(position),position,userId,this);
                     } else // if event cancelled by organizer, delete it
                         Action.deleteBikeEvent(listEvents.get(position), userId, getApplicationContext());
+
+                    // cancel alarm bikeEvent
+                    cancelAlarmEvent(listEvents.get(position));
                 });
                 break;
 
@@ -342,6 +345,9 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
                 buttonRight.setOnClickListener(v -> {
                     Action.acceptInvitation(listInvitations.get(position),userId,getApplicationContext());
                     removeItemListInvits(position, getApplicationContext().getResources().getString(R.string.accept_invitation));
+
+                    // set alarm for event
+                    configureAlarmManager(listInvitations.get(position));
                 });
                 break;
         }

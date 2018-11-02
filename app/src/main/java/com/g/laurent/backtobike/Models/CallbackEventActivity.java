@@ -12,4 +12,6 @@ public interface CallbackEventActivity {
     String getUserId();
 
     void launchDisplayActivity(String typeDisplay, String id);
+
+    void configureAlarmManager(BikeEvent event);
 }

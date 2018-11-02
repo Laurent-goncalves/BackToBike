@@ -2,6 +2,8 @@ package com.g.laurent.backtobike.Utils;
 
 import android.content.Context;
 import android.database.Cursor;
+
+import com.g.laurent.backtobike.Models.AppDatabase;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.BikeEventContentProvider;
 import com.g.laurent.backtobike.Models.EventFriends;
@@ -134,6 +136,35 @@ public class BikeEventHandler {
         bikeEventContentProvider.setUtils(context,TYPE_MY_EVENTS,null, userId);
 
         final Cursor cursor = bikeEventContentProvider.query(null, null, null, null, null);
+
+        List<BikeEvent> listBikeEvent = BikeEvent.getListBikeEventsFromCursor(cursor);
+        List<BikeEvent> finalListBikeEvent = new ArrayList<>();
+
+        if(listBikeEvent.size()>0) {
+
+            for(BikeEvent event : listBikeEvent){
+
+                // Event friends
+                List<EventFriends> listEventFriends = BikeEventHandler.getEventFriends(context,event.getId(),userId);
+                event.setListEventFriends(listEventFriends);
+
+                // Route and RouteSegments
+                Route route = RouteHandler.getRoute(context,event.getIdRoute(),userId);
+                List<RouteSegment> listSegments = RouteHandler.getRouteSegments(context,event.getIdRoute(),userId);
+                route.setListRouteSegment(listSegments);
+                event.setRoute(route);
+
+                finalListBikeEvent.add(event);
+
+            }
+        }
+
+        return finalListBikeEvent;
+    }
+
+    public static List<BikeEvent> getAllBikeEvents(Context context, String userId){
+
+        final Cursor cursor = AppDatabase.getInstance(context, userId).bikeEventDao().getAllBikeEvents();
 
         List<BikeEvent> listBikeEvent = BikeEvent.getListBikeEventsFromCursor(cursor);
         List<BikeEvent> finalListBikeEvent = new ArrayList<>();

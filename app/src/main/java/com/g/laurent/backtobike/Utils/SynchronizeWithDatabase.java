@@ -109,7 +109,7 @@ public class SynchronizeWithDatabase {
 
     public static void synchronizeEvents(Context context, String userId, OnCompletedSynchronization onCompletedSynchronization) throws InterruptedException {
 
-        List<BikeEvent> listEventDB = BikeEventHandler.getAllFutureBikeEvents(context,userId);
+        List<BikeEvent> listEventDB = BikeEventHandler.getAllBikeEvents(context,userId);
 
         FirebaseRecover firebaseRecover = new FirebaseRecover(context);
         firebaseRecover.recoverBikeEventsUser(userId, new OnBikeEventDataGetListener() {

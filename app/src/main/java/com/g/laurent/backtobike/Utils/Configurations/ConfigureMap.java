@@ -1,8 +1,11 @@
 package com.g.laurent.backtobike.Utils.Configurations;
 
 import android.content.Context;
+import android.os.Handler;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.g.laurent.backtobike.Models.BikeEvent;
@@ -35,10 +38,8 @@ public class ConfigureMap implements OnMapReadyCallback {
     private GoogleMap googleMap;
     private Route route;
 
-
     public ConfigureMap(Context context, View view) {
         this.context = context;
-
         mapView = view.findViewById(R.id.map);
         mileageView = view.findViewById(R.id.mileage_estimation);
         timeView = view.findViewById(R.id.time_estimation);
@@ -49,10 +50,12 @@ public class ConfigureMap implements OnMapReadyCallback {
     public void configureMapLayout(Route route){
         this.route=route;
 
-        if(route!=null){
-            mapView.onCreate(null);
-            mapView.onResume();
-            mapView.getMapAsync(this);
+        if(route!=null && route.getListRouteSegment()!=null){
+            if(route.getListRouteSegment().size()>0) {
+                mapView.onCreate(null);
+                mapView.onResume();
+                mapView.getMapAsync(this);
+            }
         }
     }
 
@@ -115,13 +118,19 @@ public class ConfigureMap implements OnMapReadyCallback {
             timeView.setText(timeText);
         }
     }
+
     private void scaleMap(List<LatLng> listPoints){
         LatLngBounds.Builder bounds = new LatLngBounds.Builder();
 
         for(LatLng point : listPoints)
             bounds.include(point);
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 50));
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 50));
+            }
+        }, 500);
     }
 
     public void configureButtonAddToMyRoutes(Context context, String userId, BikeEvent bikeEvent) {

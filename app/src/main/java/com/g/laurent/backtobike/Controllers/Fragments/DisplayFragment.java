@@ -3,10 +3,13 @@ package com.g.laurent.backtobike.Controllers.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+
 import com.g.laurent.backtobike.Models.CallbackDisplayActivity;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.Configurations.ConfigureDisplayFragment;
@@ -22,7 +25,7 @@ public class DisplayFragment extends Fragment {
     private static final String BUNDLE_POSITION ="bundle_position";
     private static final String BUNDLE_TYPE_DISPLAY ="bundle_type_display";
     private ConfigureDisplayFragment config;
-    private CallbackDisplayActivity callbackInvitActivity;
+    private CallbackDisplayActivity callbackDisplayActivity;
     private Context context;
     private int position;
 
@@ -48,6 +51,7 @@ public class DisplayFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_display, container, false);
+
         if(getArguments()!=null){
             position = getArguments().getInt(BUNDLE_POSITION);
             String typeDisplay = getArguments().getString(BUNDLE_TYPE_DISPLAY);
@@ -55,15 +59,15 @@ public class DisplayFragment extends Fragment {
             if(typeDisplay !=null){
                 switch(typeDisplay){
                     case DISPLAY_MY_ROUTES:
-                        config = new ConfigureDisplayFragment(context, view, typeDisplay, callbackInvitActivity.getListRoutes().get(position));
+                        config = new ConfigureDisplayFragment(context, view, typeDisplay, callbackDisplayActivity.getListRoutes().get(position));
                         break;
 
                     case DISPLAY_MY_EVENTS:
-                        config = new ConfigureDisplayFragment(context, view, typeDisplay,callbackInvitActivity.getListEvents().get(position));
+                        config = new ConfigureDisplayFragment(context, view, typeDisplay,callbackDisplayActivity.getListEvents().get(position));
                         break;
 
                     case DISPLAY_MY_INVITS:
-                        config = new ConfigureDisplayFragment(context, view, typeDisplay,callbackInvitActivity.getListInvitations().get(position));
+                        config = new ConfigureDisplayFragment(context, view, typeDisplay,callbackDisplayActivity.getListInvitations().get(position));
                         break;
                 }
             }
@@ -76,7 +80,7 @@ public class DisplayFragment extends Fragment {
         super.onAttach(context);
         this.context=context;
         if(context instanceof CallbackDisplayActivity){
-            callbackInvitActivity = (CallbackDisplayActivity) context;
+            callbackDisplayActivity = (CallbackDisplayActivity) context;
         }
     }
 

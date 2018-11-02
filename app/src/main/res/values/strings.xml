@@ -75,6 +75,13 @@
     <string name="give_permission">Please give your permission</string>
     <string name="leave_authorization">Are you sure that you want to leave ?</string>
 
+    <!-- ALARM -->
+    <string name="alarm_notif_title">Next bike trip</string>
+    <string name="channel_alarm_backtobike">channel_alarm_backtobike</string>
+    <string name="notification_title">Reminder : the trip </string>
+    <string name="notification_title2days">is still planned in two days.</string>
+    <string name="notification_title4hours">is at</string>
+
     <!-- AUTHACTIVITY -->
     <string name="facebook_app_id">291137544820428</string>
     <string name="fb_login_protocol_scheme">fb291137544820428</string>

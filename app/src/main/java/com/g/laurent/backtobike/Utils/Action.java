@@ -14,6 +14,7 @@ import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 
 public class Action {
 
+    private static final String CANCELLED = "cancelled";
     private static final String ACCEPTED = "accepted";
     private static final String REJECTED = "rejected";
     private static final String NEED_SYNCHRONIZATION = "need_synchronization";
@@ -191,7 +192,8 @@ public class Action {
         SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
         // Delete event in database
-        BikeEventHandler.deleteBikeEvent(context, event, userId);
+        event.setStatus(CANCELLED);
+        BikeEventHandler.updateBikeEvent(context, event, userId);
 
         // Cancel event and invitations in Firebase
         if(UtilsApp.isInternetAvailable(context)) {

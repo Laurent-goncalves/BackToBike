@@ -9,6 +9,7 @@ import com.g.laurent.backtobike.Utils.UtilsTime;
 import junit.framework.Assert;
 import org.junit.Test;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 
@@ -151,4 +152,46 @@ public class ExampleUnitTest {
         Assert.assertFalse(UtilsApp.areRoutesEquals(route1,route4));
     }
 
+    @Test
+    public void test_getCalendarAlarms(){
+
+        String date = "15/10/2018";
+        Calendar calendar = UtilsTime.getCalendarAlarm2daysbefore(date);
+        Assert.assertEquals(13, calendar.get(Calendar.DAY_OF_MONTH));
+
+        date = "02/10/2018";
+        calendar = UtilsTime.getCalendarAlarm2daysbefore(date);
+        Assert.assertEquals(30, calendar.get(Calendar.DAY_OF_MONTH));
+
+        String time = "14:00";
+        calendar = UtilsTime.getCalendarAlarmdayevent(date, time);
+        Assert.assertEquals(10, calendar.get(Calendar.HOUR_OF_DAY));
+
+        date = "01/10/2018";
+        time = "02:00";
+        calendar = UtilsTime.getCalendarAlarmdayevent(date, time);
+        Assert.assertEquals(22, calendar.get(Calendar.HOUR_OF_DAY));
+        Assert.assertEquals(30, calendar.get(Calendar.DAY_OF_MONTH));
+    }
+
+    @Test
+    public void test_id_pending_intent(){
+
+        String date = "31/10/2018";
+        String time = "21:00";
+
+        int id2days = UtilsTime.generatePendingIntentID_2days(date,time);
+        int idDayEvent = UtilsTime.generatePendingIntentID_4hours(date,time);
+
+        Assert.assertEquals(2100311020, id2days);
+        Assert.assertEquals(2100311022, idDayEvent);
+
+        time = "7:00";
+
+        id2days = UtilsTime.generatePendingIntentID_2days(date,time);
+        idDayEvent = UtilsTime.generatePendingIntentID_4hours(date,time);
+
+        Assert.assertEquals(700311020, id2days);
+        Assert.assertEquals(700311022, idDayEvent);
+    }
 }

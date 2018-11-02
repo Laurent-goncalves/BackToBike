@@ -34,7 +34,15 @@ import com.g.laurent.backtobike.Utils.UtilsCounters;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.iid.FirebaseInstanceId;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,17 +74,18 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
             userId = user.getUid();
         }
 
-        /*FirebaseInstanceId.getInstance().getInstanceId()
+        FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
-
                         return;
                     }
 
                     // Get new Instance ID token
                     String token = task.getResult().getToken();
                     System.out.println("eee  token=" + token);
-                });*/
+                });
+
+
         //RemoteMessage remoteMessage = new RemoteMessage();
         //FirebaseMessaging.getInstance().send(remoteMessage);
 
@@ -93,6 +102,56 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
         // Check if the database has already been initialized (during the first use of the app on the phone)
         checkInitializationDatabase();
 
+    }
+
+    public  String send(String to,  String body) {
+        try {
+
+            final String apiKey = FirebaseAuth.getInstance().getUid();
+
+            URL url = new URL("https://fcm.googleapis.com/fcm/send");
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Authorization", "key=" + apiKey);
+            conn.setDoOutput(true);
+            JSONObject message = new JSONObject();
+            message.put("to", to);
+            message.put("priority", "high");
+
+            JSONObject notification = new JSONObject();
+            // notification.put("title", title);
+            notification.put("body", body);
+            message.put("data", notification);
+            OutputStream os = conn.getOutputStream();
+            os.write(message.toString().getBytes());
+            os.flush();
+            os.close();
+
+            int responseCode = conn.getResponseCode();
+            System.out.println("\nSending 'POST' request to URL : " + url);
+            System.out.println("Post parameters : " + message.toString());
+            System.out.println("Response Code : " + responseCode);
+            System.out.println("Response Code : " + conn.getResponseMessage());
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            // print result
+            System.out.println(response.toString());
+            return response.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "error";
     }
 
     private void checkInitializationDatabase(){
@@ -279,7 +338,7 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
 
     private void clearDatabase(String userId, Context context){
         AppDatabase.getInstance(context,userId).eventFriendsDao().deleteAllEventFriends();
-        AppDatabase.getInstance(context,userId).friendsDao().deleteAllFriends();
+        //AppDatabase.getInstance(context,userId).friendsDao().deleteAllFriends();
         //AppDatabase.getInstance(context,userId).routeSegmentDao().deleteRouteSegment();
         //AppDatabase.getInstance(context,userId).routesDao().deleteAllRoutes();
         AppDatabase.getInstance(context,userId).bikeEventDao().deleteAllBikeEvents();

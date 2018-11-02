@@ -162,6 +162,65 @@ public class UtilsTime {
         }
     }
 
+    public static Calendar getCalendarAlarm2daysbefore(String date){
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, Integer.parseInt(date.substring(6,10)));
+        calendar.set(Calendar.MONTH, Integer.parseInt(date.substring(3,5))-1);
+        calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.substring(0,2)));
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 0);
+
+        calendar.add(Calendar.DATE, -2);
+
+        return calendar;
+    }
+
+    public static Calendar getCalendarAlarmdayevent(String date, String time){
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, Integer.parseInt(date.substring(6,10)));
+        calendar.set(Calendar.MONTH, Integer.parseInt(date.substring(3,5))-1);
+        calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.substring(0,2)));
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time.substring(0,2)));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(time.substring(3,5)));
+
+        calendar.add(Calendar.HOUR_OF_DAY, -4);
+
+        return calendar;
+    }
+
+    public static int generatePendingIntentID_2days(String date, String time){
+
+        String id = "0";
+
+        if(time.length()==5){
+            id = time.substring(0,2) + time.substring(3,5) +
+                    date.substring(0,2) + date.substring(3,5) + date.substring(8,10);
+
+        } else if(time.length()==4){
+            id = time.substring(0,1) + time.substring(2,4) +
+                    date.substring(0,2) + date.substring(3,5) + date.substring(8,10);
+        }
+
+        return Integer.parseInt(id) + 2;
+    }
+
+    public static int generatePendingIntentID_4hours(String date, String time){
+
+        String id = "0";
+
+        if(time.length()==5){
+            id = time.substring(0,2) + time.substring(3,5) +
+                    date.substring(0,2) + date.substring(3,5) + date.substring(8,10);
+
+        } else if(time.length()==4){
+            id = time.substring(0,1) + time.substring(2,4) +
+                    date.substring(0,2) + date.substring(3,5) + date.substring(8,10);
+        }
+        return Integer.parseInt(id) + 4;
+    }
+
     public static boolean isAfter(BikeEvent bikeEvent1, BikeEvent bikeEvent2) {
 
         Calendar dateComp = Calendar.getInstance();

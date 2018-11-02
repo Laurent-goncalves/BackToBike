@@ -61,6 +61,10 @@ public class CheckAndSendInvitation {
             else
                 Toast.makeText(context,context.getResources().getString(R.string.bike_event_saved),Toast.LENGTH_LONG).show(); // bike event saved
 
+            // Set alarms bike event
+            config.getCallbackEventActivity().configureAlarmManager(bikeEvent);
+
+            // Launch displayActivity
             config.getCallbackEventActivity().launchDisplayActivity(DISPLAY_MY_EVENTS,firebaseUser.getUid());
         }
     }

@@ -1,7 +1,9 @@
 package com.g.laurent.backtobike.Controllers.Activities;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
@@ -22,6 +24,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.firebase.ui.auth.AuthUI;
+import com.g.laurent.backtobike.Models.AlarmEvent;
+import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackBaseActivity;
 import com.g.laurent.backtobike.Models.CallbackCounters;
 import com.g.laurent.backtobike.Models.Difference;
@@ -32,8 +36,10 @@ import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.Action;
 import com.g.laurent.backtobike.Utils.FirebaseRecover;
 import com.g.laurent.backtobike.Utils.UtilsApp;
+import com.g.laurent.backtobike.Utils.UtilsTime;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class BaseActivity extends AppCompatActivity implements CallbackBaseActivity{
@@ -51,6 +57,11 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
     protected static final String LOGIN_SHARED ="login_shared";
     protected static final int SIGN_OUT_TASK = 10;
     protected final static String MENU_SIGN_OUT= "menu_sign_out";
+    protected static final String EXTRA_EVENT_ID ="extra_event_id";
+    protected static final String EXTRA_USER_ID ="extra_user_id";
+    protected static final String EXTRA_TYPE_ALARM ="extra_type_alarm";
+    protected static final String ALARM_2_DAYS ="alarm_2_days";
+    protected static final String ALARM_4_HOURS ="alarm_4_hours";
     protected static final int PERMISSIONS_REQUEST_ACCESS_WIFI_STATE = 44;
     protected CallbackBaseActivity callbackBaseActivity;
     protected ToolbarManager toolbarManager;
@@ -188,6 +199,62 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
             toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, 0, 0,0);
         }
 
+    }
+
+    public void configureAlarmManager(BikeEvent event) {
+
+        AlarmManager alarmMgr = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+
+        Intent intent2Days = new Intent(getApplicationContext(), AlarmEvent.class);
+        intent2Days.putExtra(EXTRA_USER_ID, userId); // attach the userId to the intent
+        intent2Days.putExtra(EXTRA_EVENT_ID, event.getId()); // attach the idEvent to the intent
+        intent2Days.putExtra(EXTRA_TYPE_ALARM, ALARM_2_DAYS); // attach the type of alarm to the intent
+        int idIntent2days = UtilsTime.generatePendingIntentID_2days(event.getDate(),event.getTime());
+        int idIntentDayEvent = UtilsTime.generatePendingIntentID_4hours(event.getDate(),event.getTime());
+
+        Intent intentDayEvent = new Intent(getApplicationContext(), AlarmEvent.class);
+        intentDayEvent.putExtra(EXTRA_USER_ID, userId); // attach the userId to the intent
+        intentDayEvent.putExtra(EXTRA_EVENT_ID, event.getId()); // attach the idEvent to the intent
+        intentDayEvent.putExtra(EXTRA_TYPE_ALARM, ALARM_4_HOURS); // attach the type of alarm to the intent
+
+        PendingIntent alarmIntent2days = PendingIntent.getBroadcast(getApplicationContext(), idIntent2days, intent2Days, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent alarmIntentDayEvent = PendingIntent.getBroadcast(getApplicationContext(), idIntentDayEvent, intentDayEvent, PendingIntent.FLAG_ONE_SHOT);
+
+        // Set the first alarm to start at 12:00, 2 days before event.
+        Calendar calendar2days = UtilsTime.getCalendarAlarm2daysbefore(event.getDate());
+
+        // Set the second alarm to start 4 hours before event.
+        Calendar calendarDayEvent = UtilsTime.getCalendarAlarmdayevent(event.getDate(), event.getTime());
+
+        // Set alarm
+        if (alarmMgr != null) {
+            alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar2days.getTimeInMillis(), alarmIntent2days);
+            alarmMgr.set(AlarmManager.RTC_WAKEUP, calendarDayEvent.getTimeInMillis(), alarmIntentDayEvent);
+        }
+    }
+
+    public void cancelAlarmEvent(BikeEvent event) {
+
+        AlarmManager alarmMgr = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+
+        Intent intent2Days = new Intent(getApplicationContext(), AlarmEvent.class);
+        Intent intentDayEvent = new Intent(getApplicationContext(), AlarmEvent.class);
+
+        int idIntent2days = UtilsTime.generatePendingIntentID_2days(event.getDate(),event.getTime());
+        int idIntentDayEvent = UtilsTime.generatePendingIntentID_4hours(event.getDate(),event.getTime());
+
+        PendingIntent alarmIntent2days = PendingIntent.getBroadcast(getApplicationContext(), idIntent2days, intent2Days, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent alarmIntentDayEvent = PendingIntent.getBroadcast(getApplicationContext(), idIntentDayEvent, intentDayEvent, PendingIntent.FLAG_ONE_SHOT);
+
+        // Cancel alarm
+        if (alarmMgr != null) {
+
+            alarmIntent2days.cancel();
+            alarmIntentDayEvent.cancel();
+
+            alarmMgr.cancel(alarmIntent2days);
+            alarmMgr.cancel(alarmIntentDayEvent);
+        }
     }
 
     public static void showSnackBar(BaseActivity baseActivity, String text) {

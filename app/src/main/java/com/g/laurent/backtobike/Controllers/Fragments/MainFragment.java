@@ -8,6 +8,7 @@ import android.app.Fragment;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +52,6 @@ public class MainFragment extends Fragment {
     @BindView(R.id.title_center) ImageView centralTitle;
     @BindView(R.id.panel) RelativeLayout panel;
     @BindView(R.id.image_panel) ImageView imagePanel;
-    @BindView(R.id.scrollview_panel) ScrollView panelScroll;
     @BindView(R.id.count_friends) TextView countFriends;
     @BindView(R.id.count_invitation) TextView countInvits;
     @BindView(R.id.count_events) TextView countEvents;
@@ -86,8 +86,9 @@ public class MainFragment extends Fragment {
 
         panelExpanded = false;
         panel.setOnClickListener(onClickPanelListener);
-        panelScroll.setOnClickListener(onClickPanelListener);
+
         differencesPanel.setOnClickListener(onClickPanelListener);
+        differencesPanel.setMovementMethod(new ScrollingMovementMethod());
         imagePanel.setOnClickListener(onClickPanelListener);
 
         if(getArguments()!=null){

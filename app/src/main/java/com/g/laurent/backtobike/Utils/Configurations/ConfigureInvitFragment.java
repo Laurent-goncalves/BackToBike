@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,6 +51,7 @@ public class ConfigureInvitFragment {
     @BindView(R.id.button_cancel) Button buttonCancel;
     @BindView(R.id.button_send) Button buttonSend;
     @BindView(R.id.map_layout) View mapLayout;
+    private static final String DISPLAY_MY_EVENTS ="display_my_events";
     private InvitFragment invitFragment;
     private Context context;
     private View view;
@@ -63,7 +65,7 @@ public class ConfigureInvitFragment {
         this.invitFragment=invitFragment;
         this.mCallbackEventActivity = callbackEventActivity;
         context = invitFragment.getContext();
-        configMap = new ConfigureMap(context, mapLayout);
+        configMap = new ConfigureMap(context,mapLayout);
     }
 
     public void configureViews(Invitation invitation){
@@ -135,6 +137,11 @@ public class ConfigureInvitFragment {
     @OnClick(R.id.button_send)
     public void sendInvitation(){
         new CheckAndSendInvitation(this, view, context);
+    }
+
+    @OnClick(R.id.button_cancel)
+    public void cancel(){
+        mCallbackEventActivity.launchDisplayActivity(DISPLAY_MY_EVENTS, null);
     }
 
     @OnClick(R.id.button_add_guests)

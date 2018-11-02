@@ -225,27 +225,22 @@
             android:layout_height="wrap_content"
             android:src="@drawable/panel_draw"/>
 
-        <ScrollView
-            android:id="@+id/scrollview_panel"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/textview_differences"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/image_panel"
             android:layout_alignStart="@+id/image_panel"
             android:layout_alignBottom="@+id/image_panel"
             android:layout_alignEnd="@+id/image_panel"
-            android:layout_marginTop="10dp"
             android:layout_marginBottom="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp">
-
-            <TextView
-                android:id="@+id/textview_differences"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:gravity="center"/>
-
-        </ScrollView>
+            android:textStyle="bold"
+            android:scrollbars="vertical"
+            android:layout_alignParentTop="true"
+            android:gravity="center"/>
 
     </RelativeLayout>
 

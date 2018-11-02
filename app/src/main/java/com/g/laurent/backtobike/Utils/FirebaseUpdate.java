@@ -224,7 +224,7 @@ public class FirebaseUpdate {
     public void cancelMyBikeEvent(String user_id, List<EventFriends> listEventFriends, BikeEvent bikeEvent){
 
         // Delete BikeEvent from my_events
-        databaseReferenceUsers.child(user_id).child(MY_EVENTS).child(String.valueOf(bikeEvent.getId())).removeValue();
+        databaseReferenceUsers.child(user_id).child(MY_EVENTS).child(String.valueOf(bikeEvent.getId())).child(STATUS).setValue(CANCELLED);
 
         String idInvitation = UtilsApp.getIdEvent(bikeEvent);
 
@@ -335,6 +335,7 @@ public class FirebaseUpdate {
         databaseReference.child(DATE).setValue(bikeEvent.getDate());
         databaseReference.child(TIME).setValue(bikeEvent.getTime());
         databaseReference.child(ID_ORGANIZER).setValue(bikeEvent.getOrganizerId());
+        databaseReference.child(ID_ROUTE).setValue(bikeEvent.getIdRoute());
         databaseReference.child(COMMENTS).setValue(bikeEvent.getComments());
         databaseReference.child(STATUS).setValue(bikeEvent.getStatus());
     }
