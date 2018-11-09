@@ -145,50 +145,54 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
 
     public void configureAndShowDisplayFragmentsInViewPager(){
 
-        // Define page to display
-        switch (typeDisplay) {
-            case DISPLAY_MY_ROUTES:
-                position = UtilsApp.findIndexRouteInList(idSelected, listRoutes);
-                break;
-            case DISPLAY_MY_EVENTS:
-                position = UtilsApp.findIndexEventInList(idSelected, listEvents);
-                break;
-            case DISPLAY_MY_INVITS:
-                position = UtilsApp.findIndexEventInList(idSelected, listInvitations);
-                break;
+        if(adapter!=null){
+            adapter.notifyDataSetChanged();
+        } else {
+            // Define page to display
+            switch (typeDisplay) {
+                case DISPLAY_MY_ROUTES:
+                    position = UtilsApp.findIndexRouteInList(idSelected, listRoutes);
+                    break;
+                case DISPLAY_MY_EVENTS:
+                    position = UtilsApp.findIndexEventInList(idSelected, listEvents);
+                    break;
+                case DISPLAY_MY_INVITS:
+                    position = UtilsApp.findIndexEventInList(idSelected, listInvitations);
+                    break;
+            }
+
+            // Configure pager
+            pager = findViewById(R.id.activity_display_viewpager);
+            pager.setOffscreenPageLimit(0);
+            adapter = new PageAdapter(getSupportFragmentManager(), typeDisplay, count);
+            pager.setAdapter(adapter);
+
+            pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+                @Override
+                public void onPageSelected(int position) {
+                    setPosition(position);
+                    configureArrows();
+                    configureButtons(count > 0, position);
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+                    if(state == ViewPager.SCROLL_STATE_IDLE)
+                        synchronizeWithFirebaseAndRefreshFragment();
+                }
+            });
+
+            // Set current page
+            if(position!=-1)
+                pager.setCurrentItem(position);
+            else
+                position = 0;
+
+            configureViews(position);
         }
-
-        // Configure pager
-        pager = findViewById(R.id.activity_display_viewpager);
-        pager.setOffscreenPageLimit(0);
-        adapter = new PageAdapter(getSupportFragmentManager(), typeDisplay, count);
-        pager.setAdapter(adapter);
-
-        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
-
-            @Override
-            public void onPageSelected(int position) {
-                setPosition(position);
-                configureArrows();
-                configureButtons(count > 0, position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                if(state == ViewPager.SCROLL_STATE_IDLE)
-                    synchronizeWithFirebaseAndRefreshFragment();
-            }
-        });
-
-        // Set current page
-        if(position!=-1)
-            pager.setCurrentItem(position);
-        else
-            position = 0;
-
-        configureViews(position);
     }
 
     public void configureViews(int position){

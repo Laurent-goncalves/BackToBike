@@ -27,6 +27,7 @@ import com.g.laurent.backtobike.Models.RouteSegment;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.BikeEventHandler;
 import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
+import com.g.laurent.backtobike.Utils.NotificationUtils;
 import com.g.laurent.backtobike.Utils.UtilsTime;
 import com.g.laurent.backtobike.Utils.WeatherApi.GetForecast;
 import com.g.laurent.backtobike.Utils.WeatherApi.WeatherForecast;
@@ -38,24 +39,18 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.iid.FirebaseInstanceId;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.io.BufferedReader;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
+
 import static com.g.laurent.backtobike.Utils.UtilsTime.getSeasonNumber;
 
 
@@ -88,7 +83,6 @@ public class MainFragment extends Fragment {
     private String userId;
     private Boolean panelExpanded;
     private LatLng currentLocation;
-    private String serverKey = "AAAAg5ho7EE:APA91bG9pRx7eyOE5JT4O_bBm7c5AcHEVHyyMHVrH9R9d9dxorr3tXCH0bFF-a-_UuOr469a6oX_xOvPvNI6N_-a3s0ONjxUDHq5_k_MAn8uHZ8_EtpYXDG8bMOQ5q0xllqaH5Qv3ic4";
 
     public MainFragment() {
         // Required empty public constructor
@@ -111,19 +105,6 @@ public class MainFragment extends Fragment {
         centralTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                FirebaseInstanceId.getInstance().getInstanceId()
-                        .addOnCompleteListener(task -> {
-                            if (!task.isSuccessful()) {
-                                return;
-                            }
-
-                            // Get new Instance ID token
-                            String token = task.getResult().getToken();
-                            sendNotification(token);
-
-                            System.out.println("eee  token=" + token);
-                        });
 
                 /*FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
 
@@ -262,111 +243,6 @@ public class MainFragment extends Fragment {
     public void clickOnSignOutButton(){
         callbackMainActivity.launchDisplayActivity(DISPLAY_MY_ROUTES,null);
     }
-
-    public String send(String to,  String body) {
-        try {
-
-            URL url = new URL("https://fcm.googleapis.com/fcm/send");
-
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Authorization", "key=" + serverKey);
-            conn.setDoOutput(true);
-            JSONObject message = new JSONObject();
-            message.put("to", to);
-            message.put("priority", "high");
-
-            JSONObject notification = new JSONObject();
-            notification.put("title", "nouvelle notif");
-            notification.put("body", body);
-            message.put("data", notification);
-            OutputStream os = conn.getOutputStream();
-            os.write(message.toString().getBytes());
-            os.flush();
-            os.close();
-
-            int responseCode = conn.getResponseCode();
-            System.out.println("\nSending 'POST' request to URL : " + url);
-            System.out.println("Post parameters : " + message.toString());
-            System.out.println("Response Code : " + responseCode);
-            System.out.println("Response Code : " + conn.getResponseMessage());
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-            in.close();
-
-            // print result
-            System.out.println(response.toString());
-            return response.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "error";
-    }
-
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-    OkHttpClient client = new OkHttpClient();
-
-    Call post(String url, String json, Callback callback) {
-        RequestBody body = RequestBody.create(JSON, json);
-        Request request = new Request.Builder()
-                .addHeader("Content-Type","application/json")
-                .addHeader("Authorization","key=" + serverKey)
-                .url(url)
-                .post(body)
-                .build();
-        Call call = client.newCall(request);
-        call.enqueue(callback);
-        return call;
-    }
-
-
-    private void sendNotification(String to){
-
-        try {
-            JSONObject jsonObject = new JSONObject();
-            JSONObject param = new JSONObject();
-            jsonObject.put("data", param);
-            jsonObject.put("to", to);
-            jsonObject.put("priority", "high");
-            jsonObject.put("content_available", true);
-
-            JSONObject notification = new JSONObject();
-            notification.put("title", "nouvelle notif");
-            notification.put("body", "body");
-            jsonObject.put("data", notification);
-
-            post("https://fcm.googleapis.com/fcm/send", jsonObject.toString(), new Callback() {
-                        @Override
-                        public void onFailure(Call call, IOException e) {
-                            //Something went wrong
-                        }
-
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            if (response.isSuccessful()) {
-                                String responseStr = response.body().string();
-                                Log.d("Response", responseStr);
-                                // Do what you want to do with the response.
-                            } else {
-                                // Request not successful
-                            }
-                        }
-                    }
-            );
-        } catch (JSONException ex) {
-            Log.d("Exception", "JSON exception", ex);
-        }
-    }
-
 
     private void configureEventsRecyclerView(){
 

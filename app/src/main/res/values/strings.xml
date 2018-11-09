@@ -7,6 +7,7 @@
     <string name="save">SAVE</string>
     <string name="confirm">CONFIRM</string>
     <string name="sharedpreferences">backtobike_sharedpreferences</string>
+    <string name="server_key">AAAAg5ho7EE:APA91bG9pRx7eyOE5JT4O_bBm7c5AcHEVHyyMHVrH9R9d9dxorr3tXCH0bFF-a-_UuOr469a6oX_xOvPvNI6N_-a3s0ONjxUDHq5_k_MAn8uHZ8_EtpYXDG8bMOQ5q0xllqaH5Qv3ic4</string>
 
     <!-- WEATHER API -->
     <string name="weather_api_key">3713ca929eee4947bc090a1e7dc0c625</string>
@@ -83,6 +84,25 @@
     <string name="notification_title">Reminder : the trip </string>
     <string name="notification_title2days">is still planned in two days.</string>
     <string name="notification_title4hours">is at</string>
+
+    <!-- NOTIF -->
+    <string name="notification_new_invit">has sent you a new invitation!</string>
+    <string name="notification_cancel_event">has cancelled a bike trip.</string>
+    <string name="notification_reject_invit">has rejected your invitation.</string>
+    <string name="notification_accept_invit">has accepted your invitation!</string>
+    <string name="notification_reject_event">cannot attend your bike trip…</string>
+    <string name="notification_new_friend_request">has sent you a friend request!</string>
+    <string name="notification_friend_has_accepted">has accepted your friend request!</string>
+    <string name="notification_friend_has_rejected">has rejected your friend request…</string>
+    <string name="notification_new_invit_title">New invitation!</string>
+    <string name="notification_cancel_event_title">Bike trip cancellation</string>
+    <string name="notification_reject_invit_title">Invitation rejected</string>
+    <string name="notification_accept_invit_title">Invitation accepted</string>
+    <string name="notification_reject_event_title">Bike trip rejection</string>
+    <string name="notification_new_friend_request_title">New friend request!</string>
+    <string name="notification_friend_has_accepted_title">Friend request accepted</string>
+    <string name="notification_friend_has_rejected_title">Friend request rejected</string>
+    <string name="error_send_notification">Error. Cannot send the notification</string>
 
     <!-- AUTHACTIVITY -->
     <string name="facebook_app_id">291137544820428</string>

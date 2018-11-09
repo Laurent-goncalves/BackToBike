@@ -1,9 +1,11 @@
 package com.g.laurent.backtobike.Utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.widget.Toast;
 
 import com.g.laurent.backtobike.Models.BikeEvent;
+import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.OnBikeEventDataGetListener;
 import com.g.laurent.backtobike.Models.OnCompletedSynchronization;
@@ -16,10 +18,10 @@ import java.util.List;
 
 public class SynchronizeWithDatabase {
 
-
     private static final String REJECTED = "rejected";
     private static final String CANCELLED = "cancelled";
     private static final String ACCEPTED = "accepted";
+    private static final String LOGIN_SHARED ="login_shared";
 
     // ------------------------------------------------------------------------------------------------------
     // ------------------------------------- SYNCHRONIZE FRIENDS --------------------------------------------
@@ -62,16 +64,21 @@ public class SynchronizeWithDatabase {
                     if(UtilsApp.findFriendIndexInListFriends(friend,listFriendsFB)!=-1){ // if friend DB on Firebase
 
                         if(friend.getAccepted()!=null){
-                            if(friend.getAccepted())
+                            if(friend.getAccepted()) {
                                 firebaseUpdate.acceptFriend(user.getId(), friend.getId());
-                            else
+                                NotificationUtils.configureAndSendNotification(context, friend.getId(), user.getLogin(),NotificationUtils.FRIEND_HAS_ACCEPTED);
+                            } else {
                                 firebaseUpdate.rejectFriend(user.getId(), friend.getId());
+                                NotificationUtils.configureAndSendNotification(context, friend.getId(), user.getLogin(),NotificationUtils.FRIEND_HAS_REJECTED);
+                            }
                         }
                     } else {
                         if(friend.getAccepted()!=null){
-                            if(friend.getAccepted()) // if new friend request to be sent
+                            if(friend.getAccepted()) { // if new friend request to be sent
                                 firebaseUpdate.addNewFriend(friend, user);
-                            else // delete friend from Firebase
+
+                                NotificationUtils.configureAndSendNotification(context, friend.getId(), user.getLogin(),NotificationUtils.NEW_FRIEND_REQUEST);
+                            } else // delete friend from Firebase
                                 FriendsHandler.deleteFriend(context, friend.getId(), user.getId());
                         }
                     }
@@ -134,6 +141,9 @@ public class SynchronizeWithDatabase {
 
     private static void synchonizeEventsFirebase(Context context, String userId, List<BikeEvent> listBikeEventFB, List<BikeEvent> listBikeEventDB, OnCompletedSynchronization onCompletedSynchronization) throws InterruptedException {
 
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
+        String myLogin = sharedPref.getString(LOGIN_SHARED, null);
+
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
 
         if(listBikeEventDB!=null){
@@ -147,12 +157,21 @@ public class SynchronizeWithDatabase {
                         if(!event.getOrganizerId().equals(userId)){ // if user is NOT the organizer
 
                             if(event.getStatus()!=null){
-                                if(event.getStatus().equals(ACCEPTED)) // if user has accepted invitation
-                                    firebaseUpdate.giveAnswerToInvitation(userId, event, ACCEPTED);
-                                else if(event.getStatus().equals(REJECTED)) // if user has rejected invitation
-                                    firebaseUpdate.giveAnswerToInvitation(userId, event, REJECTED);
-                                else
-                                    Action.deleteBikeEvent(event, userId, context);
+                                switch (event.getStatus()) {
+                                    case ACCEPTED:  // if user has accepted invitation
+                                        firebaseUpdate.giveAnswerToInvitation(userId, event, ACCEPTED);
+                                        NotificationUtils.configureAndSendNotification(context, event.getOrganizerId(),myLogin,
+                                                NotificationUtils.ACCEPT_INVITATION);
+                                        break;
+                                    case REJECTED:  // if user has rejected invitation
+                                        firebaseUpdate.giveAnswerToInvitation(userId, event, REJECTED);
+                                        NotificationUtils.configureAndSendNotification(context, event.getOrganizerId(), myLogin,
+                                                NotificationUtils.REJECT_INVITATION);
+                                        break;
+                                    default:
+                                        Action.deleteBikeEvent(event, userId, context);
+                                        break;
+                                }
                             }
 
                         } else { // if user is the organizer
@@ -161,6 +180,14 @@ public class SynchronizeWithDatabase {
                                 firebaseUpdate.updateMyBikeEvent(userId, event);
                                 // Send invitations to guests
                                 firebaseUpdate.addInvitationGuests(event);
+                                // Send notifications to guests
+                                if(event.getListEventFriends()!=null){
+                                    for(EventFriends eventFriends : event.getListEventFriends()){
+                                        NotificationUtils.configureAndSendNotification(context, eventFriends.getIdFriend(),
+                                                myLogin,NotificationUtils.NEW_INVITATION);
+                                    }
+                                }
+
                             } else {
                                 // event finished, to be deleted in Firebase and Database
                                 Action.deleteBikeEvent(event, userId, context);
@@ -171,14 +198,32 @@ public class SynchronizeWithDatabase {
                         if(!event.getStatus().equals(listBikeEventFB.get(index).getStatus())){ // if status are different
 
                             if(event.getOrganizerId().equals(userId)) { // if user is the organizer
-                                if(event.getStatus().equals(CANCELLED))
+                                if(event.getStatus().equals(CANCELLED)) {
                                     firebaseUpdate.cancelMyBikeEvent(userId, event.getListEventFriends(), event);
-                                else
+
+                                    // Send notifications to guests
+                                    if(event.getListEventFriends()!=null){
+                                        for(EventFriends eventFriends : event.getListEventFriends()){
+                                            NotificationUtils.configureAndSendNotification(context, eventFriends.getIdFriend(),
+                                                    myLogin,NotificationUtils.CANCEL_EVENT);
+                                        }
+                                    }
+                                } else
                                     Action.deleteBikeEvent(event, userId, context);
-                            } else {
-                                if(event.getStatus().equals(REJECTED))
-                                    firebaseUpdate.giveAnswerToInvitation(userId, event, REJECTED);
-                                else
+                            } else { // if user is NOT the organizer
+                                if(event.getStatus().equals(REJECTED)) {
+
+                                    firebaseUpdate.rejectEvent(userId, event);
+
+                                    // Send notifications to guests
+                                    if(event.getListEventFriends()!=null){
+                                        for(EventFriends eventFriends : event.getListEventFriends()){
+                                            NotificationUtils.configureAndSendNotification(context, eventFriends.getIdFriend(),
+                                                    myLogin,NotificationUtils.REJECT_EVENT);
+                                        }
+                                    }
+
+                                } else
                                     Action.deleteBikeEvent(event, userId, context);
                             }
                         }

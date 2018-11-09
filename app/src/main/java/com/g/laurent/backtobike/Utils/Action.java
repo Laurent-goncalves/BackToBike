@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 
 import com.g.laurent.backtobike.Controllers.Activities.DisplayActivity;
 import com.g.laurent.backtobike.Models.BikeEvent;
+import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
@@ -18,6 +19,7 @@ public class Action {
     private static final String ACCEPTED = "accepted";
     private static final String REJECTED = "rejected";
     private static final String NEED_SYNCHRONIZATION = "need_synchronization";
+    private static final String LOGIN_SHARED ="login_shared";
 
     // ---------------------------------------------------------------------------------------------------------
     // -------------------------------------------- FRIEND -----------------------------------------------------
@@ -32,8 +34,14 @@ public class Action {
 
         // Insert friend in Firebase
         if(UtilsApp.isInternetAvailable(context)) {
+
+            // Add new friend on Firebase
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
             firebaseUpdate.addNewFriend(friend, user);
+
+            // Send notification to user
+            NotificationUtils.configureAndSendNotification(context, friend.getId(), user.getLogin(),NotificationUtils.NEW_FRIEND_REQUEST);
+
         } else {
             sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
         }
@@ -79,10 +87,15 @@ public class Action {
         friend.setAccepted(true);
         FriendsHandler.updateFriend(context, friend, userId);
 
-        // Friend accepted in Firebase
         if(UtilsApp.isInternetAvailable(context)) {
+
+            // Friend accepted in Firebase
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
             firebaseUpdate.acceptFriend(userId, friend.getId());
+
+            // Send notification to user
+            NotificationUtils.configureAndSendNotification(context, friend.getId(), sharedPref.getString(LOGIN_SHARED, null),NotificationUtils.FRIEND_HAS_ACCEPTED);
+
         } else {
             sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
         }
@@ -96,10 +109,15 @@ public class Action {
         friend.setAccepted(false);
         FriendsHandler.updateFriend(context, friend, userId);
 
-        // Friend accepted in Firebase
         if(UtilsApp.isInternetAvailable(context)) {
+
+            // Friend accepted in Firebase
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
             firebaseUpdate.rejectFriend(userId, friend.getId());
+
+            // Send notification to user
+            NotificationUtils.configureAndSendNotification(context, friend.getId(), sharedPref.getString(LOGIN_SHARED, null),NotificationUtils.FRIEND_HAS_REJECTED);
+
         } else {
             sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
         }
@@ -182,6 +200,14 @@ public class Action {
 
             // Send invitations to guests
             firebaseUpdate.addInvitationGuests(event);
+
+            // Send notification to each guest
+            if(event.getListEventFriends()!=null){
+                for(EventFriends eventFriends : event.getListEventFriends()){
+                    NotificationUtils.configureAndSendNotification(context, eventFriends.getIdFriend(), sharedPref.getString(LOGIN_SHARED, null),NotificationUtils.NEW_INVITATION);
+                }
+            }
+
         } else {
             sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
         }
@@ -198,6 +224,13 @@ public class Action {
         if(UtilsApp.isInternetAvailable(context)) {
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
             firebaseUpdate.cancelMyBikeEvent(userId, event.getListEventFriends(), event);
+
+            // Send notification of cancellation to each guest
+            if(event.getListEventFriends()!=null){
+                for(EventFriends eventFriends : event.getListEventFriends()){
+                    NotificationUtils.configureAndSendNotification(context, eventFriends.getIdFriend(), sharedPref.getString(LOGIN_SHARED, null),NotificationUtils.CANCEL_EVENT);
+                }
+            }
         } else {
             sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
         }
@@ -232,10 +265,15 @@ public class Action {
         // Accept invitation in database
         BikeEventHandler.updateBikeEvent(context, invitation, userId);
 
-        // Accept invitation in Firebase
         if(UtilsApp.isInternetAvailable(context)) {
+
+            // Accept invitation in Firebase
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
             firebaseUpdate.giveAnswerToInvitation(userId, invitation, ACCEPTED);
+
+            // Send notification to organizer
+            NotificationUtils.configureAndSendNotification(context, invitation.getOrganizerId(), sharedPref.getString(LOGIN_SHARED, null),NotificationUtils.ACCEPT_INVITATION);
+
         } else {
             sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
         }
@@ -248,10 +286,36 @@ public class Action {
         // Reject invitation in database
         BikeEventHandler.deleteBikeEvent(context,invitation, userId);
 
-        // Reject invitation in Firebase
         if(UtilsApp.isInternetAvailable(context)) {
+
+            // Reject invitation in Firebase
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
             firebaseUpdate.giveAnswerToInvitation(userId, invitation, REJECTED);
+
+            // Send notification to organizer
+            NotificationUtils.configureAndSendNotification(context, invitation.getOrganizerId(), sharedPref.getString(LOGIN_SHARED, null),NotificationUtils.REJECT_INVITATION);
+
+        } else {
+            sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
+        }
+    }
+
+    public static void rejectEvent(BikeEvent invitation, String userId, Context context){
+
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
+
+        // Reject invitation in database
+        BikeEventHandler.deleteBikeEvent(context,invitation, userId);
+
+        if(UtilsApp.isInternetAvailable(context)) {
+
+            // Reject invitation in Firebase
+            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+            firebaseUpdate.rejectEvent(userId, invitation);
+
+            // Send notification to organizer
+            NotificationUtils.configureAndSendNotification(context, invitation.getOrganizerId(), sharedPref.getString(LOGIN_SHARED, null),NotificationUtils.REJECT_EVENT);
+
         } else {
             sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
         }
@@ -327,7 +391,7 @@ public class Action {
         builder.setTitle(context.getResources().getString(R.string.warning_title));
         builder.setMessage(context.getResources().getString(R.string.confirm_reject_event));
         builder.setPositiveButton(context.getResources().getString(R.string.confirm), (dialog, id) -> {
-                    Action.rejectInvitation(event,userId,context);
+                    Action.rejectEvent(event,userId,context);
                     String message = context.getResources().getString(R.string.reject_event);
                     displayActivity.removeItemListEvent(position, message);
                 }

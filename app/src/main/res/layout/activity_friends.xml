@@ -96,22 +96,10 @@
                 android:layout_height="match_parent">
 
                 <FrameLayout
+                    android:id="@+id/fragment_friend"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/mountains"/>
-
-                    <FrameLayout
-                        android:id="@+id/fragment_friend"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/fui_transparent"/>
-
-                </FrameLayout>
+                    android:layout_height="match_parent"
+                    android:background="@drawable/background_display_activity"/>
 
             </android.support.v4.widget.SwipeRefreshLayout>
 

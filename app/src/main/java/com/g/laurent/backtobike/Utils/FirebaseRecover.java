@@ -33,6 +33,7 @@ public class FirebaseRecover {
 
     private static final String USERS = "users";
     private static final String NAME = "name";
+    private static final String TOKEN_DEVICE = "token_device";
     private static final String MY_FRIENDS = "my_friends";
     private static final String MY_EVENTS = "my_events";
     private static final String MY_INVITATIONS = "my_invitations";
@@ -73,6 +74,28 @@ public class FirebaseRecover {
     // ----------------------------------------------------------------------------------------------
     // -------------------------------- RECOVER USER DATAS ------------------------------------------
     // ----------------------------------------------------------------------------------------------
+
+    public void recoverUserTokenDevice(String userId, final OnUserDataGetListener onUserDataGetListener){
+
+        databaseReferenceUsers.child(userId).child(TOKEN_DEVICE).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String token = null;
+                if(dataSnapshot.getValue()!=null)
+                    token = dataSnapshot.getValue().toString();
+
+                if(token!=null)
+                    onUserDataGetListener.onSuccess(true, token);
+                else
+                    onUserDataGetListener.onFailure(null);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                onUserDataGetListener.onFailure("Error to access data " + "\n" + databaseError);
+            }
+        });
+    }
 
     public void recoverUserDatas(String user_id, final OnUserDataGetListener onUserDataGetListener) {
 
@@ -330,7 +353,7 @@ public class FirebaseRecover {
     // ------------------------ RECOVER ALL INVITATIONS FROM USER -----------------------------------
     // ----------------------------------------------------------------------------------------------
 
-    public void recoverInvitationsUser(String user_id, OnBikeEventDataGetListener onBikeEventDataGetListener) throws InterruptedException {
+    public void recoverInvitationsUser(String user_id, OnBikeEventDataGetListener onBikeEventDataGetListener) {
 
         DatabaseReference databaseReferenceInvitation = databaseReferenceUsers.child(user_id).child(MY_INVITATIONS);
 

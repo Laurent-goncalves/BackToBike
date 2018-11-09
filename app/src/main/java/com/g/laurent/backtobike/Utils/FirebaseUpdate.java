@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.List;
 public class FirebaseUpdate {
 
     private static final String USERS = "users";
+    private static final String TOKEN_DEVICE = "token_device";
     private static final String NAME = "name";
     private static final String MY_FRIENDS = "my_friends";
     private static final String MY_EVENTS = "my_events";
@@ -69,11 +71,31 @@ public class FirebaseUpdate {
         databaseReferenceUsers.child(user_id).child(NAME).setValue(name);
         databaseReferenceUsers.child(user_id).child(PHOTO_URL).setValue(photoUrl);
         databaseReferenceUsers.child(user_id).child(LOGIN).setValue(login);
+
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful())
+                        return;
+
+                    // Get new Instance ID token
+                    String token = task.getResult().getToken();
+                    databaseReferenceUsers.child(user_id).child(TOKEN_DEVICE).setValue(token);
+                });
     }
 
     public void updateUserData(String user_id, String name, String photoUrl){
         databaseReferenceUsers.child(user_id).child(NAME).setValue(name);
         databaseReferenceUsers.child(user_id).child(PHOTO_URL).setValue(photoUrl);
+
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful())
+                        return;
+
+                    // Get new Instance ID token
+                    String token = task.getResult().getToken();
+                    databaseReferenceUsers.child(user_id).child(TOKEN_DEVICE).setValue(token);
+                });
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -159,6 +181,18 @@ public class FirebaseUpdate {
             // update datas from organizer and other eventFriends
             updateAcceptanceEventFriend(userId, bikeEvent, bikeEvent.getOrganizerId(), false);
         }
+    }
+
+    public void rejectEvent(String userId, BikeEvent bikeEvent){
+
+        // create idEvent
+        String idEvent = UtilsApp.getIdEvent(bikeEvent);
+
+        // Delete event
+        databaseReferenceUsers.child(userId).child(MY_EVENTS).child(idEvent).child(STATUS).child(REJECTED);
+
+        // update datas from organizer and other eventFriends
+        updateAcceptanceEventFriend(userId, bikeEvent, bikeEvent.getOrganizerId(), false);
     }
 
     private void moveInvitationToMyEvents(DatabaseReference fromPath, final DatabaseReference toPath) {

@@ -281,8 +281,9 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
     }
 
     private void clearDatabase(String userId, Context context){
+
         AppDatabase.getInstance(context,userId).eventFriendsDao().deleteAllEventFriends();
-        //AppDatabase.getInstance(context,userId).friendsDao().deleteAllFriends();
+        AppDatabase.getInstance(context,userId).friendsDao().deleteAllFriends();
         AppDatabase.getInstance(context,userId).routeSegmentDao().deleteRouteSegment();
         AppDatabase.getInstance(context,userId).routesDao().deleteAllRoutes();
         AppDatabase.getInstance(context,userId).bikeEventDao().deleteAllBikeEvents();
