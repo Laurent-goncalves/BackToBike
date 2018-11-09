@@ -37,6 +37,7 @@ public class SaveAndRestoreDisplayActivity {
             String typeDisplay = saveInstantState.getString(BUNDLE_TYPE_DISPLAY);
             String id = saveInstantState.getString(BUNDLE_ID, null);
 
+            displayActivity.savePreviousPage(typeDisplay);
             displayActivity.setTypeDisplay(typeDisplay);
             displayActivity.setIdSelected(id);
 
@@ -52,14 +53,51 @@ public class SaveAndRestoreDisplayActivity {
 
             switch(typeDisplay){
                 case DISPLAY_MY_ROUTES:
-                    List<Route> listRoutes = RouteHandler.getAllRoutes(context, user_id);
-                    displayActivity.setListRoutes(listRoutes);
-                    displayActivity.setCount(listRoutes.size());
-                    displayActivity.configureAndShowDisplayFragmentsInViewPager();
+
+                    if(UtilsApp.isInternetAvailable(context)) {
+
+                        SynchronizeWithFirebase.synchronizeMyRoutes(user_id, context, new CallbackSynchronizeEnd() {
+                            @Override
+                            public void onCompleted() {
+                                configureDisplayActivityForMyRoutes(user_id, displayActivity);
+                                displayActivity.configureAndShowDisplayFragmentsInViewPager();
+                            }
+
+                            @Override
+                            public void onFailure(String error) {
+                                configureDisplayActivityForMyRoutes(user_id, displayActivity);
+                                displayActivity.configureAndShowDisplayFragmentsInViewPager();
+                            }
+                        });
+                    } else {
+                        configureDisplayActivityForMyRoutes(user_id, displayActivity);
+                        displayActivity.configureAndShowDisplayFragmentsInViewPager();
+                    }
+
                     break;
 
                 case DISPLAY_MY_EVENTS:
-                    configureDisplayActivityForMyEvents(user_id,displayActivity);
+                    // SynchronizeWithDatabase with Firebase if invitations are displayed
+                    if(UtilsApp.isInternetAvailable(context)) {
+
+                        SynchronizeWithFirebase.synchronizeMyEvents(user_id, context, new CallbackSynchronizeEnd() {
+                            @Override
+                            public void onCompleted() {
+                                configureDisplayActivityForMyEvents(user_id, displayActivity);
+                                displayActivity.configureAndShowDisplayFragmentsInViewPager();
+                            }
+
+                            @Override
+                            public void onFailure(String error) {
+                                configureDisplayActivityForMyEvents(user_id, displayActivity);
+                                displayActivity.configureAndShowDisplayFragmentsInViewPager();
+                            }
+                        });
+                    } else {
+                        configureDisplayActivityForMyEvents(user_id, displayActivity);
+                        displayActivity.configureAndShowDisplayFragmentsInViewPager();
+                    }
+
                     break;
 
                 case DISPLAY_MY_INVITS:
@@ -90,54 +128,34 @@ public class SaveAndRestoreDisplayActivity {
         }
     }
 
-    private static void configureDisplayActivityForMyEvents(String user_id, DisplayActivity displayActivity) throws InterruptedException {
+    private static void configureDisplayActivityForMyRoutes(String user_id, DisplayActivity displayActivity) {
+
+        Context context = displayActivity.getApplicationContext();
+
+        // Get listRoutes
+        List<Route> listRoutes = RouteHandler.getAllRoutes(context, user_id);
+        displayActivity.setListRoutes(listRoutes);
+
+        // Set count list Events
+        if(listRoutes!=null)
+            displayActivity.setCount(listRoutes.size());
+        else
+            displayActivity.setCount(0);
+    }
+
+    private static void configureDisplayActivityForMyEvents(String user_id, DisplayActivity displayActivity) {
 
         Context context = displayActivity.getApplicationContext();
 
         // Get Bike Events
         List<BikeEvent> listEvents = BikeEventHandler.getAllFutureBikeEvents(context, user_id);
+        displayActivity.setListEvents(listEvents);
 
-        // Recover list bike events on Firebase
-        if(UtilsApp.isInternetAvailable(context)){
-
-            FirebaseRecover firebaseRecover = new FirebaseRecover(context);
-            firebaseRecover.recoverBikeEventsUser(user_id, new OnBikeEventDataGetListener() {
-                @Override
-                public void onSuccess(BikeEvent bikeEvent) {}
-
-                @Override
-                public void onSuccess(List<BikeEvent> newBikeEventList) {
-
-                    // Get differences with list bike events on Firebase (status and friend acceptances)
-                    List<Difference> differenceList = UtilsCounters.getListDifferencesBetweenListEvents(listEvents, newBikeEventList, context);
-                    displayActivity.setListDifferences(differenceList);
-
-                    // Set list Events
-                    displayActivity.setListEvents(newBikeEventList);
-
-                    // Set count list Events
-                    displayActivity.setCount(newBikeEventList.size());
-
-                    displayActivity.configureAndShowDisplayFragmentsInViewPager();
-                }
-
-                @Override
-                public void onFailure(String error) {
-                    displayActivity.setListEvents(listEvents);
-                    // Set count list Events
-                    displayActivity.setCount(listEvents.size());
-
-                    displayActivity.configureAndShowDisplayFragmentsInViewPager();
-                }
-            });
-
-        } else {
-            displayActivity.setListEvents(listEvents);
-            // Set count list Events
+        // Set count list Events
+        if(listEvents!=null)
             displayActivity.setCount(listEvents.size());
-
-            displayActivity.configureAndShowDisplayFragmentsInViewPager();
-        }
+        else
+            displayActivity.setCount(0);
     }
 
     private static void configureDisplayActivityForMyInvits(String user_id, DisplayActivity displayActivity){

@@ -451,7 +451,7 @@ public class FirebaseRecover {
     // ----------------------------------------- UTILS ----------------------------------------------
     // ----------------------------------------------------------------------------------------------
 
-    private Route buildListRoute(DataSnapshot dataSnapshot){
+    private static Route buildListRoute(DataSnapshot dataSnapshot){
 
         List<RouteSegment> listRouteSegments = new ArrayList<>();
 
@@ -477,7 +477,7 @@ public class FirebaseRecover {
                 (Boolean) dataSnapshot.child(VALID).getValue(),listRouteSegments);
     }
 
-    private BikeEvent buildBikeEvent(DataSnapshot datas){
+    public static BikeEvent buildBikeEvent(DataSnapshot datas){
 
         String idRoute;
         if(datas.child(ID_ROUTE).getValue()!=null)
@@ -501,7 +501,7 @@ public class FirebaseRecover {
         return bikeEvent;
     }
 
-    private List<EventFriends> buildListEventFriends(DataSnapshot guests, String idEvent) {
+    private static List<EventFriends> buildListEventFriends(DataSnapshot guests, String idEvent) {
 
         List<EventFriends> listEventFriends = new ArrayList<>();
 
@@ -516,7 +516,7 @@ public class FirebaseRecover {
         return listEventFriends;
     }
 
-    private Friend buildFriend(DataSnapshot datas){
+    private static Friend buildFriend(DataSnapshot datas){
 
         Boolean accepted = null;
         Boolean has_accepted = null;

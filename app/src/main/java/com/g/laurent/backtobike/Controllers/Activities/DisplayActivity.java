@@ -21,13 +21,13 @@ import com.g.laurent.backtobike.Models.DisplayViewPager;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.Action;
+import com.g.laurent.backtobike.Utils.BikeEventHandler;
+import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 import com.g.laurent.backtobike.Utils.SaveAndRestoreDisplayActivity;
 import com.g.laurent.backtobike.Utils.SynchronizeWithFirebase;
 import com.g.laurent.backtobike.Utils.UtilsApp;
-import com.g.laurent.backtobike.Utils.UtilsCounters;
 import com.g.laurent.backtobike.Views.PageAdapter;
 import com.google.firebase.auth.FirebaseAuth;
-import java.util.ArrayList;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,7 +38,6 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
     private static final String CANCELLED = "cancelled";
     private List<Route> listRoutes;
     private List<BikeEvent> listEvents;
-    private List<Difference> listDifferences;
     private List<BikeEvent> listInvitations;
     private String typeDisplay;
     private DisplayViewPager pager;
@@ -46,7 +45,6 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
     private String idSelected;
     private int count;
     private int position;
-    private DisplaySwipeToRefresh mySwipeRefreshLayout;
     @BindView(R.id.arrow_next) ImageView arrowNext;
     @BindView(R.id.arrow_back) ImageView arrowBack;
     @BindView(R.id.left_button)  Button buttonLeft;
@@ -63,11 +61,6 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         Bundle extras = getIntent().getExtras();
         assignToolbarViews();
 
-        // Configure swipe to refresh
-        mySwipeRefreshLayout = findViewById(R.id.swipe_to_refresh);
-        mySwipeRefreshLayout.setOnRefreshListener(this::synchronizeWithFirebaseAndRefreshFragment);
-
-
         // Recover datas
         try {
             SaveAndRestoreDisplayActivity.restoreData(extras, userId,this);
@@ -80,20 +73,35 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
 
         if(typeDisplay!=null && UtilsApp.isInternetAvailable(getApplicationContext())){
 
-            if(typeDisplay.equals(DISPLAY_MY_ROUTES))
+            if(typeDisplay.equals(DISPLAY_MY_ROUTES)) {
 
-                configureAndShowDisplayFragmentsInViewPager();
+                try {
+                    SynchronizeWithFirebase.synchronizeMyRoutes(userId, getApplicationContext(), new CallbackSynchronizeEnd() {
+                        @Override
+                        public void onCompleted() {
+                            listRoutes = RouteHandler.getAllRoutes(getApplicationContext(), userId);
+                            configureAndShowDisplayFragmentsInViewPager();
+                        }
 
-            else {
-                String idEvent;
+                        @Override
+                        public void onFailure(String error) {
+                            configureAndShowDisplayFragmentsInViewPager();
+                        }
+                    });
 
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    configureAndShowDisplayFragmentsInViewPager();
+                }
+
+            } else {
                 try {
                     if( listEvents.size()>0){
                         if (typeDisplay.equals(DISPLAY_MY_EVENTS)) {
-                            idEvent = listEvents.get(position).getId();
-                            SynchronizeWithFirebase.synchronizeOneEvent(userId, idEvent, getApplicationContext(), new CallbackSynchronizeEnd() {
+                            SynchronizeWithFirebase.synchronizeMyEvents(userId, getApplicationContext(), new CallbackSynchronizeEnd() {
                                 @Override
                                 public void onCompleted() {
+                                    listEvents = BikeEventHandler.getAllFutureBikeEvents(getApplicationContext(),userId);
                                     configureAndShowDisplayFragmentsInViewPager();
                                 }
 
@@ -103,10 +111,10 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
                                 }
                             });
                         } else {
-                            idEvent = listInvitations.get(position).getId();
-                            SynchronizeWithFirebase.synchronizeOneInvitation(userId, idEvent, getApplicationContext(), new CallbackSynchronizeEnd() {
+                            SynchronizeWithFirebase.synchronizeInvitations(userId, getApplicationContext(), new CallbackSynchronizeEnd() {
                                 @Override
                                 public void onCompleted() {
+                                    listInvitations = BikeEventHandler.getAllInvitations(getApplicationContext(),userId);
                                     configureAndShowDisplayFragmentsInViewPager();
                                 }
 
@@ -137,8 +145,6 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
 
     public void configureAndShowDisplayFragmentsInViewPager(){
 
-        mySwipeRefreshLayout.setRefreshing(false);
-
         // Define page to display
         switch (typeDisplay) {
             case DISPLAY_MY_ROUTES:
@@ -164,16 +170,16 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
 
             @Override
             public void onPageSelected(int position) {
-                /*if(typeDisplay.equals(DISPLAY_MY_EVENTS))
-                    showDifferences(position);*/
-
                 setPosition(position);
                 configureArrows();
                 configureButtons(count > 0, position);
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {}
+            public void onPageScrollStateChanged(int state) {
+                if(state == ViewPager.SCROLL_STATE_IDLE)
+                    synchronizeWithFirebaseAndRefreshFragment();
+            }
         });
 
         // Set current page
@@ -261,8 +267,13 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
                         buttonLeft.setCompoundDrawablesWithIntrinsicBounds(null, context.getResources().getDrawable(R.drawable.round_cancel_white_48), null, null);
                         iconLeft = buttonLeft.getCompoundDrawables();
                         iconLeft[1].setColorFilter(context.getResources().getColor(R.color.colorReject), PorterDuff.Mode.SRC_IN);
-                        buttonLeft.setText(context.getResources().getString(R.string.cancel));
                         buttonLeft.setTextColor(context.getResources().getColor(R.color.colorReject));
+
+                        if(listEvents.get(position).getOrganizerId().equals(userId))
+                            buttonLeft.setText(context.getResources().getString(R.string.cancel));
+                        else
+                            buttonLeft.setText(context.getResources().getString(R.string.reject));
+
                     } else { // if event cancelled by organizer
                         buttonLeft.setVisibility(View.VISIBLE);
                         buttonLeft.setCompoundDrawablesWithIntrinsicBounds(null, context.getResources().getDrawable(R.drawable.baseline_delete_white_48), null, null);
@@ -287,7 +298,7 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
                     buttonLeft.setCompoundDrawablesWithIntrinsicBounds(null,context.getResources().getDrawable(R.drawable.round_cancel_white_48),null,null);
                     iconLeft = buttonLeft.getCompoundDrawables();
                     iconLeft[1].setColorFilter(context.getResources().getColor(R.color.colorReject),PorterDuff.Mode.SRC_IN);
-                    buttonLeft.setText(context.getResources().getString(R.string.delete));
+                    buttonLeft.setText(context.getResources().getString(R.string.reject));
                     buttonLeft.setTextColor(context.getResources().getColor(R.color.colorReject));
 
                     // ACCEPT INVITATION
@@ -344,10 +355,9 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
                 // ACCEPT INVITATION
                 buttonRight.setOnClickListener(v -> {
                     Action.acceptInvitation(listInvitations.get(position),userId,getApplicationContext());
-                    removeItemListInvits(position, getApplicationContext().getResources().getString(R.string.accept_invitation));
-
                     // set alarm for event
                     configureAlarmManager(listInvitations.get(position));
+                    removeItemListInvits(position, getApplicationContext().getResources().getString(R.string.accept_invitation));
                 });
                 break;
         }
@@ -373,49 +383,6 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         configureAndShowDisplayFragmentsInViewPager();
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
-
-    /*private void showDifferences(int position){
-
-        StringBuilder diffText = new StringBuilder();
-
-        List<Difference> listDiffEvent = UtilsCounters.getListDifferencesFromBikeEvent(listEvents.get(position).getId(), listDifferences);
-
-        if(listDiffEvent.size()>0){
-            for(Difference diff : listDiffEvent){
-                diffText.append(diff.getDifference());
-                diffText.append("\n");
-            }
-        }
-
-        // Remove all differences from bike event selected
-        String idEvent = listEvents.get(position).getId();
-        removeDifferences(idEvent);
-
-        // Show text
-        if(diffText.length()>0)
-            Toast.makeText(getApplicationContext(), diffText, Toast.LENGTH_LONG).show();
-    }
-
-    private void removeDifferences(String idEvent){
-
-        List<Integer> listPositionsToDelete = new ArrayList<>();
-
-        if(listDifferences!=null){
-            if(listDifferences.size()>0){
-                for(int i = 0; i < listDifferences.size(); i++){
-                    if(listDifferences.get(i).getIdEvent().equals(idEvent)){
-                        listPositionsToDelete.add(i);
-                    }
-                }
-            }
-        }
-
-        if(listPositionsToDelete.size()>0 && listDifferences!=null){
-            for(int i : listPositionsToDelete){
-                listDifferences.remove(i);
-            }
-        }
-    }*/
 
     private void configureAddButton(){
 
@@ -501,13 +468,5 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
 
     public void setPosition(int position) {
         this.position = position;
-    }
-
-    public List<Difference> getListDifferences() {
-        return listDifferences;
-    }
-
-    public void setListDifferences(List<Difference> listDifferences) {
-        this.listDifferences = listDifferences;
     }
 }

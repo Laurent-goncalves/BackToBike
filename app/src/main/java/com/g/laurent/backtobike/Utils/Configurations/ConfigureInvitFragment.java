@@ -66,6 +66,8 @@ public class ConfigureInvitFragment {
         this.mCallbackEventActivity = callbackEventActivity;
         context = invitFragment.getContext();
         configMap = new ConfigureMap(context,mapLayout);
+        view.findViewById(R.id.map_layout).findViewById(R.id.title_route).setVisibility(View.GONE); // remove title route
+        view.findViewById(R.id.map_layout).findViewById(R.id.button_add_my_routes).setVisibility(View.GONE); // remove button add to my routes
     }
 
     public void configureViews(Invitation invitation){
@@ -79,7 +81,7 @@ public class ConfigureInvitFragment {
     private void configureSpinner(int idRoute){
 
         listRoutes = RouteHandler.getAllRoutes(context, mCallbackEventActivity.getUserId());
-        listRoutes.add(0,new Route(-1,"Select a route",false,null));
+        listRoutes.add(0,new Route(-1, context.getResources().getString(R.string.select_a_route_spinner),false,null));
 
         // Creating adapter for spinner
         ArrayAdapter<String> routeAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item,
@@ -182,7 +184,6 @@ public class ConfigureInvitFragment {
     // -----------------------------------------------------------------------------------------------------
     // ------------------------------------------- GUESTS --------------------------------------------------
     // -----------------------------------------------------------------------------------------------------
-
 
     public CallbackEventActivity getCallbackEventActivity() {
         return mCallbackEventActivity;

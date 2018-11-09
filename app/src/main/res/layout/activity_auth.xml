@@ -12,8 +12,17 @@
         android:scaleType="centerCrop"
         android:src="@drawable/vtt_main_pic"/>
 
-    <!-- BUTTON SIGN IN WITH GOOGLE AND FACEBOOK -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:indeterminateDrawable="@drawable/progress_auth" >
+    </ProgressBar>
 
+    <!-- BUTTON SIGN IN WITH GOOGLE AND FACEBOOK -->
     <LinearLayout
         android:id="@+id/buttons_container"
         android:layout_width="match_parent"

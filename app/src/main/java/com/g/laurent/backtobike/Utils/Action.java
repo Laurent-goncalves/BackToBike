@@ -192,8 +192,7 @@ public class Action {
         SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
         // Delete event in database
-        event.setStatus(CANCELLED);
-        BikeEventHandler.updateBikeEvent(context, event, userId);
+        BikeEventHandler.deleteBikeEvent(context, event, userId);
 
         // Cancel event and invitations in Firebase
         if(UtilsApp.isInternetAvailable(context)) {
@@ -246,10 +245,8 @@ public class Action {
 
         SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
-        invitation.setStatus(REJECTED);
-
         // Reject invitation in database
-        BikeEventHandler.updateBikeEvent(context,invitation, userId);
+        BikeEventHandler.deleteBikeEvent(context,invitation, userId);
 
         // Reject invitation in Firebase
         if(UtilsApp.isInternetAvailable(context)) {

@@ -3,6 +3,7 @@
     <string name="title_activity_trace">Trace</string>
     <string name="title_route">Title route</string>
     <string name="cancel">CANCEL</string>
+    <string name="cancelled">CANCELLED</string>
     <string name="save">SAVE</string>
     <string name="confirm">CONFIRM</string>
     <string name="sharedpreferences">backtobike_sharedpreferences</string>
@@ -38,6 +39,7 @@
     <string name="send">SEND</string>
     <string name="add_a_new_friend">Add a friend</string>
     <string name="select_a_route">Select a route:</string>
+    <string name="select_a_route_spinner">Select a route</string>
     <string name="enter_a_comment">Enter a comment:</string>
     <string name="invitation_send">Your invitation has been sent!</string>
     <string name="bike_event_saved">Your bike event has been saved!</string>

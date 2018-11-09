@@ -29,4 +29,9 @@
         <item name="android:paddingStart">15dp</item>
     </style>
 
+    <!-- Spinner EventActivity -->
+    <style name="mySpinnerItemStyle" parent="@android:style/Widget.Holo.DropDownItem.Spinner">
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
 </resources>

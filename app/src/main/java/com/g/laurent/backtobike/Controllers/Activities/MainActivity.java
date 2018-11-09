@@ -12,9 +12,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import com.g.laurent.backtobike.Controllers.Fragments.MainFragment;
 import com.g.laurent.backtobike.Models.AppDatabase;
+import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackCounters;
 import com.g.laurent.backtobike.Models.CallbackMainActivity;
 import com.g.laurent.backtobike.Models.CallbackSynchronizeEnd;
@@ -24,6 +24,7 @@ import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.OnUserDataGetListener;
 import com.g.laurent.backtobike.Models.RouteSegment;
 import com.g.laurent.backtobike.R;
+import com.g.laurent.backtobike.Utils.BikeEventHandler;
 import com.g.laurent.backtobike.Utils.FirebaseRecover;
 import com.g.laurent.backtobike.Utils.FirebaseUpdate;
 import com.g.laurent.backtobike.Utils.FriendsHandler;
@@ -31,13 +32,12 @@ import com.g.laurent.backtobike.Utils.MapTools.GetCurrentLocation;
 import com.g.laurent.backtobike.Utils.SynchronizeWithFirebase;
 import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.g.laurent.backtobike.Utils.UtilsCounters;
+import com.g.laurent.backtobike.Utils.UtilsTime;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
-
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -56,7 +56,7 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
     private static final String BUNDLE_LATITUDE = "bundle_latitude";
     private static final String BUNDLE_LONGITUDE = "bundle_longitude";
     private static final String BUNDLE_DIFFERENCES = "bundle_differences";
-    private SharedPreferences sharedPref;
+
     private MainFragment mainFragment;
     private FirebaseUser user;
     private ProgressBar progressBar;
@@ -74,84 +74,32 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
             userId = user.getUid();
         }
 
-        FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        return;
-                    }
-
-                    // Get new Instance ID token
-                    String token = task.getResult().getToken();
-                    System.out.println("eee  token=" + token);
-                });
+        savePreviousPage(MENU_MAIN_PAGE);
 
 
-        //RemoteMessage remoteMessage = new RemoteMessage();
-        //FirebaseMessaging.getInstance().send(remoteMessage);
 
         clearDatabase(userId,getApplicationContext());
 
-        //FirebaseUpdate firebaseUpdate = new FirebaseUpdate(getApplicationContext());
-        //firebaseUpdate.setTestData(getApplicationContext(), userId);
 
-
-
-        // recover SharedPreferences
-        sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
+        deleteOverdueEvents();
 
         // Check if the database has already been initialized (during the first use of the app on the phone)
         checkInitializationDatabase();
-
     }
 
-    public  String send(String to,  String body) {
-        try {
+    private void deleteOverdueEvents(){
 
-            final String apiKey = FirebaseAuth.getInstance().getUid();
+        List<BikeEvent> listBikeEvents = BikeEventHandler.getAllBikeEvents(getApplicationContext(), userId);
 
-            URL url = new URL("https://fcm.googleapis.com/fcm/send");
-
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Authorization", "key=" + apiKey);
-            conn.setDoOutput(true);
-            JSONObject message = new JSONObject();
-            message.put("to", to);
-            message.put("priority", "high");
-
-            JSONObject notification = new JSONObject();
-            // notification.put("title", title);
-            notification.put("body", body);
-            message.put("data", notification);
-            OutputStream os = conn.getOutputStream();
-            os.write(message.toString().getBytes());
-            os.flush();
-            os.close();
-
-            int responseCode = conn.getResponseCode();
-            System.out.println("\nSending 'POST' request to URL : " + url);
-            System.out.println("Post parameters : " + message.toString());
-            System.out.println("Response Code : " + responseCode);
-            System.out.println("Response Code : " + conn.getResponseMessage());
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
+        if(listBikeEvents!=null){
+            if(listBikeEvents.size()>0){
+                for(BikeEvent event : listBikeEvents){
+                    if(UtilsTime.isBefore(event.getDate(), UtilsTime.getTodayDate())){
+                        BikeEventHandler.deleteBikeEvent(getApplicationContext(),event ,userId);
+                    }
+                }
             }
-            in.close();
-
-            // print result
-            System.out.println(response.toString());
-            return response.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return "error";
     }
 
     private void checkInitializationDatabase(){
@@ -206,7 +154,6 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
             }
         });
     }
-
 
     public void getCurrentLocationForWeather(){
         GetCurrentLocation getCurrentLocation = new GetCurrentLocation();
@@ -307,8 +254,6 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
         progressBar.setVisibility(View.GONE); // close progressBar
     }
 
-
-
     public MainActivity getMainActivity(){
         return this;
     }
@@ -335,12 +280,11 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
         }
     }
 
-
     private void clearDatabase(String userId, Context context){
         AppDatabase.getInstance(context,userId).eventFriendsDao().deleteAllEventFriends();
         //AppDatabase.getInstance(context,userId).friendsDao().deleteAllFriends();
-        //AppDatabase.getInstance(context,userId).routeSegmentDao().deleteRouteSegment();
-        //AppDatabase.getInstance(context,userId).routesDao().deleteAllRoutes();
+        AppDatabase.getInstance(context,userId).routeSegmentDao().deleteRouteSegment();
+        AppDatabase.getInstance(context,userId).routesDao().deleteAllRoutes();
         AppDatabase.getInstance(context,userId).bikeEventDao().deleteAllBikeEvents();
 
         /*setFriendsDatabase(getApplicationContext(),userId);
@@ -357,6 +301,8 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
 
         // ----------------------------------------------------- INSERT BIKE EVENT
         Action.addBikeEvent(bikeEvent,"id1", getApplicationContext());*/
+
+
     }
 
     private List<RouteSegment> getListRouteSegments(){

@@ -6,10 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.support.v4.content.ContextCompat;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -32,6 +34,8 @@ import java.util.Date;
 import java.util.List;
 
 public class UtilsApp {
+
+    private static final String ACCEPTED = "accepted";
 
     // ------------------------------------------------------------------------------------------------------------
     // ------------------------------------  ADD COUNT ON ICON APP  -----------------------------------------------
@@ -259,6 +263,59 @@ public class UtilsApp {
         return listRoutesNames;
     }
 
+    public static List<EventFriends> positionOrganizerAtStartList(List<EventFriends> listEventFriends, BikeEvent event, EventFriends user, String idOrganizer){
+
+        List<EventFriends> newlistEventFriends = new ArrayList<>(listEventFriends);
+
+        if(!user.getIdFriend().equals(idOrganizer)){
+            user.setAccepted(event.getStatus());
+        }
+
+        if(user.getIdFriend().equals(idOrganizer)){
+            newlistEventFriends.add(0, user);
+        }
+
+        int indexOrg = -1;
+
+        if(listEventFriends!=null){
+            if(listEventFriends.size()>0){
+                for(int i = 0; i< listEventFriends.size(); i++){
+                    if(listEventFriends.get(i).getIdFriend()!=null){
+                        if(listEventFriends.get(i).getIdFriend().equals(idOrganizer)){
+                            indexOrg = i;
+                            break;
+                        }
+                    }
+                }
+
+                if(indexOrg!=-1) {
+                    newlistEventFriends.add(0, listEventFriends.get(indexOrg));
+                    newlistEventFriends.remove(indexOrg + 1);
+                }
+            }
+        }
+
+        return newlistEventFriends;
+    }
+
+    public static String getAcceptanceEventUser(String idUser, List<EventFriends> eventFriendsList){
+
+        String answer = ACCEPTED;
+
+        if(eventFriendsList!=null){
+            if(eventFriendsList.size()>0){
+                for(EventFriends eventFriends : eventFriendsList){
+                    if(eventFriends.getIdFriend().equals(idUser)) {
+                        answer = eventFriends.getAccepted();
+                        break;
+                    }
+                }
+            }
+        }
+
+        return answer;
+    }
+
     public static Friend getUserFromFirebaseUser(String mylogin, FirebaseUser user){
 
         String photoUrl = null;
@@ -317,6 +374,12 @@ public class UtilsApp {
         }
 
         return index;
+    }
+
+    public static int convertDpToPixel(float dp, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        return Math.round(dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
     private static Boolean needLeftArrow(int position, int sizeList){

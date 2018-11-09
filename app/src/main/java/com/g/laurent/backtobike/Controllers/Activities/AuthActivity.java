@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -25,6 +27,8 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -34,14 +38,18 @@ public class AuthActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 121;
     private CallbackManager callbackManager;
     private FirebaseAuth firebaseAuth;
+    @BindView(R.id.progressBar) ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
         ButterKnife.bind(this);
+
         AuthUI.getInstance().signOut(getApplicationContext());
+
         firebaseAuth = FirebaseAuth.getInstance();
+
         new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -55,11 +63,13 @@ public class AuthActivity extends AppCompatActivity {
 
     @OnClick(R.id.main_activity_button_login_google)
     public void launchSignInWithGoogle(){
+        progressBar.setVisibility(View.VISIBLE);
         signInWithGoogle();
     }
 
     @OnClick(R.id.facebook_loginButton)
     public void launchSignInWithFacebook(){
+        progressBar.setVisibility(View.VISIBLE);
         signInWithFacebook();
     }
 
@@ -82,11 +92,13 @@ public class AuthActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancel() {
+                        progressBar.setVisibility(View.GONE);
                         Toast.makeText(getApplicationContext(),getApplicationContext().getResources().getString(R.string.cancel_connection),Toast.LENGTH_LONG).show();
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
+                        progressBar.setVisibility(View.GONE);
                         Toast.makeText(getApplicationContext(),getApplicationContext().getResources().getString(R.string.error_connection),Toast.LENGTH_LONG).show();
                     }
                 });
@@ -108,6 +120,7 @@ public class AuthActivity extends AppCompatActivity {
                         goToMainActivity();
                         finish();
                     } else {
+                        progressBar.setVisibility(View.GONE);
                         Toast.makeText(getApplicationContext(),getApplicationContext().getResources().getString(R.string.error_connection),Toast.LENGTH_LONG).show();
                     }
                 });
@@ -153,6 +166,7 @@ public class AuthActivity extends AppCompatActivity {
                 firebaseAuthWithGoogle(account);
 
         } catch (ApiException e) {
+            progressBar.setVisibility(View.GONE);
             Toast.makeText(getApplicationContext(),getApplicationContext().getResources().getString(R.string.error_connection),Toast.LENGTH_LONG).show();
         }
     }
@@ -175,6 +189,7 @@ public class AuthActivity extends AppCompatActivity {
 
                     } else {
                         // If sign in fails, display a message to the user.
+                        progressBar.setVisibility(View.GONE);
                         Toast.makeText(getApplicationContext(),getApplicationContext().getResources().getString(R.string.error_connection),Toast.LENGTH_LONG).show();
                     }
                 });
@@ -202,5 +217,6 @@ public class AuthActivity extends AppCompatActivity {
     private void goToMainActivity(){
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+        progressBar.setVisibility(View.GONE);
     }
 }

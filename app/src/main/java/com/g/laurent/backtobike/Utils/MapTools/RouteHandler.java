@@ -93,6 +93,25 @@ public class RouteHandler {
     }
 
     // --------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------- DELETE ---------------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------------
+
+    public static void deleteRoute(Context context, Route route, String userId){
+
+        // Delete routes segments related to this idRoute
+        RouteSegmentContentProvider routeSegmentContentProvider = new RouteSegmentContentProvider();
+        routeSegmentContentProvider.setUtils(context, userId);
+
+        Uri uriDelete = ContentUris.withAppendedId(RouteSegmentContentProvider.URI_ITEM, route.getId());
+        routeSegmentContentProvider.delete(uriDelete,null,null);
+
+        // Delete routes segments related to this idRoute
+        RoutesContentProvider routesContentProvider = new RoutesContentProvider();
+        routesContentProvider.setUtils(context, userId);
+        routesContentProvider.delete(uriDelete,null,null);
+    }
+
+    // --------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------- GET ----------------------------------------------------------
     // --------------------------------------------------------------------------------------------------------------
 
@@ -116,6 +135,26 @@ public class RouteHandler {
         routesContentProvider.setUtils(context, userId);
 
         final Cursor cursor = AppDatabase.getInstance(context, userId).routesDao().getAllRoutes(true);
+
+        List<Route> listRoutes = Route.getListRoutesFromCursor(cursor);
+
+        if(listRoutes!=null){
+            if(listRoutes.size()>0){
+                for(Route route : listRoutes){
+                    route.setListRouteSegment(getRouteSegments(context, route.getId(), userId));
+                }
+            }
+        }
+
+        return listRoutes;
+    }
+
+    public static List<Route> getAllRoutesForSynchronization(Context context, String userId){
+
+        RoutesContentProvider routesContentProvider = new RoutesContentProvider();
+        routesContentProvider.setUtils(context, userId);
+
+        final Cursor cursor = AppDatabase.getInstance(context, userId).routesDao().getAllRoutes();
 
         List<Route> listRoutes = Route.getListRoutesFromCursor(cursor);
 

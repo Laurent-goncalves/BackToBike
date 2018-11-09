@@ -88,7 +88,7 @@ public class SynchronizeWithDatabase {
 
     public static void synchronizeRoutes(Context context, String userId, OnCompletedSynchronization onCompletedSynchronization) throws InterruptedException {
 
-        List<Route> listRouteDB = RouteHandler.getAllRoutes(context,userId);
+        List<Route> listRouteDB = RouteHandler.getAllRoutesForSynchronization(context,userId);
 
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
 

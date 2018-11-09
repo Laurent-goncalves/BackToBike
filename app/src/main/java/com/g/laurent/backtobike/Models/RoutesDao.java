@@ -17,6 +17,9 @@ public interface RoutesDao {
     @Query("SELECT * FROM Route WHERE valid =:valid")
     Cursor getAllRoutes(Boolean valid);
 
+    @Query("SELECT * FROM Route")
+    Cursor getAllRoutes();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertRoute(Route route);
 

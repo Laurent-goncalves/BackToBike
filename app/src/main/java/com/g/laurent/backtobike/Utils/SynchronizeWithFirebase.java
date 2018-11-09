@@ -190,6 +190,38 @@ public class SynchronizeWithFirebase {
         });
     }
 
+    public static void synchronizeMyRoutes(String userId, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) throws InterruptedException {
+
+        // Recover routes on database
+        List<Route> listRoutesApp = RouteHandler.getAllRoutesForSynchronization(context, userId);
+
+        // Recover routes from user on Firebase
+        FirebaseRecover firebaseRecover = new FirebaseRecover(context);
+
+        firebaseRecover.recoverRoutesUser(userId, new OnRouteDataGetListener() {
+
+            @Override
+            public void onSuccess(List<Route> listRoutesFirebase) {
+                if(listRoutesFirebase!=null){
+                    if(listRoutesFirebase.size()>0){
+                        for(Route route : listRoutesFirebase){
+                            if (UtilsApp.findIndexRouteInList(String.valueOf(route.getId()), listRoutesApp) != -1) // if route in database
+                                RouteHandler.updateRoute(context, route, userId); // update route
+                            else
+                                RouteHandler.insertNewRoute(context, route, userId); // add new route in database
+                        }
+                    }
+                }
+                callbackSynchronizeEnd.onCompleted();
+            }
+
+            @Override
+            public void onFailure(String error) {
+                callbackSynchronizeEnd.onFailure(error);
+            }
+        });
+    }
+
     public static void synchronizeOneEvent(String userId, String idEvent, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) throws InterruptedException {
 
         // Recover events on database

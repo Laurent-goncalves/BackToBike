@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +17,13 @@ import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackMainActivity;
 import com.g.laurent.backtobike.Models.CallbackWeather;
+import com.g.laurent.backtobike.Models.EventFriends;
+import com.g.laurent.backtobike.Models.RouteSegment;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.BikeEventHandler;
 import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
@@ -34,13 +35,27 @@ import com.g.laurent.backtobike.Views.EventViewHolder;
 import com.g.laurent.backtobike.Views.WeatherAdapter;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
-
+import com.google.firebase.iid.FirebaseInstanceId;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import static com.g.laurent.backtobike.Utils.UtilsTime.getSeasonNumber;
 
 
@@ -58,6 +73,8 @@ public class MainFragment extends Fragment {
     @BindView(R.id.textview_differences) TextView differencesPanel;
     @BindView(R.id.layout_bike_event) LinearLayout bikeEventLayout;
     @BindView(R.id.title_weather) TextView titleWeather;
+    private final static String MENU_MAIN_PAGE = "menu_main_page";
+    private static final String DISPLAY_MY_ROUTES ="display_my_routes";
     private static final String DISPLAY_MY_EVENTS ="display_my_events";
     private static final String DISPLAY_MY_INVITS ="display_my_invits";
     private static final String BUNDLE_COUNTER_EVENTS = "bundle_counter_events";
@@ -71,6 +88,7 @@ public class MainFragment extends Fragment {
     private String userId;
     private Boolean panelExpanded;
     private LatLng currentLocation;
+    private String serverKey = "AAAAg5ho7EE:APA91bG9pRx7eyOE5JT4O_bBm7c5AcHEVHyyMHVrH9R9d9dxorr3tXCH0bFF-a-_UuOr469a6oX_xOvPvNI6N_-a3s0ONjxUDHq5_k_MAn8uHZ8_EtpYXDG8bMOQ5q0xllqaH5Qv3ic4";
 
     public MainFragment() {
         // Required empty public constructor
@@ -86,10 +104,44 @@ public class MainFragment extends Fragment {
 
         panelExpanded = false;
         panel.setOnClickListener(onClickPanelListener);
-
         differencesPanel.setOnClickListener(onClickPanelListener);
-        differencesPanel.setMovementMethod(new ScrollingMovementMethod());
         imagePanel.setOnClickListener(onClickPanelListener);
+        differencesPanel.setMovementMethod(new ScrollingMovementMethod());
+
+        centralTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                FirebaseInstanceId.getInstance().getInstanceId()
+                        .addOnCompleteListener(task -> {
+                            if (!task.isSuccessful()) {
+                                return;
+                            }
+
+                            // Get new Instance ID token
+                            String token = task.getResult().getToken();
+                            sendNotification(token);
+
+                            System.out.println("eee  token=" + token);
+                        });
+
+                /*FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+
+                BikeEvent invitation = new BikeEvent("id2_28_11_2018_14:00", "id2", "28/11/2018", "14:00", 0, "Comments : take good shoes", "ongoing");
+                Route route = new Route(0,"Trip to Paris",false);
+                route.setListRouteSegment(getListRouteSegments());
+                invitation.setRoute(route);
+                invitation.setListEventFriends(getListEventFriends());
+
+                DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference()
+                        .child("users").child(userId).child("my_invitations").child("id2_28_11_2018_14:00");
+
+
+                firebaseUpdate.setInvitation(databaseReference, invitation);
+                firebaseUpdate.setRoute(databaseReference.child("route"), route);
+                firebaseUpdate.setRouteSegment(databaseReference.child("route"), getListRouteSegments());*/
+            }
+        });
 
         if(getArguments()!=null){
             currentLocation = new LatLng(getArguments().getDouble(BUNDLE_LATITUDE),getArguments().getDouble(BUNDLE_LONGITUDE));
@@ -206,10 +258,115 @@ public class MainFragment extends Fragment {
         callbackMainActivity.launchDisplayActivity(DISPLAY_MY_EVENTS, null);
     }
 
-    @OnClick(R.id.button_disconnect)
+    @OnClick(R.id.button_my_routes)
     public void clickOnSignOutButton(){
-        callbackMainActivity.signOutUserFromFirebase(context);
+        callbackMainActivity.launchDisplayActivity(DISPLAY_MY_ROUTES,null);
     }
+
+    public String send(String to,  String body) {
+        try {
+
+            URL url = new URL("https://fcm.googleapis.com/fcm/send");
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Authorization", "key=" + serverKey);
+            conn.setDoOutput(true);
+            JSONObject message = new JSONObject();
+            message.put("to", to);
+            message.put("priority", "high");
+
+            JSONObject notification = new JSONObject();
+            notification.put("title", "nouvelle notif");
+            notification.put("body", body);
+            message.put("data", notification);
+            OutputStream os = conn.getOutputStream();
+            os.write(message.toString().getBytes());
+            os.flush();
+            os.close();
+
+            int responseCode = conn.getResponseCode();
+            System.out.println("\nSending 'POST' request to URL : " + url);
+            System.out.println("Post parameters : " + message.toString());
+            System.out.println("Response Code : " + responseCode);
+            System.out.println("Response Code : " + conn.getResponseMessage());
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            // print result
+            System.out.println(response.toString());
+            return response.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "error";
+    }
+
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+    OkHttpClient client = new OkHttpClient();
+
+    Call post(String url, String json, Callback callback) {
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .addHeader("Content-Type","application/json")
+                .addHeader("Authorization","key=" + serverKey)
+                .url(url)
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
+    }
+
+
+    private void sendNotification(String to){
+
+        try {
+            JSONObject jsonObject = new JSONObject();
+            JSONObject param = new JSONObject();
+            jsonObject.put("data", param);
+            jsonObject.put("to", to);
+            jsonObject.put("priority", "high");
+            jsonObject.put("content_available", true);
+
+            JSONObject notification = new JSONObject();
+            notification.put("title", "nouvelle notif");
+            notification.put("body", "body");
+            jsonObject.put("data", notification);
+
+            post("https://fcm.googleapis.com/fcm/send", jsonObject.toString(), new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            //Something went wrong
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            if (response.isSuccessful()) {
+                                String responseStr = response.body().string();
+                                Log.d("Response", responseStr);
+                                // Do what you want to do with the response.
+                            } else {
+                                // Request not successful
+                            }
+                        }
+                    }
+            );
+        } catch (JSONException ex) {
+            Log.d("Exception", "JSON exception", ex);
+        }
+    }
+
 
     private void configureEventsRecyclerView(){
 
@@ -300,5 +457,33 @@ public class MainFragment extends Fragment {
         }
     }
 
+
+    private List<RouteSegment> getListRouteSegments(){
+
+        List<RouteSegment> listRouteSegments = new ArrayList<>();
+        RouteSegment ROUTE_SEG1_DEMO = new RouteSegment(0,1,48.819446, 2.344624,999);
+        RouteSegment ROUTE_SEG2_DEMO = new RouteSegment(0,2,48.885412, 2.336589,999);
+        RouteSegment ROUTE_SEG3_DEMO = new RouteSegment(0,3,48.874563, 2.312778,999);
+        RouteSegment ROUTE_SEG4_DEMO = new RouteSegment(0,4,48.858933, 2.321511,999);
+
+        listRouteSegments.add(ROUTE_SEG1_DEMO);
+        listRouteSegments.add(ROUTE_SEG2_DEMO);
+        listRouteSegments.add(ROUTE_SEG3_DEMO);
+        listRouteSegments.add(ROUTE_SEG4_DEMO);
+
+        return listRouteSegments;
+    }
+
+    private List<EventFriends> getListEventFriends(){
+
+        List<EventFriends> listEventFriends = new ArrayList<>();
+        EventFriends EVENT_FRIENDS_DEMO_1 = new EventFriends(0,"id1_01_01_2000_14:00","id2","id2","ongoing");
+        EventFriends EVENT_FRIENDS_DEMO_2 = new EventFriends(0,"id1_01_01_2000_14:00","id3","id3","ongoing");
+
+        listEventFriends.add(EVENT_FRIENDS_DEMO_1);
+        listEventFriends.add(EVENT_FRIENDS_DEMO_2);
+
+        return listEventFriends;
+    }
 
 }

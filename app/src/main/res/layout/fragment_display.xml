@@ -9,7 +9,7 @@
         android:id="@+id/layout_calendar_event"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:gravity="top|center_horizontal"
         android:orientation="horizontal">
 
@@ -87,6 +87,17 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/comments_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_margin="10dp"
+            android:scrollbars="vertical"
+            android:textSize="16sp"
+            android:textStyle="bold|italic"
+            android:maxHeight="30dp"/>
+
         <!-- FRIENDS JOINING -->
         <android.support.v7.widget.RecyclerView
             android:id="@+id/friends_recyclerview"
@@ -96,5 +107,17 @@
             android:layout_height="wrap_content"/>
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/cancelled_text_rotated"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:rotation="45"
+        android:textSize="40sp"
+        android:visibility="gone"
+        android:text="@string/cancelled"
+        android:layout_gravity="center"
+        android:layout_marginBottom="30dp"
+        android:textColor="@color/colorGoogleButton"/>
 
 </FrameLayout>

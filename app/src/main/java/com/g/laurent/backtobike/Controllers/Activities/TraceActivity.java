@@ -21,10 +21,12 @@ import com.g.laurent.backtobike.Utils.Configurations.ConfigureTraceActivity;
 import com.g.laurent.backtobike.Utils.MapTools.GetCurrentLocation;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.firebase.auth.FirebaseAuth;
 import java.util.List;
 
@@ -36,7 +38,6 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
     private Route route;
     private GetCurrentLocation getCurrentLocation;
-    private SharedPreferences sharedPreferences;
     private ProgressBar progressBar;
 
     @Override
@@ -50,7 +51,7 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE); // open progressBar
 
-        sharedPreferences = getSharedPreferences(SHAREDPREFERENCES,MODE_PRIVATE);
+        savePreviousPage(MENU_TRACE_ROUTE);
         defineCountersAndConfigureToolbar(MENU_TRACE_ROUTE);
 
         defineRouteToTrace(savedInstanceState, getIntent().getExtras());
@@ -91,8 +92,24 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        getCurrentLocation = new GetCurrentLocation();
-        getCurrentLocation.getLocationPermission(this, sharedPreferences, onCurrentLocationFound);
+
+        if(route.getListRouteSegment()!=null){ // CHANGE EXISTING MAP -> zoom on route
+            scaleMap(mMap);
+        } else { // NEW MAP -> zoom on current location
+            getCurrentLocation = new GetCurrentLocation();
+            getCurrentLocation.getLocationPermission(this, sharedPref, onCurrentLocationFound);
+        }
+    }
+
+    private void scaleMap(GoogleMap googleMap){
+        LatLngBounds.Builder bounds = new LatLngBounds.Builder();
+
+        List<LatLng> listPoints = UtilsGoogleMaps.transformListRouteSegmentsToListPoints(route.getListRouteSegment());
+
+        for(LatLng point : listPoints)
+            bounds.include(point);
+
+        googleMap.setOnMapLoadedCallback(() -> googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 50)));
     }
 
     OnCurrentLocationFound onCurrentLocationFound = currentLocation -> configureTraceActivity();
@@ -107,7 +124,7 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getCurrentLocation = new GetCurrentLocation();
-                    getCurrentLocation.getLocationPermission(this,sharedPreferences, onCurrentLocationFound);
+                    getCurrentLocation.getLocationPermission(this,sharedPref, onCurrentLocationFound);
                 } else {
                     Toast.makeText(getApplicationContext(),getApplicationContext().getResources().getString(R.string.give_permission),Toast.LENGTH_LONG).show();
                 }

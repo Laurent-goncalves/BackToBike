@@ -16,7 +16,7 @@ public interface BikeEventDao {
     @Query("SELECT * FROM BikeEvent WHERE id = :id")
     Cursor getBikeEvent(String id);
 
-    @Query("SELECT * FROM BikeEvent WHERE status = :status")
+    @Query("SELECT * FROM BikeEvent WHERE status != :status")
     Cursor getMyBikeEvents(String status);
 
     @Query("SELECT * FROM BikeEvent WHERE organizerId != :user_id  AND status = :status")

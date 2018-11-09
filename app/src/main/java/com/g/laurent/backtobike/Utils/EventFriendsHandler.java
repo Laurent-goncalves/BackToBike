@@ -3,6 +3,7 @@ package com.g.laurent.backtobike.Utils;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -29,10 +30,15 @@ public class EventFriendsHandler {
 
         // Button delete
         ImageView buttonDelete = guestView.findViewById(R.id.button_delete);
-        buttonDelete.setColorFilter(context.getResources().getColor(R.color.colorButtonDelete));
+        //buttonDelete.setColorFilter(context.getResources().getColor(R.color.colorButtonDelete));
         buttonDelete.setOnClickListener(v -> deleteGuestView(friend,guestView,guestsLayout,config));
 
         // add view
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        int margin = UtilsApp.convertDpToPixel(10, context);
+        params.setMargins(margin,margin,margin,margin);
+        guestView.setLayoutParams(params);
+
         guestsLayout.addView(guestView);
     }
 

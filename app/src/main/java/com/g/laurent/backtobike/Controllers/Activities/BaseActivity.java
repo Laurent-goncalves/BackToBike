@@ -9,6 +9,7 @@ import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -44,6 +45,7 @@ import java.util.List;
 
 public class BaseActivity extends AppCompatActivity implements CallbackBaseActivity{
 
+    protected final static String PREVIOUS_PAGE = "previous_page";
     protected final static String MENU_MAIN_PAGE = "menu_main_page";
     protected final static String MENU_MY_FRIENDS = "menu_my_friends";
     protected final static String DISPLAY_MY_ROUTES ="display_my_routes";
@@ -62,7 +64,9 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
     protected static final String EXTRA_TYPE_ALARM ="extra_type_alarm";
     protected static final String ALARM_2_DAYS ="alarm_2_days";
     protected static final String ALARM_4_HOURS ="alarm_4_hours";
+    protected static final String CURRENT_PAGE ="current_page";
     protected static final int PERMISSIONS_REQUEST_ACCESS_WIFI_STATE = 44;
+    protected SharedPreferences sharedPref;
     protected CallbackBaseActivity callbackBaseActivity;
     protected ToolbarManager toolbarManager;
     protected String userId;
@@ -75,6 +79,7 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
         toolbarManager = new ToolbarManager();
+        sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
         callbackBaseActivity = this;
 
         if (getApplicationContext() != null) {
@@ -90,6 +95,20 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             scheduleJob();
+        }
+    }
+
+    public void savePreviousPage(String newPage){
+
+        String previousPage = sharedPref.getString(PREVIOUS_PAGE, null);
+        String currentPage = sharedPref.getString(CURRENT_PAGE, null);
+
+        if(previousPage==null){
+            sharedPref.edit().putString(PREVIOUS_PAGE, MENU_MAIN_PAGE).apply();
+            sharedPref.edit().putString(CURRENT_PAGE, MENU_MAIN_PAGE).apply();
+        } else {
+            sharedPref.edit().putString(PREVIOUS_PAGE, currentPage).apply();
+            sharedPref.edit().putString(CURRENT_PAGE, newPage).apply();
         }
     }
 
@@ -124,7 +143,6 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
         Intent startServiceIntent = new Intent(this, NetworkSchedulerService.class);
         startService(startServiceIntent);
     }
-
 
     protected void assignToolbarViews(){
 
@@ -168,7 +186,6 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
     }
 
     public void launchTraceActivity(Route route){
-
         Intent intent = new Intent(this, TraceActivity.class);
         if(route!=null)
             intent.putExtra(BUNDLE_ROUTE_ID, route.getId());
@@ -228,8 +245,8 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
 
         // Set alarm
         if (alarmMgr != null) {
-            alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar2days.getTimeInMillis(), alarmIntent2days);
-            alarmMgr.set(AlarmManager.RTC_WAKEUP, calendarDayEvent.getTimeInMillis(), alarmIntentDayEvent);
+            alarmMgr.set(AlarmManager.RTC, calendar2days.getTimeInMillis(), alarmIntent2days);
+            alarmMgr.set(AlarmManager.RTC, calendarDayEvent.getTimeInMillis(), alarmIntentDayEvent);
         }
     }
 
@@ -259,6 +276,39 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
 
     public static void showSnackBar(BaseActivity baseActivity, String text) {
         //Snackbar.make(baseActivity.findViewById(R.id.fragment_position), text, Snackbar.LENGTH_LONG).show();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        String previousPage = sharedPref.getString(PREVIOUS_PAGE, null);
+
+        switch(previousPage){
+
+            case MENU_MAIN_PAGE:
+                launchMainActivity();
+                break;
+            case MENU_CREATE_EVENT:
+                launchEventActivity();
+                break;
+            case MENU_MY_FRIENDS:
+                launchFriendsActivity();
+                break;
+            case MENU_TRACE_ROUTE:
+                launchTraceActivity(null);
+                break;
+            case DISPLAY_MY_EVENTS:
+                launchDisplayActivity(DISPLAY_MY_EVENTS, null);
+                break;
+            case DISPLAY_MY_INVITS:
+                launchDisplayActivity(DISPLAY_MY_INVITS, null);
+                break;
+            case DISPLAY_MY_ROUTES:
+                launchDisplayActivity(DISPLAY_MY_ROUTES, null);
+                break;
+        }
     }
 
     public void signOutUserFromFirebase(Context context) {

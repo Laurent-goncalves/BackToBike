@@ -103,8 +103,10 @@ public class UtilsCounters {
         // Get list of events on Firebase
         List<BikeEvent> newListBikeEvent = new ArrayList<>();
 
-        for (DataSnapshot data : datas.getChildren())
-            newListBikeEvent.add(buildBikeEvent(data));
+        if(datas.getChildrenCount()>0) {
+            for (DataSnapshot data : datas.getChildren())
+                newListBikeEvent.add(FirebaseRecover.buildBikeEvent(data));
+        }
 
         List<Difference> listDiff = new ArrayList<>();
 

@@ -183,15 +183,15 @@ public class ExampleUnitTest {
         int id2days = UtilsTime.generatePendingIntentID_2days(date,time);
         int idDayEvent = UtilsTime.generatePendingIntentID_4hours(date,time);
 
-        Assert.assertEquals(2100311020, id2days);
-        Assert.assertEquals(2100311022, idDayEvent);
+        Assert.assertEquals(210031110, id2days);
+        Assert.assertEquals(210031112, idDayEvent);
 
         time = "7:00";
 
         id2days = UtilsTime.generatePendingIntentID_2days(date,time);
         idDayEvent = UtilsTime.generatePendingIntentID_4hours(date,time);
 
-        Assert.assertEquals(700311020, id2days);
-        Assert.assertEquals(700311022, idDayEvent);
+        Assert.assertEquals(70031110, id2days);
+        Assert.assertEquals(70031112, idDayEvent);
     }
 }

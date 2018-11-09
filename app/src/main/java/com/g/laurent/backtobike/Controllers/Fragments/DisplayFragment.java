@@ -2,6 +2,7 @@ package com.g.laurent.backtobike.Controllers.Fragments;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,8 +12,11 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
 import com.g.laurent.backtobike.Models.CallbackDisplayActivity;
+import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.Configurations.ConfigureDisplayFragment;
+import com.google.android.gms.maps.MapView;
+import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +32,7 @@ public class DisplayFragment extends Fragment {
     private CallbackDisplayActivity callbackDisplayActivity;
     private Context context;
     private int position;
+    private MapView mapView;
 
     public DisplayFragment() {
         // Required empty public constructor
@@ -51,6 +56,7 @@ public class DisplayFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_display, container, false);
+        mapView = view.findViewById(R.id.map_layout).findViewById(R.id.map);
 
         if(getArguments()!=null){
             position = getArguments().getInt(BUNDLE_POSITION);
@@ -63,11 +69,11 @@ public class DisplayFragment extends Fragment {
                         break;
 
                     case DISPLAY_MY_EVENTS:
-                        config = new ConfigureDisplayFragment(context, view, typeDisplay,callbackDisplayActivity.getListEvents().get(position));
+                        config = new ConfigureDisplayFragment(context, view, typeDisplay, FirebaseAuth.getInstance().getCurrentUser(), callbackDisplayActivity.getListEvents().get(position));
                         break;
 
                     case DISPLAY_MY_INVITS:
-                        config = new ConfigureDisplayFragment(context, view, typeDisplay,callbackDisplayActivity.getListInvitations().get(position));
+                        config = new ConfigureDisplayFragment(context, view, typeDisplay, FirebaseAuth.getInstance().getCurrentUser(), callbackDisplayActivity.getListInvitations().get(position));
                         break;
                 }
             }
@@ -86,5 +92,41 @@ public class DisplayFragment extends Fragment {
 
     public int getPosition() {
         return position;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mapView != null)
+            mapView.onResume();
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mapView != null)
+            mapView.onDestroy();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mapView != null)
+            mapView.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mapView != null)
+            mapView.onStop();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mapView != null)
+            mapView.onSaveInstanceState(outState);
     }
 }

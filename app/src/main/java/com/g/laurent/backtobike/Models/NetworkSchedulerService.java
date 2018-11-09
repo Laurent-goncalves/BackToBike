@@ -49,7 +49,7 @@ public class NetworkSchedulerService extends JobService implements ConnectivityR
 
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(getApplicationContext().getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
-        if(sharedPref.getBoolean(NEED_SYNCHRONIZATION, false)){
+        if(isConnected && sharedPref.getBoolean(NEED_SYNCHRONIZATION, false)){
 
             // Build friend from user
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();

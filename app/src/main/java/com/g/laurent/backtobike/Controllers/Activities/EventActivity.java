@@ -4,8 +4,6 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
-
 import com.g.laurent.backtobike.Controllers.Fragments.FriendFragment;
 import com.g.laurent.backtobike.Controllers.Fragments.InvitFragment;
 import com.g.laurent.backtobike.Models.CallbackEventActivity;
@@ -31,7 +29,7 @@ public class EventActivity extends BaseActivity implements CallbackEventActivity
         invitation = new Invitation();
         userId = FirebaseAuth.getInstance().getUid();
         assignToolbarViews();
-
+        savePreviousPage(MENU_CREATE_EVENT);
         SaveAndRestoreDataInvitActivity.restoreData(savedInstanceState,this);
         defineCountersAndConfigureToolbar(MENU_CREATE_EVENT);
 
@@ -106,7 +104,6 @@ public class EventActivity extends BaseActivity implements CallbackEventActivity
             });
         }
     }
-
     public Invitation getInvitation() {
         return invitation;
     }

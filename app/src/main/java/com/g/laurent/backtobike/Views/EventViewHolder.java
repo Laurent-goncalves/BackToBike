@@ -17,6 +17,7 @@ import static com.g.laurent.backtobike.Utils.UtilsTime.getSeasonNumber;
 public class EventViewHolder extends RecyclerView.ViewHolder {
 
     private static final String ACCEPTED = "accepted";
+    private static final String CANCELLED = "cancelled";
 
     public EventViewHolder(View itemView) {
         super(itemView);
@@ -28,6 +29,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         ImageView iconOrganizer = itemView.findViewById(R.id.organizer_icon);
         TextView routeView = itemView.findViewById(R.id.route_name_view);
         TextView friendCounter = itemView.findViewById(R.id.number_friends_view);
+        TextView cancelText = itemView.findViewById(R.id.cancelled_text_rotated);
 
         // set background
         int seasonNum = getSeasonNumber();
@@ -45,6 +47,10 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
 
         // Configure friend counter
         setCounterFriend(friendCounter, bikeEvent);
+
+        // Set cancel text if applicable
+        if(bikeEvent.getStatus().equals(CANCELLED))
+            cancelText.setVisibility(View.VISIBLE);
     }
 
     private void setDateView(TextView dateView, Context context, BikeEvent bikeEvent){

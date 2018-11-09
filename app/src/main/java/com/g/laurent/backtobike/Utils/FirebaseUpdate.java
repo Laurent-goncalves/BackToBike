@@ -145,13 +145,16 @@ public class FirebaseUpdate {
             // Move invitation to "my_events"
             DatabaseReference databaseReferenceInvitation = databaseReferenceUsers.child(userId).child(MY_INVITATIONS).child(idInvitation);
             DatabaseReference databaseReferenceEvent = databaseReferenceUsers.child(userId).child(MY_EVENTS).child(bikeEvent.getId());
+            databaseReferenceInvitation.child(STATUS).setValue(ACCEPTED);
             moveInvitationToMyEvents(databaseReferenceInvitation, databaseReferenceEvent);
 
             // update datas from organizer and other eventFriends
             updateAcceptanceEventFriend(userId, bikeEvent, bikeEvent.getOrganizerId(), true);
+
         } else {
             // Delete invitation if user rejected
             databaseReferenceUsers.child(userId).child(MY_INVITATIONS).child(idInvitation).removeValue();
+            databaseReferenceUsers.child(userId).child(MY_EVENTS).child(idInvitation).removeValue();
 
             // update datas from organizer and other eventFriends
             updateAcceptanceEventFriend(userId, bikeEvent, bikeEvent.getOrganizerId(), false);
@@ -216,9 +219,6 @@ public class FirebaseUpdate {
 
         // In "invitations", delete the route
         databaseReferenceUsers.child(user_id).child(MY_EVENTS).child(idInvitation).child(ROUTE).removeValue();
-
-        // In "invitations", replace the route by the IdRoute
-        databaseReferenceUsers.child(user_id).child(MY_EVENTS).child(idInvitation).child(ID_ROUTE).setValue(route.getId());
     }
 
     public void cancelMyBikeEvent(String user_id, List<EventFriends> listEventFriends, BikeEvent bikeEvent){
@@ -232,10 +232,16 @@ public class FirebaseUpdate {
         if(listEventFriends!=null){
             if(listEventFriends.size()>0){
                 for(EventFriends eventFriends : listEventFriends){
-                    databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_INVITATIONS)
-                            .child(idInvitation).child(STATUS).setValue(CANCELLED);
-                    databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_EVENTS)
-                            .child(idInvitation).child(STATUS).setValue(CANCELLED);
+
+                    if(eventFriends.getAccepted().equals(ONGOING)) {
+                        databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_INVITATIONS)
+                                .child(idInvitation).child(STATUS).setValue(CANCELLED);
+                    }
+
+                    if(eventFriends.getAccepted().equals(ACCEPTED)) {
+                        databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_EVENTS)
+                                .child(idInvitation).child(STATUS).setValue(CANCELLED);
+                    }
                 }
             }
         }
@@ -308,12 +314,17 @@ public class FirebaseUpdate {
     // ---------------------------------------- UTILS -------------------------------------------------
     // ------------------------------------------------------------------------------------------------
 
-    private void setRoute(DatabaseReference databaseReference, Route route){
+    public void setRoute(DatabaseReference databaseReference, Route route){
         databaseReference.child(NAME).setValue(route.getName());
         databaseReference.child(VALID).setValue(route.getValid());
     }
 
-    private void setRouteSegment(DatabaseReference databaseReference, List<RouteSegment> routeSegmentList){
+    public void setIdRouteForInvitation(int idRoute, String idEvent, String userId){
+        databaseReferenceUsers.child(userId).child(MY_INVITATIONS).child(idEvent).child(ID_ROUTE)
+                .setValue(idRoute);
+    }
+
+    public void setRouteSegment(DatabaseReference databaseReference, List<RouteSegment> routeSegmentList){
 
         if(routeSegmentList!=null){
             if(routeSegmentList.size() > 0 ){
@@ -340,7 +351,7 @@ public class FirebaseUpdate {
         databaseReference.child(STATUS).setValue(bikeEvent.getStatus());
     }
 
-    private void setInvitation(DatabaseReference databaseReference, BikeEvent bikeEvent){
+    public void setInvitation(DatabaseReference databaseReference, BikeEvent bikeEvent){
 
         databaseReference.child(DATE).setValue(bikeEvent.getDate());
         databaseReference.child(TIME).setValue(bikeEvent.getTime());
@@ -365,7 +376,6 @@ public class FirebaseUpdate {
             }
         }
     }
-
 
     public void setTestData(Context context, String userId){
 

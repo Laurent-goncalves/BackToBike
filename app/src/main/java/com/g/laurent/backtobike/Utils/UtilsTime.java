@@ -162,6 +162,24 @@ public class UtilsTime {
         }
     }
 
+    public static boolean isBefore(String date1, String date2) {
+
+        Calendar dateComp = Calendar.getInstance();
+        dateComp.set(Calendar.YEAR, Integer.parseInt(date1.substring(6,10)));
+        dateComp.set(Calendar.MONTH, Integer.parseInt(date1.substring(3,5)));
+        dateComp.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date1.substring(0,2)));
+
+        Calendar dateRef = Calendar.getInstance();
+        dateRef.set(Calendar.YEAR, Integer.parseInt(date2.substring(6,10)));
+        dateRef.set(Calendar.MONTH, Integer.parseInt(date2.substring(3,5)));
+        dateRef.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date2.substring(0,2)));
+
+        return dateComp.get(Calendar.YEAR) < dateRef.get(Calendar.YEAR) || dateComp.get(Calendar.YEAR) == dateRef.get(Calendar.YEAR)
+                    && (dateComp.get(Calendar.MONTH) < dateRef.get(Calendar.MONTH) || dateComp.get(Calendar.MONTH) == dateRef.get(Calendar.MONTH)
+                    && dateComp.get(Calendar.DAY_OF_MONTH) < dateRef.get(Calendar.DAY_OF_MONTH));
+
+    }
+
     public static Calendar getCalendarAlarm2daysbefore(String date){
 
         Calendar calendar = Calendar.getInstance();
@@ -182,8 +200,14 @@ public class UtilsTime {
         calendar.set(Calendar.YEAR, Integer.parseInt(date.substring(6,10)));
         calendar.set(Calendar.MONTH, Integer.parseInt(date.substring(3,5))-1);
         calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.substring(0,2)));
-        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time.substring(0,2)));
-        calendar.set(Calendar.MINUTE, Integer.parseInt(time.substring(3,5)));
+
+        if(time.length()==4) {
+            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time.substring(0, 1)));
+            calendar.set(Calendar.MINUTE, Integer.parseInt(time.substring(2,4)));
+        } else {
+            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time.substring(0, 2)));
+            calendar.set(Calendar.MINUTE, Integer.parseInt(time.substring(3,5)));
+        }
 
         calendar.add(Calendar.HOUR_OF_DAY, -4);
 
@@ -196,11 +220,11 @@ public class UtilsTime {
 
         if(time.length()==5){
             id = time.substring(0,2) + time.substring(3,5) +
-                    date.substring(0,2) + date.substring(3,5) + date.substring(8,10);
+                    date.substring(0,2) + date.substring(3,5) + date.substring(9,10);
 
         } else if(time.length()==4){
             id = time.substring(0,1) + time.substring(2,4) +
-                    date.substring(0,2) + date.substring(3,5) + date.substring(8,10);
+                    date.substring(0,2) + date.substring(3,5) + date.substring(9,10);
         }
 
         return Integer.parseInt(id) + 2;
@@ -212,11 +236,11 @@ public class UtilsTime {
 
         if(time.length()==5){
             id = time.substring(0,2) + time.substring(3,5) +
-                    date.substring(0,2) + date.substring(3,5) + date.substring(8,10);
+                    date.substring(0,2) + date.substring(3,5) + date.substring(9,10);
 
         } else if(time.length()==4){
             id = time.substring(0,1) + time.substring(2,4) +
-                    date.substring(0,2) + date.substring(3,5) + date.substring(8,10);
+                    date.substring(0,2) + date.substring(3,5) + date.substring(9,10);
         }
         return Integer.parseInt(id) + 4;
     }

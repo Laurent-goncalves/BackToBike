@@ -13,6 +13,8 @@ public class BikeEventContentProvider extends ContentProvider {
 
     private static final String ACCEPTED = "accepted";
     private static final String ONGOING ="ongoing";
+    private static final String COMPLETED = "completed";
+    private static final String ALL_EVENTS ="all_events";
     private static final String TYPE_MY_EVENTS ="type_my_events";
     private static final String TYPE_MY_INVITS ="type_my_invits";
     private static final String TYPE_SINGLE_EVENT ="type_single_event";
@@ -42,8 +44,10 @@ public class BikeEventContentProvider extends ContentProvider {
         if (context != null){
 
             switch(typeEvent){
+                case ALL_EVENTS:
+                    return AppDatabase.getInstance(context, userId).bikeEventDao().getAllBikeEvents();
                 case TYPE_MY_EVENTS:
-                    return AppDatabase.getInstance(context, userId).bikeEventDao().getMyBikeEvents(ACCEPTED);
+                    return AppDatabase.getInstance(context, userId).bikeEventDao().getMyBikeEvents(COMPLETED);
                 case TYPE_MY_INVITS:
                     return AppDatabase.getInstance(context, userId).bikeEventDao().getMyInvitations(userId, ONGOING);
                 case TYPE_SINGLE_EVENT:

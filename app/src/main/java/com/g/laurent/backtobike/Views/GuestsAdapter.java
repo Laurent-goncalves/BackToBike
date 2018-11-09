@@ -11,14 +11,14 @@ import com.g.laurent.backtobike.R;
 import java.util.List;
 
 
-public class DisplayFriendsAdapter extends RecyclerView.Adapter<GuestViewHolder> {
+public class GuestsAdapter extends RecyclerView.Adapter<GuestViewHolder> {
 
     private Context context;
     private List<EventFriends> listEventFriends;
     private String userId;
     private String organizerId;
 
-    public DisplayFriendsAdapter(Context context, String userId, String organizerId, List<EventFriends> listEventFriends) {
+    public GuestsAdapter(Context context, String userId, String organizerId, List<EventFriends> listEventFriends) {
         this.context = context;
         this.organizerId=organizerId;
         this.userId=userId;

@@ -40,6 +40,7 @@ public class FriendsActivity extends BaseActivity implements CallbackFriendActiv
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends);
         assignToolbarViews();
+        savePreviousPage(MENU_MY_FRIENDS);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -230,5 +231,4 @@ public class FriendsActivity extends BaseActivity implements CallbackFriendActiv
 
         dialog.show();
     }
-
 }

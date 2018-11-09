@@ -14,11 +14,10 @@ public class ConnectivityReceiver extends BroadcastReceiver {
         mConnectivityReceiverListener = listener;
     }
 
-
     @Override
     public void onReceive(Context context, Intent intent) {
-        mConnectivityReceiverListener.onNetworkConnectionChanged(isConnected(context));
-
+        if(intent!=null)
+            mConnectivityReceiverListener.onNetworkConnectionChanged(isConnected(context));
     }
 
     public static boolean isConnected(Context context) {

@@ -12,9 +12,11 @@ import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.Action;
+import com.g.laurent.backtobike.Utils.FirebaseUpdate;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -74,7 +76,7 @@ public class ConfigureMap implements OnMapReadyCallback {
     }
 
     private void setTitleMap(String title){
-        if(title!=null) {
+        if(title!=null && titleView.getVisibility() != View.GONE) {
             if (title.length() <= 50)
                 titleView.setText(title);
             else
@@ -125,21 +127,19 @@ public class ConfigureMap implements OnMapReadyCallback {
         for(LatLng point : listPoints)
             bounds.include(point);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 50));
-            }
-        }, 500);
+        googleMap.setOnMapLoadedCallback(() -> googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 50)));
     }
 
     public void configureButtonAddToMyRoutes(Context context, String userId, BikeEvent bikeEvent) {
 
         if(bikeEvent.getRoute()!=null) {
-            if (routeNotInDatabase(context, userId, bikeEvent.getRoute())) {
+            if (routeNotInDatabase(context, userId, bikeEvent.getRoute()) && !bikeEvent.getRoute().getValid()) {
                 buttonAddRoute.setVisibility(View.VISIBLE);
                 buttonAddRoute.setOnClickListener(v -> {
-                    Action.addInvitRouteToMyRoutes(bikeEvent, userId, context);
+                    bikeEvent.getRoute().setValid(true);
+                    RouteHandler.updateRoute(context,bikeEvent.getRoute(),userId);
+                    FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+                    firebaseUpdate.acceptRoute(userId, bikeEvent.getRoute(), bikeEvent);
                     buttonAddRoute.setVisibility(View.INVISIBLE);
                 });
             }

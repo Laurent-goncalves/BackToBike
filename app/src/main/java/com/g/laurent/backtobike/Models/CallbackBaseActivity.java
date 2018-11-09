@@ -34,5 +34,4 @@ public interface CallbackBaseActivity {
     DrawerLayout getDrawerLayout();
 
     NavigationView getNavigationView();
-
 }

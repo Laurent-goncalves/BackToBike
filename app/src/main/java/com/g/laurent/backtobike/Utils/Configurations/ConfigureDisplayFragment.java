@@ -1,23 +1,21 @@
 package com.g.laurent.backtobike.Utils.Configurations;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
-import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
-import com.g.laurent.backtobike.Utils.FriendsHandler;
-import com.g.laurent.backtobike.Utils.SynchronizeWithFirebase;
 import com.g.laurent.backtobike.Utils.UtilsApp;
-import com.g.laurent.backtobike.Views.DisplayFriendsAdapter;
+import com.g.laurent.backtobike.Views.GuestsAdapter;
 import com.google.firebase.auth.FirebaseAuth;
-import java.util.ArrayList;
+import com.google.firebase.auth.FirebaseUser;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,17 +26,22 @@ public class ConfigureDisplayFragment {
     private static final String DISPLAY_MY_ROUTES ="display_my_routes";
     private static final String DISPLAY_MY_EVENTS ="display_my_events";
     private static final String DISPLAY_MY_INVITS ="display_my_invits";
+    private static final String CANCELLED = "cancelled";
+    private static final String LOGIN_SHARED ="login_shared";
     @BindView(R.id.text_date) TextView dateView;
     @BindView(R.id.text_hour) TextView timeView;
     @BindView(R.id.layout_calendar_event) LinearLayout dateLayout;
     @BindView(R.id.map_layout) View mapLayout;
+    @BindView(R.id.comments_view) TextView commentView;
     @BindView(R.id.friends_recyclerview) RecyclerView friendsView;
+    @BindView(R.id.cancelled_text_rotated) TextView cancelText;
     private Route route;
     private BikeEvent bikeEvent;
     private Context context;
     private String typeDisplay;
     private String userId;
-    private DisplayFriendsAdapter adapter;
+    private GuestsAdapter adapter;
+    private FirebaseUser user;
 
     public ConfigureDisplayFragment(Context context, View view, String typeDisplay, Route route) {
         this.context = context;
@@ -46,39 +49,28 @@ public class ConfigureDisplayFragment {
         this.route=route;
         userId = FirebaseAuth.getInstance().getUid();
         ButterKnife.bind(this,view);
-        recoverDatasToDisplay();
-        configureDateTime();
-        configureMap();
-        configureGuests();
+        configureViews();
     }
 
-    public ConfigureDisplayFragment(Context context, View view, String typeDisplay, BikeEvent bikeEvent) {
+    public ConfigureDisplayFragment(Context context, View view, String typeDisplay, FirebaseUser user, BikeEvent bikeEvent) {
         this.context = context;
         this.typeDisplay = typeDisplay;
         this.bikeEvent=bikeEvent;
+        this.user=user;
         userId = FirebaseAuth.getInstance().getUid();
         ButterKnife.bind(this,view);
-        recoverDatasToDisplay();
+        configureViews();
+    }
+
+    private void configureViews(){
         configureDateTime();
         configureMap();
         configureGuests();
+        configureCommentView();
+        configureCancelText();
     }
 
-    // -------------------------------- 1 - SynchronizeWithDatabase datas
-    private void recoverDatasToDisplay() {
-
-        if(typeDisplay.equals(DISPLAY_MY_EVENTS)){
-            if(UtilsApp.isInternetAvailable(context)){
-                try {
-                    SynchronizeWithFirebase.synchronizeOneEvent(userId, bikeEvent.getId(), context, null);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    // -------------------------------- 2 - Configure dates
+    // -------------------------------- 1 - Configure dates
     private void configureDateTime(){
 
         switch(typeDisplay){
@@ -100,8 +92,9 @@ public class ConfigureDisplayFragment {
         }
     }
 
-    // -------------------------------- 3 - Configure map
+    // -------------------------------- 2 - Configure map
     private void configureMap(){
+
         ConfigureMap configMap = new ConfigureMap(context, mapLayout);
 
         switch(typeDisplay){
@@ -118,7 +111,30 @@ public class ConfigureDisplayFragment {
         }
     }
 
-    // -------------------------------- 4 - Configure guests
+    // -------------------------------- 3 - Configure guests
+
+    private void configureCommentView(){
+        switch(typeDisplay){
+            case DISPLAY_MY_ROUTES:
+                commentView.setVisibility(View.GONE);
+                break;
+
+            case DISPLAY_MY_EVENTS:
+                commentView.setVisibility(View.VISIBLE);
+                commentView.setText(bikeEvent.getComments());
+                commentView.setMovementMethod(new ScrollingMovementMethod());
+                break;
+
+            case DISPLAY_MY_INVITS:
+                commentView.setVisibility(View.VISIBLE);
+                // configure recyclerView
+                commentView.setText(bikeEvent.getComments());
+                commentView.setMovementMethod(new ScrollingMovementMethod());
+                break;
+        }
+    }
+
+    // -------------------------------- 4 - Configure comments for bikeEvent and invitation
     private void configureGuests(){
 
         switch(typeDisplay){
@@ -142,34 +158,43 @@ public class ConfigureDisplayFragment {
 
     private void configureGuestsRecyclerView(Context context, String userId, List<EventFriends> listEventFriends){
 
+        // Configure list event friends
+        List<EventFriends> listEventFriendsToShow = UtilsApp.positionOrganizerAtStartList(listEventFriends, bikeEvent, getUserAsEventFriend(listEventFriends), bikeEvent.getOrganizerId());
+
         // Set the recyclerView in horizontal direction
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
 
-        adapter = new DisplayFriendsAdapter(context, userId, bikeEvent.getOrganizerId(), listEventFriends);
+        adapter = new GuestsAdapter(context, userId, bikeEvent.getOrganizerId(), listEventFriendsToShow);
         friendsView.setAdapter(adapter);
 
         // Set layout manager to position the items
         friendsView.setLayoutManager(layoutManager);
     }
 
-    private static List<Friend> getListFriendsFromEventFriends(List<EventFriends> listEventFriends, String userId, Context context){
-
-        List<Friend> listFriends = new ArrayList<>();
-
-        if(listEventFriends!=null){
-            if(listEventFriends.size()!=0){
-                for(EventFriends eventFriends : listEventFriends){
-
-                    Friend friend = FriendsHandler.getFriend(context, eventFriends.getIdFriend(),userId);
-                    friend.setLogin(eventFriends.getLogin());
-
-                    listFriends.add(friend);
-                }
-            }
-        }
-        return listFriends;
+    private EventFriends getUserAsEventFriend(List<EventFriends> listEventFriends){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
+        String myLogin = sharedPreferences.getString(LOGIN_SHARED,null);
+        return new EventFriends(0,null, user.getUid(), myLogin, UtilsApp.getAcceptanceEventUser(user.getUid(), listEventFriends));
     }
 
+    // -------------------------------- 5 - Configure cancel text
 
+    private void configureCancelText(){
+
+        switch(typeDisplay){
+
+            case DISPLAY_MY_EVENTS:
+                if(bikeEvent.getStatus().equals(CANCELLED)){
+                    cancelText.setVisibility(View.VISIBLE);
+                }
+                break;
+
+            case DISPLAY_MY_INVITS:
+                if(bikeEvent.getStatus().equals(CANCELLED)){
+                    cancelText.setVisibility(View.VISIBLE);
+                }
+                break;
+        }
+    }
 }

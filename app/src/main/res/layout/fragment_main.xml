@@ -75,13 +75,13 @@
                         android:id="@+id/button_new_friends"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/new_friends"
+                        android:text="@string/my_friends_menu"
                         android:textSize="12sp"
                         android:textStyle="bold"
                         android:gravity="center"
                         android:textColor="@color/colorWhite"
                         android:background="@color/fui_transparent"
-                        android:drawableTop="@drawable/baseline_person_add_white_36"/>
+                        android:drawableTop="@drawable/baseline_people_white_36"/>
 
                     <TextView
                         android:id="@+id/count_friends"
@@ -129,6 +129,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/next_trips"
+                        android:layout_marginTop="5dp"
                         android:textSize="12sp"
                         android:textStyle="bold"
                         android:gravity="center"
@@ -152,16 +153,16 @@
                 </FrameLayout>
 
                 <Button
-                    android:id="@+id/button_disconnect"
+                    android:id="@+id/button_my_routes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/sign_out_menu"
+                    android:text="@string/my_routes_menu"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     android:gravity="center"
                     android:textColor="@color/colorWhite"
                     android:background="@color/fui_transparent"
-                    android:drawableTop="@drawable/baseline_power_settings_new_white_36"/>
+                    android:drawableTop="@drawable/baseline_location_on_white_36"/>
 
             </LinearLayout>
 
@@ -287,7 +288,8 @@
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/bikeevents_recyclerview"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="10dp"
                     android:layout_gravity="center_vertical"/>
 
             </FrameLayout>
