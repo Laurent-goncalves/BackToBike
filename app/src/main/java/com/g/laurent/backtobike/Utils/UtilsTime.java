@@ -143,11 +143,11 @@ public class UtilsTime {
 
         if(isSameDay){ // compare time
 
-            int hour1 = Integer.parseInt(bikeEvent1.getTime().substring(0,2));
-            int hour2 = Integer.parseInt(bikeEvent2.getTime().substring(0,2));
+            int hour1 = getHour(bikeEvent1.getTime());
+            int hour2 = getHour(bikeEvent2.getTime());
 
-            int min1 = Integer.parseInt(bikeEvent1.getTime().substring(3,5));
-            int min2 = Integer.parseInt(bikeEvent2.getTime().substring(3,5));
+            int min1 = getMinutes(bikeEvent1.getTime());
+            int min2 = getMinutes(bikeEvent2.getTime());
 
             if(hour1 < hour2)
                 return true;
@@ -160,6 +160,28 @@ public class UtilsTime {
                     && (dateComp.get(Calendar.MONTH) < dateRef.get(Calendar.MONTH) || dateComp.get(Calendar.MONTH) == dateRef.get(Calendar.MONTH)
                     && dateComp.get(Calendar.DAY_OF_MONTH) < dateRef.get(Calendar.DAY_OF_MONTH));
         }
+    }
+
+    private static int getHour(String time){
+        int hour;
+
+        if(time.length()==4){
+            hour = Integer.parseInt(time.substring(0,1));
+        } else {
+            hour = Integer.parseInt(time.substring(0,2));
+        }
+        return hour;
+    }
+
+    private static int getMinutes(String time){
+        int minute;
+
+        if(time.length()==4){
+            minute = Integer.parseInt(time.substring(2,4));
+        } else {
+            minute = Integer.parseInt(time.substring(3,5));
+        }
+        return minute;
     }
 
     public static boolean isBefore(String date1, String date2) {
@@ -201,13 +223,8 @@ public class UtilsTime {
         calendar.set(Calendar.MONTH, Integer.parseInt(date.substring(3,5))-1);
         calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.substring(0,2)));
 
-        if(time.length()==4) {
-            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time.substring(0, 1)));
-            calendar.set(Calendar.MINUTE, Integer.parseInt(time.substring(2,4)));
-        } else {
-            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time.substring(0, 2)));
-            calendar.set(Calendar.MINUTE, Integer.parseInt(time.substring(3,5)));
-        }
+        calendar.set(Calendar.HOUR_OF_DAY, getHour(time));
+        calendar.set(Calendar.MINUTE, getMinutes(time));
 
         calendar.add(Calendar.HOUR_OF_DAY, -4);
 
@@ -215,71 +232,13 @@ public class UtilsTime {
     }
 
     public static int generatePendingIntentID_2days(String date, String time){
-
-        String id = "0";
-
-        if(time.length()==5){
-            id = time.substring(0,2) + time.substring(3,5) +
-                    date.substring(0,2) + date.substring(3,5) + date.substring(9,10);
-
-        } else if(time.length()==4){
-            id = time.substring(0,1) + time.substring(2,4) +
-                    date.substring(0,2) + date.substring(3,5) + date.substring(9,10);
-        }
-
+        String id = getHour(time) + getMinutes(time) + date.substring(0,2) + date.substring(3,5) + date.substring(9,10);
         return Integer.parseInt(id) + 2;
     }
 
     public static int generatePendingIntentID_4hours(String date, String time){
-
-        String id = "0";
-
-        if(time.length()==5){
-            id = time.substring(0,2) + time.substring(3,5) +
-                    date.substring(0,2) + date.substring(3,5) + date.substring(9,10);
-
-        } else if(time.length()==4){
-            id = time.substring(0,1) + time.substring(2,4) +
-                    date.substring(0,2) + date.substring(3,5) + date.substring(9,10);
-        }
+        String id = getHour(time) + getMinutes(time) + date.substring(0,2) + date.substring(3,5) + date.substring(9,10);
         return Integer.parseInt(id) + 4;
-    }
-
-    public static boolean isAfter(BikeEvent bikeEvent1, BikeEvent bikeEvent2) {
-
-        Calendar dateComp = Calendar.getInstance();
-        dateComp.set(Calendar.YEAR, Integer.parseInt(bikeEvent1.getDate().substring(6,10)));
-        dateComp.set(Calendar.MONTH, Integer.parseInt(bikeEvent1.getDate().substring(3,5)));
-        dateComp.set(Calendar.DAY_OF_MONTH, Integer.parseInt(bikeEvent1.getDate().substring(0,2)));
-
-        Calendar dateRef = Calendar.getInstance();
-        dateRef.set(Calendar.YEAR, Integer.parseInt(bikeEvent2.getDate().substring(6,10)));
-        dateRef.set(Calendar.MONTH, Integer.parseInt(bikeEvent2.getDate().substring(3,5)));
-        dateRef.set(Calendar.DAY_OF_MONTH, Integer.parseInt(bikeEvent2.getDate().substring(0,2)));
-
-        Boolean isSameDay = dateComp.get(Calendar.YEAR)== dateRef.get(Calendar.YEAR)
-                && dateComp.get(Calendar.MONTH) == dateRef.get(Calendar.MONTH)
-                && dateComp.get(Calendar.DAY_OF_MONTH) == dateRef.get(Calendar.DAY_OF_MONTH);
-
-        if(isSameDay){ // compare time
-
-            int hour1 = Integer.parseInt(bikeEvent1.getTime().substring(0,2));
-            int hour2 = Integer.parseInt(bikeEvent2.getTime().substring(0,2));
-
-            int min1 = Integer.parseInt(bikeEvent1.getTime().substring(3,5));
-            int min2 = Integer.parseInt(bikeEvent2.getTime().substring(3,5));
-
-            if(hour1 > hour2)
-                return true;
-            else if(hour1 == hour2){
-                return min1 >= min2;
-            } else
-                return false;
-        } else {
-            return dateComp.get(Calendar.YEAR) > dateRef.get(Calendar.YEAR) || dateComp.get(Calendar.YEAR) == dateRef.get(Calendar.YEAR)
-                    && (dateComp.get(Calendar.MONTH) > dateRef.get(Calendar.MONTH) || dateComp.get(Calendar.MONTH) == dateRef.get(Calendar.MONTH)
-                    && dateComp.get(Calendar.DAY_OF_MONTH) > dateRef.get(Calendar.DAY_OF_MONTH));
-        }
     }
 
     public static String createStringDate(int year, int month, int dayOfMonth){

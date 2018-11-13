@@ -1,6 +1,7 @@
 package com.g.laurent.backtobike.Utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.util.EventLog;
 import android.util.Log;
@@ -8,8 +9,13 @@ import android.util.Log;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
+import com.g.laurent.backtobike.Models.OnCompletedSynchronization;
+import com.g.laurent.backtobike.Models.OnFriendDataGetListener;
+import com.g.laurent.backtobike.Models.OnLoginChecked;
+import com.g.laurent.backtobike.Models.OnUserDataGetListener;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
+import com.g.laurent.backtobike.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -56,6 +62,7 @@ public class FirebaseUpdate {
     private static final String LAT = "lat";
     private static final String LNG = "lng";
     private static final String POINTS = "points";
+    private static final String NEED_SYNCHRONIZATION = "need_synchronization";
     private DatabaseReference databaseReferenceUsers;
 
     public FirebaseUpdate(Context context) {
@@ -290,14 +297,25 @@ public class FirebaseUpdate {
     // ---------------------- CREATE / UPDATE / DELETE FRIEND or USER ---------------------------------
     // ------------------------------------------------------------------------------------------------
 
-    public void addNewFriend(Friend friend, Friend user){
+    public void addNewFriend(Context context, Friend friend, Friend user){
 
-        // Add friend to user Firebase "my_friends" with status "true" as accepted
-        friend.setAccepted(true);
-        updateFriendsFromUser(user.getId(), friend);
+        // Check data compliance
+        FirebaseRecover firebaseRecover = new FirebaseRecover(context);
+        firebaseRecover.checkLogin(context, user.getId(), friend.getLogin(), new OnLoginChecked() {
+            @Override
+            public void onSuccess(Friend friend) {
+                // Add friend to user Firebase "my_friends" with status accepted
+                friend.setAccepted(ACCEPTED);
+                friend.setHasAgreed(ONGOING);
+                updateFriendsFromUser(user.getId(), friend);
 
-        // Add user in friend Firebase "my_friends" with status "null" as accepted
-        sendFriendRequests(friend.getId(), user);
+                // Add user in friend Firebase "my_friends" with status ongoing
+                sendFriendRequests(friend.getId(), user);
+            }
+
+            @Override
+            public void onFailed() {}
+        });
     }
 
     public void updateFriendsFromUser(String user_id, Friend friend){
@@ -305,7 +323,8 @@ public class FirebaseUpdate {
         databaseReferenceFriend.child(NAME).setValue(friend.getName());
         databaseReferenceFriend.child(PHOTO_URL).setValue(friend.getPhotoUrl());
         databaseReferenceFriend.child(LOGIN).setValue(friend.getLogin());
-        databaseReferenceFriend.child(ACCEPTED).setValue(true);
+        databaseReferenceFriend.child(ACCEPTED).setValue(friend.getAccepted());
+        databaseReferenceFriend.child(HAS_ACCEPTED).setValue(friend.getHasAgreed());
     }
 
     public void sendFriendRequests(String user_id, Friend requester){
@@ -313,35 +332,69 @@ public class FirebaseUpdate {
         databaseReferenceFriend.child(NAME).setValue(requester.getName());
         databaseReferenceFriend.child(PHOTO_URL).setValue(requester.getPhotoUrl());
         databaseReferenceFriend.child(LOGIN).setValue(requester.getLogin());
-        databaseReferenceFriend.child(HAS_ACCEPTED).setValue(true);
+        databaseReferenceFriend.child(ACCEPTED).setValue(ONGOING);
+        databaseReferenceFriend.child(HAS_ACCEPTED).setValue(ACCEPTED);
     }
 
-    public void acceptFriend(String user_id, String friendId){
+    public void acceptFriend(Context context, String user_id, Friend friend){
         // Change status accepted from user
         DatabaseReference databaseReferenceUser = databaseReferenceUsers.child(user_id).child(MY_FRIENDS);
-        databaseReferenceUser.child(friendId).child(ACCEPTED).setValue(true);
+        databaseReferenceUser.child(friend.getId()).child(ACCEPTED).setValue(ACCEPTED);
 
-        // Change status has_accepted from requester
-        DatabaseReference databaseReferenceRequester = databaseReferenceUsers.child(friendId).child(MY_FRIENDS);
-        databaseReferenceRequester.child(user_id).child(HAS_ACCEPTED).setValue(true);
+        // Change status has_accepted from requester if user is among friend
+        if(UtilsApp.isInternetAvailable(context)) {
+            FirebaseRecover firebaseRecover = new FirebaseRecover(context);
+            firebaseRecover.recoverFriendsUser(friend.getId(), new OnFriendDataGetListener() {
+                @Override
+                public void onSuccess(Friend friend) {
+                }
+
+                @Override
+                public void onSuccess(List<Friend> listFriend) {
+                    if (UtilsApp.findFriendIndexInListFriends(user_id, listFriend) != -1) {
+                        DatabaseReference databaseReferenceRequester = databaseReferenceUsers.child(friend.getId()).child(MY_FRIENDS);
+                        databaseReferenceRequester.child(user_id).child(HAS_ACCEPTED).setValue(ACCEPTED);
+                    }
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
+                    sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
+                }
+            });
+        }
     }
 
-    public void rejectFriend(String user_id, String friendId){
+    public void rejectFriend(Context context, String user_id, Friend friend){
 
         // Delete requester from user
-        deleteFriend(user_id,friendId);
+        DatabaseReference databaseReferenceMyFriends = databaseReferenceUsers.child(user_id).child(MY_FRIENDS);
+        databaseReferenceMyFriends.child(friend.getId()).removeValue();
 
         // Change status has_accepted from requester
-        DatabaseReference databaseReferenceRequester = databaseReferenceUsers.child(friendId).child(MY_FRIENDS);
-        databaseReferenceRequester.child(user_id).child(HAS_ACCEPTED).setValue(false);
-    }
+        if(UtilsApp.isInternetAvailable(context)) {
+            FirebaseRecover firebaseRecover = new FirebaseRecover(context);
+            firebaseRecover.recoverFriendsUser(friend.getId(), new OnFriendDataGetListener() {
+                @Override
+                public void onSuccess(Friend friend) {
+                }
 
-    public void deleteFriend(String user_id, String friendId){
-        DatabaseReference databaseReferenceMyFriends = databaseReferenceUsers.child(user_id).child(MY_FRIENDS);
-        databaseReferenceMyFriends.child(friendId).removeValue();
+                @Override
+                public void onSuccess(List<Friend> listFriend) {
+                    if (UtilsApp.findFriendIndexInListFriends(user_id, listFriend) != -1) {
+                        DatabaseReference databaseReferenceRequester = databaseReferenceUsers.child(friend.getId()).child(MY_FRIENDS);
+                        databaseReferenceRequester.child(user_id).child(HAS_ACCEPTED).setValue(REJECTED);
+                    }
+                }
 
-        DatabaseReference databaseReferenceFriend = databaseReferenceUsers.child(friendId).child(MY_FRIENDS);
-        databaseReferenceFriend.child(user_id).child(HAS_ACCEPTED).setValue(false);
+                @Override
+                public void onFailure(String error) {
+                    SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
+                    sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
+                }
+            });
+        }
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -420,18 +473,18 @@ public class FirebaseUpdate {
         // manu has accepted user friend request
         // malik has sent a new friend request
 
-        Friend friend = new Friend("id1","id1","manu","photoUrl", true, null);
+        Friend friend = new Friend("id1","id1","manu","photoUrl", REJECTED, ONGOING);
 
         FriendsHandler.insertNewFriend(context,friend,userId);
 
         databaseReferenceUsers.child(userId).child(MY_FRIENDS).child("id1").child(LOGIN).setValue("id1");
         databaseReferenceUsers.child(userId).child(MY_FRIENDS).child("id1").child(NAME).setValue("manu");
-        databaseReferenceUsers.child(userId).child(MY_FRIENDS).child("id1").child(ACCEPTED).setValue(true);
-        databaseReferenceUsers.child(userId).child(MY_FRIENDS).child("id1").child(HAS_ACCEPTED).setValue(true);
+        databaseReferenceUsers.child(userId).child(MY_FRIENDS).child("id1").child(ACCEPTED).setValue(ACCEPTED);
+        databaseReferenceUsers.child(userId).child(MY_FRIENDS).child("id1").child(HAS_ACCEPTED).setValue(ACCEPTED);
 
         databaseReferenceUsers.child(userId).child(MY_FRIENDS).child("id2").child(LOGIN).setValue("id2");
         databaseReferenceUsers.child(userId).child(MY_FRIENDS).child("id2").child(NAME).setValue("malik");
-        databaseReferenceUsers.child(userId).child(MY_FRIENDS).child("id2").child(HAS_ACCEPTED).setValue(true);
+        databaseReferenceUsers.child(userId).child(MY_FRIENDS).child("id2").child(HAS_ACCEPTED).setValue(ACCEPTED);
 
 
         // Response received from EventFriends

@@ -2,6 +2,7 @@ package com.g.laurent.backtobike.Utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.g.laurent.backtobike.Models.BikeEvent;
@@ -10,18 +11,25 @@ import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.OnBikeEventDataGetListener;
 import com.g.laurent.backtobike.Models.OnCompletedSynchronization;
 import com.g.laurent.backtobike.Models.OnFriendDataGetListener;
+import com.g.laurent.backtobike.Models.OnLoginChecked;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
 public class SynchronizeWithDatabase {
 
+    private static final String ONGOING = "ongoing";
     private static final String REJECTED = "rejected";
     private static final String CANCELLED = "cancelled";
     private static final String ACCEPTED = "accepted";
     private static final String LOGIN_SHARED ="login_shared";
+    private final static String SHARED_LIST_LOGINS = "shared_list_logins";
 
     // ------------------------------------------------------------------------------------------------------
     // ------------------------------------- SYNCHRONIZE FRIENDS --------------------------------------------
@@ -64,29 +72,67 @@ public class SynchronizeWithDatabase {
                     if(UtilsApp.findFriendIndexInListFriends(friend,listFriendsFB)!=-1){ // if friend DB on Firebase
 
                         if(friend.getAccepted()!=null){
-                            if(friend.getAccepted()) {
-                                firebaseUpdate.acceptFriend(user.getId(), friend.getId());
+                            if(friend.getAccepted().equals(ACCEPTED)) {
+                                firebaseUpdate.acceptFriend(context, user.getId(), friend);
                                 NotificationUtils.configureAndSendNotification(context, friend.getId(), user.getLogin(),NotificationUtils.FRIEND_HAS_ACCEPTED);
-                            } else {
-                                firebaseUpdate.rejectFriend(user.getId(), friend.getId());
+                            } else if(friend.getAccepted().equals(REJECTED)){
+                                firebaseUpdate.rejectFriend(context, user.getId(), friend);
                                 NotificationUtils.configureAndSendNotification(context, friend.getId(), user.getLogin(),NotificationUtils.FRIEND_HAS_REJECTED);
                             }
-                        }
-                    } else {
-                        if(friend.getAccepted()!=null){
-                            if(friend.getAccepted()) { // if new friend request to be sent
-                                firebaseUpdate.addNewFriend(friend, user);
-
-                                NotificationUtils.configureAndSendNotification(context, friend.getId(), user.getLogin(),NotificationUtils.NEW_FRIEND_REQUEST);
-                            } else // delete friend from Firebase
-                                FriendsHandler.deleteFriend(context, friend.getId(), user.getId());
                         }
                     }
                 }
             }
         }
 
+        if(listFriendsFB!=null){
+            if(listFriendsFB.size()>0){
+                for(Friend friend : listFriendsFB){
+                    if(UtilsApp.findFriendIndexInListFriends(friend,listFriendsDB)==-1) { // if friend FB not in Database
+                        if (friend.getHasAgreed() != null) {
+                            if (!friend.getAccepted().equals(ONGOING)) {
+                                firebaseUpdate.rejectFriend(context, user.getId(), friend);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Check if logins (friend requests) in sharedpref
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
+        String serialized = sharedPref.getString(SHARED_LIST_LOGINS, null);
+
+        if(serialized!=null) {
+            List<String> list = Arrays.asList(TextUtils.split(serialized, ","));
+
+            if(list.size()>0){
+                for(String login : list){
+                    checkLogin(context, sharedPref, login, user.getId());
+                }
+            }
+        }
+
+        sharedPref.edit().putString(SHARED_LIST_LOGINS, null).apply();
+
         synchronizeRoutes(context,user.getId(),onCompletedSynchronization);
+    }
+
+    private static void checkLogin(Context context, SharedPreferences sharedPref, String login, String userId){
+        FirebaseRecover firebaseRecover = new FirebaseRecover(context);
+        firebaseRecover.checkLogin(context, userId, login, new OnLoginChecked() {
+            @Override
+            public void onSuccess(Friend friend) {
+                // Add friend to database and Firebase
+                friend.setHasAgreed(ONGOING);
+                friend.setAccepted(ACCEPTED);
+                Action.addNewFriend(friend, UtilsApp.getUserFromFirebaseUser(sharedPref.getString(LOGIN_SHARED,null),
+                        FirebaseAuth.getInstance().getCurrentUser()), userId, context);
+            }
+
+            @Override
+            public void onFailed() {}
+        });
     }
 
     // ------------------------------------------------------------------------------------------------------

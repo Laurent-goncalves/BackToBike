@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.g.laurent.backtobike.Controllers.Fragments.FriendFragment;
@@ -21,10 +22,13 @@ import java.util.List;
 
 public class FriendsAdapter extends BaseAdapter {
 
+    private static final String ONGOING = "ongoing";
+    private static final String ACCEPTED = "accepted";
+    private static final String REJECTED = "rejected";
     private Context context;
     private List<Friend> listFriends;
     private ImageView image;
-    private TextView name;
+    private TextView login;
     private CheckBox box;
     private FriendFragment friendFragment;
     private Boolean SelectMode;
@@ -48,15 +52,15 @@ public class FriendsAdapter extends BaseAdapter {
             associateViews(view);
             configureFriendView(position);
             configureCheckbox(position);
-            configureClickListener(view);
+            configureClickListener(view, position);
         }
 
         return view;
     }
 
     private void associateViews(View view){
-        name = view.findViewById(R.id.friend_name);
-        name.setVisibility(View.VISIBLE);
+        login = view.findViewById(R.id.friend_name);
+        login.setVisibility(View.VISIBLE);
         image = view.findViewById(R.id.friend_picture);
         image.setVisibility(View.VISIBLE);
         box = view.findViewById(R.id.checkbox);
@@ -64,23 +68,27 @@ public class FriendsAdapter extends BaseAdapter {
 
     private void configureFriendView(int position){
 
-        // Configure name
-        String nameFriend = listFriends.get(position).getName();
-        if(nameFriend.length()>15)
-            name.setText(nameFriend.substring(0,15));
-        else
-            name.setText(nameFriend);
+        // Configure login
+        String loginFriend = listFriends.get(position).getLogin();
+        if(loginFriend!=null){
+            if(loginFriend.length()>12) {
+                String loginText = loginFriend.substring(0, 12) + "…";
+                login.setText(loginText);
+            } else
+                login.setText(loginFriend);
+        }
 
-        // set color of name view
-        if(listFriends.get(position).getHasAgreed()==null){ // NO ANSWER
-            name.setBackgroundColor(context.getResources().getColor(R.color.colorGray));
-        } else if(listFriends.get(position).getAccepted() && listFriends.get(position).getHasAgreed()) // ACCEPT
-            name.setBackgroundColor(context.getResources().getColor(R.color.colorPrimary));
-        else if(!listFriends.get(position).getHasAgreed())                   // REJECTED
-            name.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_red_dark));
+        // set color of login view
+        if(listFriends.get(position).getHasAgreed().equals(ONGOING)){ // NO ANSWER
+            login.setBackgroundColor(context.getResources().getColor(R.color.colorGray));
+        } else if(listFriends.get(position).getAccepted().equals(ACCEPTED) && listFriends.get(position).getHasAgreed().equals(ACCEPTED)) // ACCEPT
+            login.setBackgroundColor(context.getResources().getColor(R.color.colorPrimary));
+        else if(listFriends.get(position).getHasAgreed().equals(REJECTED))                   // REJECTED
+            login.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_red_dark));
         else // NO ANSWER
-            name.setBackgroundColor(context.getResources().getColor(R.color.colorGray));
+            login.setBackgroundColor(context.getResources().getColor(R.color.colorGray));
 
+        // Add picture of friend (if exists)
         Glide.with(context)
                 .load(listFriends.get(position).getPhotoUrl())
                 .apply(new RequestOptions().placeholder(R.drawable.icon_friend))
@@ -99,21 +107,24 @@ public class FriendsAdapter extends BaseAdapter {
                 box.setChecked(true);
 
             // create onCheckedChangedListener for the box
-            box.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked) { // friend selected
-                    friendFragment.getListFriendsSelected().add(listFriends.get(position).getId());
-                } else { // friend unselected
-                    ArrayList<String> list = friendFragment.getListFriendsSelected();
-                    int indexList = UtilsApp.findFriendIndexInListIds(listFriends.get(position).getId(), list);
-                    if(indexList!=-1)
-                        friendFragment.getListFriendsSelected().remove(indexList);
-                }
-            });
+            box.setOnCheckedChangeListener((buttonView, isChecked) -> updateListFriendsSelected(isChecked, position));
         } else
             box.setVisibility(View.GONE);
     }
 
-    private void configureClickListener(View view){
+    private void updateListFriendsSelected(Boolean isChecked, int position){
+
+        if (isChecked) { // friend selected
+            friendFragment.getListFriendsSelected().add(listFriends.get(position).getId());
+        } else { // friend unselected
+            ArrayList<String> list = friendFragment.getListFriendsSelected();
+            int indexList = UtilsApp.findFriendIndexInListIds(listFriends.get(position).getId(), list);
+            if(indexList!=-1)
+                friendFragment.getListFriendsSelected().remove(indexList);
+        }
+    }
+
+    private void configureClickListener(View view, int position){
 
         // Long click listener : to actuate Select Mode and show checkboxes
         view.setOnLongClickListener(v -> {
@@ -127,10 +138,18 @@ public class FriendsAdapter extends BaseAdapter {
         // Click listener : to deactivate Select mode and remove checkboxes
         view.setOnClickListener(v -> {
             if(friendFragment.getCallbackFriendActivity()!=null && SelectMode){
-                if(box.isChecked())
-                    box.setChecked(false);
-                else
-                    box.setChecked(true);
+
+                // check or uncheck box to select or unselect friend
+                CheckBox boxView = view.findViewById(R.id.checkbox);
+                if(boxView.isChecked()) {
+                    boxView.setChecked(false);
+                    updateListFriendsSelected(false, position);
+                } else {
+                    boxView.setChecked(true);
+                    updateListFriendsSelected(true, position);
+                }
+            } else { // show friend's name
+                Toast.makeText(context, listFriends.get(position).getName(),Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -152,6 +171,10 @@ public class FriendsAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return 0;
     }
+
+    // -----------------------------------------------------------------------------------------------------------
+    // ----------------------------------------- GETTERS AND SETTERS ---------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------
 
     public void setSelectMode(Boolean selectMode) {
         SelectMode = selectMode;

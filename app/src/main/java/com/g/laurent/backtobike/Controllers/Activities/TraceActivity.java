@@ -93,7 +93,7 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        if(route.getListRouteSegment()!=null){ // CHANGE EXISTING MAP -> zoom on route
+        if(route.getListRouteSegment().size()>0){ // CHANGE EXISTING MAP -> zoom on route
             scaleMap(mMap);
         } else { // NEW MAP -> zoom on current location
             getCurrentLocation = new GetCurrentLocation();
@@ -109,7 +109,10 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
         for(LatLng point : listPoints)
             bounds.include(point);
 
-        googleMap.setOnMapLoadedCallback(() -> googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 50)));
+        googleMap.setOnMapLoadedCallback(() -> {
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 50));
+            configureTraceActivity();
+        });
     }
 
     OnCurrentLocationFound onCurrentLocationFound = currentLocation -> configureTraceActivity();

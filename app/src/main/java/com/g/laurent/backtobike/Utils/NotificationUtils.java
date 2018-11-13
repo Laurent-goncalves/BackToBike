@@ -35,7 +35,7 @@ public class NotificationUtils {
     public static final String FRIEND_HAS_REJECTED = "friend_has_rejected";
 
     // ----------------------------------------------------------------------------------------------------------
-    // ------------------------------------------- SENDING ------------------------------------------------------
+    // ---------------------------------- SENDING TO OTHER DEVICE -----------------------------------------------
     // ----------------------------------------------------------------------------------------------------------
 
     public static String buildContentNotification(String loginSender, String typeUpdate){

@@ -57,7 +57,7 @@
     <string name="enter_a_login">Enter a login: </string>
     <string name="login_not_known">Login doesn\'t exists. Please check the login provided.</string>
     <string name="login_already_among_friends">This person is already among your friends.</string>
-    <string name="error_check_login">An error occurred during login checking. Please check following issue :</string>
+    <string name="error_check_login">An error occurred during login checking. Try again later.</string>
     <string name="my_login_is">My login : </string>
     <string name="title_friend_request">Friend request</string>
     <string name="yes_button">Yes</string>
@@ -65,6 +65,9 @@
     <string name="question_friend_request_1">Do you want </string>
     <string name="question_friend_request_2">to be your friend ?</string>
     <string name="suppr_button">SUPPR.</string>
+    <string name="friend_added_later">Friend will be added when internet connexion will be available.</string>
+    <string name="error_login_format">Error in login provided. Please check login.</string>
+    <string name="friend_deleted_later">Friend will be deleted when internet connexion will be available.</string>
 
     <!-- TRACEACTIVITY -->
     <string name="add_segment_message">Please click on the map to create a new segment</string>

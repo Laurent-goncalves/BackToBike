@@ -51,14 +51,9 @@ public class ConfigureMap implements OnMapReadyCallback {
 
     public void configureMapLayout(Route route){
         this.route=route;
-
-        if(route!=null && route.getListRouteSegment()!=null){
-            if(route.getListRouteSegment().size()>0) {
-                mapView.onCreate(null);
-                mapView.onResume();
-                mapView.getMapAsync(this);
-            }
-        }
+        mapView.onCreate(null);
+        mapView.onResume();
+        mapView.getMapAsync(this);
     }
 
     @Override

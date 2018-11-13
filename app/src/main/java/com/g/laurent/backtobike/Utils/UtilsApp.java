@@ -35,7 +35,9 @@ import java.util.List;
 
 public class UtilsApp {
 
+    private static final String ONGOING = "ongoing";
     private static final String ACCEPTED = "accepted";
+    private static final String REJECTED = "rejected";
 
     // ------------------------------------------------------------------------------------------------------------
     // ------------------------------------  ADD COUNT ON ICON APP  -----------------------------------------------
@@ -187,6 +189,24 @@ public class UtilsApp {
         return index;
     }
 
+    public static int findRouteInList(Route route, List<Route> listRoutes){
+
+        int index = -1;
+
+        if(listRoutes!=null && route !=null){
+            if(listRoutes.size()>0){
+                for(int i = 0; i < listRoutes.size(); i++){
+                    if(UtilsApp.areRoutesEquals(listRoutes.get(i), route)){
+                        index = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return index;
+    }
+
     public static int findFriendIndexInListEventFriends(Friend friend, List<EventFriends> listEventFriends){
 
         int index = -1;
@@ -322,7 +342,7 @@ public class UtilsApp {
         if(user.getPhotoUrl()!=null)
             photoUrl = user.getPhotoUrl().toString();
 
-        return new Friend(user.getUid(), mylogin, user.getDisplayName(), photoUrl,false,null);
+        return new Friend(user.getUid(), mylogin, user.getDisplayName(), photoUrl,REJECTED,ONGOING);
     }
 
     public static Boolean areRoutesEquals(Route route1, Route route2){

@@ -2,7 +2,10 @@ package com.g.laurent.backtobike.Utils;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.widget.Toast;
 
+import com.g.laurent.backtobike.Controllers.Fragments.DisplayFragment;
+import com.g.laurent.backtobike.Controllers.Fragments.FriendFragment;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackCounters;
 import com.g.laurent.backtobike.Models.CallbackSynchronizeEnd;
@@ -10,7 +13,9 @@ import com.g.laurent.backtobike.Models.Difference;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.OnBikeEventDataGetListener;
+import com.g.laurent.backtobike.Models.OnCompletedSynchronization;
 import com.g.laurent.backtobike.Models.OnFriendDataGetListener;
+import com.g.laurent.backtobike.Models.OnLoginChecked;
 import com.g.laurent.backtobike.Models.OnRouteDataGetListener;
 import com.g.laurent.backtobike.Models.OnUserDataGetListener;
 import com.g.laurent.backtobike.Models.Route;
@@ -205,7 +210,6 @@ public class FirebaseRecover {
         databaseReferenceEvents.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 BikeEvent bikeEvent = buildBikeEvent(dataSnapshot);
                 onBikeEventDataGetListener.onSuccess(bikeEvent);
             }
@@ -345,6 +349,42 @@ public class FirebaseRecover {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 onFriendDataGetListener.onFailure(databaseError.toString());
+            }
+        });
+    }
+
+    public void checkLogin(Context context, String user_id, String login, OnLoginChecked onLoginChecked) {
+
+        FirebaseRecover firebaseRecover = new FirebaseRecover(context);
+
+        // Check if login is different than user's login, login is not among friends of the user and if the login exists on Firebase
+        firebaseRecover.isLoginNotAmongUserFriends(login, user_id, new OnFriendDataGetListener() {
+            @Override
+            public void onSuccess(Friend friend) {
+                isLoginOnFirebase(login, user_id, new OnFriendDataGetListener() {
+                    @Override
+                    public void onSuccess(Friend friend) {
+                        onLoginChecked.onSuccess(friend);
+                    }
+
+                    @Override
+                    public void onSuccess(List<Friend> listFriend) {}
+
+                    @Override
+                    public void onFailure(String error) {
+                        onLoginChecked.onFailed();
+                        Toast.makeText(context,error,Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onSuccess(List<Friend> listFriend) {}
+
+            @Override
+            public void onFailure(String error) {
+                onLoginChecked.onFailed();
+                Toast.makeText(context,error,Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -541,19 +581,11 @@ public class FirebaseRecover {
 
     private static Friend buildFriend(DataSnapshot datas){
 
-        Boolean accepted = null;
-        Boolean has_accepted = null;
-
-        if(datas.child(ACCEPTED).getValue()!=null)
-            accepted = (Boolean) datas.child(ACCEPTED).getValue();
-
-        if(datas.child(HAS_ACCEPTED).getValue()!=null)
-            has_accepted = (Boolean) datas.child(HAS_ACCEPTED).getValue();
-
         return new Friend(datas.getKey(),
                 (String) datas.child(LOGIN).getValue(),
                 (String) datas.child(NAME).getValue(),
                 (String) datas.child(PHOTO_URL).getValue(),
-                accepted,has_accepted);
+                (String) datas.child(ACCEPTED).getValue(),
+                (String) datas.child(HAS_ACCEPTED).getValue());
     }
 }

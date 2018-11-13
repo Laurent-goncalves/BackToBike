@@ -205,9 +205,7 @@ public class SynchronizeWithFirebase {
                 if(listRoutesFirebase!=null){
                     if(listRoutesFirebase.size()>0){
                         for(Route route : listRoutesFirebase){
-                            if (UtilsApp.findIndexRouteInList(String.valueOf(route.getId()), listRoutesApp) != -1) // if route in database
-                                RouteHandler.updateRoute(context, route, userId); // update route
-                            else
+                            if (UtilsApp.findRouteInList(route, listRoutesApp) == -1) // if route NOT in database
                                 RouteHandler.insertNewRoute(context, route, userId); // add new route in database
                         }
                     }

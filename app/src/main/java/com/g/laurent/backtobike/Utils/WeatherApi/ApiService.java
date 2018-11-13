@@ -23,7 +23,7 @@ public interface ApiService {
 
     HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);
 
-    OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging).retryOnConnectionFailure(false);
+    OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging).retryOnConnectionFailure(true);
 
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("https://api.weatherbit.io/v2.0/forecast/")

@@ -23,9 +23,11 @@ import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackMainActivity;
 import com.g.laurent.backtobike.Models.CallbackWeather;
 import com.g.laurent.backtobike.Models.EventFriends;
+import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.BikeEventHandler;
+import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
 import com.g.laurent.backtobike.Utils.NotificationUtils;
 import com.g.laurent.backtobike.Utils.UtilsTime;
@@ -61,6 +63,7 @@ public class MainFragment extends Fragment {
     @BindView(R.id.image_season) ImageView seasonImage;
     @BindView(R.id.title_center) ImageView centralTitle;
     @BindView(R.id.panel) RelativeLayout panel;
+    @BindView(R.id.middle_layout) RelativeLayout middleLayout;
     @BindView(R.id.image_panel) ImageView imagePanel;
     @BindView(R.id.count_friends) TextView countFriends;
     @BindView(R.id.count_invitation) TextView countInvits;
@@ -68,6 +71,8 @@ public class MainFragment extends Fragment {
     @BindView(R.id.textview_differences) TextView differencesPanel;
     @BindView(R.id.layout_bike_event) LinearLayout bikeEventLayout;
     @BindView(R.id.title_weather) TextView titleWeather;
+    @BindView(R.id.layout_buttons_left) LinearLayout buttonsLeft;
+    @BindView(R.id.layout_buttons_right) LinearLayout buttonsRight;
     private final static String MENU_MAIN_PAGE = "menu_main_page";
     private static final String DISPLAY_MY_ROUTES ="display_my_routes";
     private static final String DISPLAY_MY_EVENTS ="display_my_events";
@@ -116,7 +121,6 @@ public class MainFragment extends Fragment {
 
                 DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference()
                         .child("users").child(userId).child("my_invitations").child("id2_28_11_2018_14:00");
-
 
                 firebaseUpdate.setInvitation(databaseReference, invitation);
                 firebaseUpdate.setRoute(databaseReference.child("route"), route);
@@ -201,10 +205,15 @@ public class MainFragment extends Fragment {
     // slide the view from its current position to below itself
     public void slideUp(View view){
 
-        centralTitle.setVisibility(View.VISIBLE);
         AlphaAnimation anim = new AlphaAnimation(0f, 1.0f);
         anim.setDuration(1000);
+
+        centralTitle.setVisibility(View.VISIBLE);
         centralTitle.startAnimation(anim);
+        buttonsLeft.setVisibility(View.VISIBLE);
+        buttonsLeft.startAnimation(anim);
+        buttonsRight.setVisibility(View.VISIBLE);
+        buttonsRight.startAnimation(anim);
 
         ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY", 0);
         animation.setDuration(1000);
@@ -216,10 +225,22 @@ public class MainFragment extends Fragment {
 
         AlphaAnimation anim = new AlphaAnimation(1.0f, 0f);
         anim.setDuration(1000);
+
         centralTitle.startAnimation(anim);
         centralTitle.setVisibility(View.INVISIBLE);
+        buttonsLeft.startAnimation(anim);
+        buttonsLeft.setVisibility(View.INVISIBLE);
+        buttonsRight.startAnimation(anim);
+        buttonsRight.setVisibility(View.INVISIBLE);
 
-        ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY",   !panelExpanded ? (9*view.getHeight()/10) : 0);
+        float height;
+
+        if(9*view.getHeight()/10 > middleLayout.getHeight())
+            height = middleLayout.getHeight();
+        else
+            height = 9*view.getHeight()/10;
+
+        ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY",   !panelExpanded ? (height) : 0);
         animation.setDuration(1000);
         animation.start();
     }

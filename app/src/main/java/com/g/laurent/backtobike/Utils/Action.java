@@ -3,14 +3,21 @@ package com.g.laurent.backtobike.Utils;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.g.laurent.backtobike.Controllers.Activities.DisplayActivity;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
+import com.g.laurent.backtobike.Models.OnLoginChecked;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class Action {
@@ -20,6 +27,7 @@ public class Action {
     private static final String REJECTED = "rejected";
     private static final String NEED_SYNCHRONIZATION = "need_synchronization";
     private static final String LOGIN_SHARED ="login_shared";
+    private final static String SHARED_LIST_LOGINS = "shared_list_logins";
 
     // ---------------------------------------------------------------------------------------------------------
     // -------------------------------------------- FRIEND -----------------------------------------------------
@@ -29,22 +37,37 @@ public class Action {
 
         SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
-        // Insert friend in database
-        FriendsHandler.insertNewFriend(context, friend, userId);
-
-        // Insert friend in Firebase
+        // If internet available
         if(UtilsApp.isInternetAvailable(context)) {
+
+            // Insert friend in database
+            FriendsHandler.insertNewFriend(context, friend, userId);
 
             // Add new friend on Firebase
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-            firebaseUpdate.addNewFriend(friend, user);
+            firebaseUpdate.addNewFriend(context, friend, user);
 
             // Send notification to user
             NotificationUtils.configureAndSendNotification(context, friend.getId(), user.getLogin(),NotificationUtils.NEW_FRIEND_REQUEST);
 
         } else {
-            sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
+            saveLoginsInSharedPref(sharedPref, friend.getLogin());
+            Toast.makeText(context, context.getResources().getString(R.string.friend_added_later), Toast.LENGTH_LONG).show();
         }
+    }
+
+    public static void saveLoginsInSharedPref(SharedPreferences sharedPref, String loginToSave){
+        List<String> list = new ArrayList<>();
+
+        String serialized = sharedPref.getString(SHARED_LIST_LOGINS, null);
+
+        if(serialized!=null)
+            list = new ArrayList<>(Arrays.asList(TextUtils.split(serialized, ",")));
+
+        list.add(loginToSave);
+
+        sharedPref.edit().putString(SHARED_LIST_LOGINS, TextUtils.join(",", list)).apply();
+        sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
     }
 
     public static void updateFriend(Friend friend, String userId, Context context){
@@ -73,8 +96,9 @@ public class Action {
         // Update friend in Firebase
         if(UtilsApp.isInternetAvailable(context)) {
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-            firebaseUpdate.deleteFriend(userId, friend.getId());
+            firebaseUpdate.rejectFriend(context, userId, friend);
         } else {
+            Toast.makeText(context, context.getResources().getString(R.string.friend_deleted_later), Toast.LENGTH_LONG).show();
             sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
         }
     }
@@ -84,14 +108,14 @@ public class Action {
         SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
         // Friend accepted in database
-        friend.setAccepted(true);
+        friend.setAccepted(ACCEPTED);
         FriendsHandler.updateFriend(context, friend, userId);
 
         if(UtilsApp.isInternetAvailable(context)) {
 
             // Friend accepted in Firebase
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-            firebaseUpdate.acceptFriend(userId, friend.getId());
+            firebaseUpdate.acceptFriend(context, userId, friend);
 
             // Send notification to user
             NotificationUtils.configureAndSendNotification(context, friend.getId(), sharedPref.getString(LOGIN_SHARED, null),NotificationUtils.FRIEND_HAS_ACCEPTED);
@@ -105,15 +129,14 @@ public class Action {
 
         SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
-        // Friend accepted in database
-        friend.setAccepted(false);
-        FriendsHandler.updateFriend(context, friend, userId);
+        // Friend to be deleted in database
+        FriendsHandler.deleteFriend(context, friend.getId(), userId);
 
         if(UtilsApp.isInternetAvailable(context)) {
 
             // Friend accepted in Firebase
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-            firebaseUpdate.rejectFriend(userId, friend.getId());
+            firebaseUpdate.rejectFriend(context, userId, friend);
 
             // Send notification to user
             NotificationUtils.configureAndSendNotification(context, friend.getId(), sharedPref.getString(LOGIN_SHARED, null),NotificationUtils.FRIEND_HAS_REJECTED);
@@ -342,7 +365,7 @@ public class Action {
     // ------------------------------------------- ALERT DIALOG ------------------------------------------------
     // ---------------------------------------------------------------------------------------------------------
 
-    public static void showAlertDialogCancelBikeEvent(BikeEvent event, int position, String userId, DisplayActivity displayActivity) {
+    public static void showAlertDialogCancelBikeEvent(BikeEvent event, String userId, DisplayActivity displayActivity) {
 
         Context context = displayActivity.getApplicationContext();
 
@@ -353,7 +376,7 @@ public class Action {
         builder.setPositiveButton(context.getResources().getString(R.string.confirm), (dialog, id) -> {
                     Action.cancelBikeEvent(event,userId,context);
                     String message = context.getResources().getString(R.string.bike_event_cancelled);
-                    displayActivity.removeItemListEvent(position, message);
+                    displayActivity.updateListAfterDeletion(message);
                 }
         )
                 .setNegativeButton(R.string.cancel, (dialog, id) -> { });
@@ -362,7 +385,7 @@ public class Action {
         dialog.show();
     }
 
-    public static void showAlertDialogDeleteRoute(Route route, int position, String userId, DisplayActivity displayActivity) {
+    public static void showAlertDialogDeleteRoute(Route route, String userId, DisplayActivity displayActivity) {
 
         Context context = displayActivity.getApplicationContext();
 
@@ -373,16 +396,16 @@ public class Action {
         builder.setPositiveButton(context.getResources().getString(R.string.confirm), (dialog, id) -> {
                     Action.deleteRoute(route,userId,context);
                     String message = context.getResources().getString(R.string.delete_route);
-                    displayActivity.removeItemListRoutes(position, message);
+                    displayActivity.updateListAfterDeletion(message);
                 }
-        )
+            )
                 .setNegativeButton(R.string.cancel, (dialog, id) -> { });
 
         AlertDialog dialog = builder.create();
         dialog.show();
     }
 
-    public static void showAlertDialogRejectEvent(BikeEvent event, int position, String userId, DisplayActivity displayActivity) {
+    public static void showAlertDialogRejectEvent(BikeEvent event, String userId, DisplayActivity displayActivity) {
 
         Context context = displayActivity.getApplicationContext();
 
@@ -393,7 +416,7 @@ public class Action {
         builder.setPositiveButton(context.getResources().getString(R.string.confirm), (dialog, id) -> {
                     Action.rejectEvent(event,userId,context);
                     String message = context.getResources().getString(R.string.reject_event);
-                    displayActivity.removeItemListEvent(position, message);
+                    displayActivity.updateListAfterDeletion(message);
                 }
         )
                 .setNegativeButton(R.string.cancel, (dialog, id) -> { });
@@ -402,7 +425,7 @@ public class Action {
         dialog.show();
     }
 
-    public static void showAlertDialogRejectInvitation(BikeEvent invit, int position, String userId, DisplayActivity displayActivity) {
+    public static void showAlertDialogRejectInvitation(BikeEvent invit, String userId, DisplayActivity displayActivity) {
 
         Context context = displayActivity.getApplicationContext();
 
@@ -413,7 +436,7 @@ public class Action {
         builder.setPositiveButton(context.getResources().getString(R.string.confirm), (dialog, id) -> {
                     Action.rejectInvitation(invit,userId,context);
                     String message = context.getResources().getString(R.string.reject_invitation);
-                    displayActivity.removeItemListInvits(position, message);
+                    displayActivity.updateListAfterDeletion(message);
                 }
         )
                 .setNegativeButton(R.string.cancel, (dialog, id) -> { });

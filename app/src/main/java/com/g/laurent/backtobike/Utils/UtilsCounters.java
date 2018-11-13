@@ -51,7 +51,7 @@ public class UtilsCounters {
 
         // Check for reception of new friend requests or answer pending
         for (DataSnapshot data : datas.getChildren()) {
-            if(!data.hasChild(ACCEPTED)){
+            if(data.child(ACCEPTED).getValue().equals(ONGOING)){
 
                 if(UtilsApp.findFriendIndexInListFriends(data.getKey(), oldListFriends) == -1){
                     // NEW friend request
@@ -77,14 +77,14 @@ public class UtilsCounters {
 
                     if(data.child(HAS_ACCEPTED).getValue()!=null){
                         if(data.child(HAS_ACCEPTED).getValue().equals(ACCEPTED) &&
-                                oldListFriends.get(index).getHasAgreed()==null){
+                                oldListFriends.get(index).getHasAgreed().equals(ONGOING)){
 
                             String difference =data.child(NAME).getValue() + " " + context.getResources().getString(R.string.friend_request_accepted) + ".";
 
                             listDifferences.add(difference);
 
                         } else if(data.child(HAS_ACCEPTED).getValue().equals(REJECTED) &&
-                                oldListFriends.get(index).getHasAgreed()==null){
+                                oldListFriends.get(index).getHasAgreed().equals(ONGOING)){
 
                             String difference =data.child(NAME).getValue() + " " + context.getResources().getString(R.string.friend_request_refused) + ".";
 

@@ -133,10 +133,10 @@
 
             <LinearLayout
                 android:id="@+id/guests_views"
-                android:layout_below="@+id/layout_guests"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:layout_below="@+id/layout_guests">
             </LinearLayout>
 
             <!-- MAP AREA -->

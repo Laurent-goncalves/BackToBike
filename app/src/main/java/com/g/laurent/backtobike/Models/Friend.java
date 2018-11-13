@@ -20,10 +20,10 @@ public class Friend {
     private String login;
     private String name;
     private String photoUrl;
-    private Boolean accepted;
-    private Boolean hasAgreed;
+    private String accepted;
+    private String hasAgreed;
 
-    public Friend(@NonNull String id, String login, String name, String photoUrl, Boolean accepted, Boolean hasAgreed) {
+    public Friend(@NonNull String id, String login, String name, String photoUrl, String accepted, String hasAgreed) {
         this.id = id;
         this.login = login;
         this.name = name;
@@ -68,19 +68,19 @@ public class Friend {
         this.login = login;
     }
 
-    public Boolean getAccepted() {
+    public String getAccepted() {
         return accepted;
     }
 
-    public void setAccepted(Boolean accepted) {
+    public void setAccepted(String accepted) {
         this.accepted = accepted;
     }
 
-    public Boolean getHasAgreed() {
+    public String getHasAgreed() {
         return hasAgreed;
     }
 
-    public void setHasAgreed(Boolean hasAgreed) {
+    public void setHasAgreed(String hasAgreed) {
         this.hasAgreed = hasAgreed;
     }
 
@@ -91,8 +91,8 @@ public class Friend {
 
         if (values.containsKey("id")) friend.setId(values.getAsString("id"));
         if (values.containsKey("login")) friend.setLogin(values.getAsString("login"));
-        if (values.containsKey("accepted")) friend.setAccepted(values.getAsBoolean("accepted"));
-        if (values.containsKey("hasAgreed")) friend.setHasAgreed(values.getAsBoolean("hasAgreed"));
+        if (values.containsKey("accepted")) friend.setAccepted(values.getAsString("accepted"));
+        if (values.containsKey("hasAgreed")) friend.setHasAgreed(values.getAsString("hasAgreed"));
         if (values.containsKey("name")) friend.setName(values.getAsString("name"));
         if (values.containsKey("photoUrl")) friend.setPhotoUrl(values.getAsString("photoUrl"));
 
@@ -123,8 +123,8 @@ public class Friend {
 
                 friend.setId(cursor.getString(cursor.getColumnIndexOrThrow("id")));
                 friend.setLogin(cursor.getString(cursor.getColumnIndexOrThrow("login")));
-                friend.setAccepted(cursor.getInt(cursor.getColumnIndexOrThrow("accepted"))>0);
-                friend.setHasAgreed(cursor.getInt(cursor.getColumnIndexOrThrow("hasAgreed"))>0);
+                friend.setAccepted(cursor.getString(cursor.getColumnIndexOrThrow("accepted")));
+                friend.setHasAgreed(cursor.getString(cursor.getColumnIndexOrThrow("hasAgreed")));
                 friend.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
                 friend.setPhotoUrl(cursor.getString(cursor.getColumnIndexOrThrow("photoUrl")));
 
@@ -144,8 +144,8 @@ public class Friend {
             while (cursor.moveToNext()) {
                 friend.setId(cursor.getString(cursor.getColumnIndexOrThrow("id")));
                 friend.setLogin(cursor.getString(cursor.getColumnIndexOrThrow("login")));
-                friend.setAccepted(cursor.getInt(cursor.getColumnIndexOrThrow("accepted"))>0);
-                friend.setHasAgreed(cursor.getInt(cursor.getColumnIndexOrThrow("hasAgreed"))>0);
+                friend.setAccepted(cursor.getString(cursor.getColumnIndexOrThrow("accepted")));
+                friend.setHasAgreed(cursor.getString(cursor.getColumnIndexOrThrow("hasAgreed")));
                 friend.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
                 friend.setPhotoUrl(cursor.getString(cursor.getColumnIndexOrThrow("photoUrl")));
             }

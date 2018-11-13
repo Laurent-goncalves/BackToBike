@@ -28,6 +28,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         TextView dateView = itemView.findViewById(R.id.date_view);
         ImageView iconOrganizer = itemView.findViewById(R.id.organizer_icon);
         TextView routeView = itemView.findViewById(R.id.route_name_view);
+        ImageView iconFriends = itemView.findViewById(R.id.friend_icon);
         TextView friendCounter = itemView.findViewById(R.id.number_friends_view);
         TextView cancelText = itemView.findViewById(R.id.cancelled_text_rotated);
 
@@ -46,7 +47,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         routeView.setText(bikeEvent.getRoute().getName());
 
         // Configure friend counter
-        setCounterFriend(friendCounter, bikeEvent);
+        setCounterFriend(friendCounter, iconFriends, bikeEvent);
 
         // Set cancel text if applicable
         if(bikeEvent.getStatus().equals(CANCELLED))
@@ -70,7 +71,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    private void setCounterFriend(TextView friendCounter, BikeEvent bikeEvent){
+    private void setCounterFriend(TextView friendCounter, ImageView iconFriend, BikeEvent bikeEvent){
         if(bikeEvent.getListEventFriends()!=null){
             if(bikeEvent.getListEventFriends().size()>0){
 
@@ -87,10 +88,15 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
                     text = "(" + count + ")";
 
                 friendCounter.setText(text);
-            } else
-                friendCounter.setText("(0)");
-        } else
-            friendCounter.setText("(0)");
+
+            } else {
+                friendCounter.setVisibility(View.GONE);
+                iconFriend.setVisibility(View.GONE);
+            }
+        } else {
+            friendCounter.setVisibility(View.GONE);
+            iconFriend.setVisibility(View.GONE);
+        }
     }
 
     public interface DaysName {

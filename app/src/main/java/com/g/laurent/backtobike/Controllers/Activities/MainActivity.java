@@ -76,10 +76,7 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
 
         savePreviousPage(MENU_MAIN_PAGE);
 
-
-
-        clearDatabase(userId,getApplicationContext());
-
+        //clearDatabase(userId,getApplicationContext());
 
         deleteOverdueEvents();
 
@@ -336,9 +333,9 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
 
     private void setFriendsDatabase(Context context, String userId){
 
-        Friend friend1 = new Friend("id1","id1","Mat","photoUrl",true, true);
-        Friend friend2 = new Friend("id2","id2","Seb","photoUrl",true,true);
-        Friend friend3 = new Friend("id3","id3","Camille","photoUrl",true,true);
+        Friend friend1 = new Friend("id1","id1","Mat","photoUrl","accepted", "accepted");
+        Friend friend2 = new Friend("id2","id2","Seb","photoUrl","accepted","accepted");
+        Friend friend3 = new Friend("id3","id3","Camille","photoUrl","accepted","accepted");
 
         FriendsHandler.insertNewFriend(context,friend1, userId);
         FriendsHandler.insertNewFriend(context,friend2, userId);

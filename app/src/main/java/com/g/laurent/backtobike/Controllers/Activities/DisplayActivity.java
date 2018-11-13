@@ -69,6 +69,36 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         }
     }
 
+    public void updateListAfterDeletion(String message){
+
+        position = 0;
+
+        // Show message to user
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+
+        // Update viewpager
+        switch (typeDisplay) {
+            case DISPLAY_MY_ROUTES:
+                listRoutes = RouteHandler.getAllRoutes(getApplicationContext(), userId);
+                count = listRoutes.size();
+                break;
+            case DISPLAY_MY_EVENTS:
+                listEvents = BikeEventHandler.getAllFutureBikeEvents(getApplicationContext(),userId);
+                count = listEvents.size();
+                break;
+            case DISPLAY_MY_INVITS:
+                listInvitations = BikeEventHandler.getAllInvitations(getApplicationContext(),userId);
+                count = listInvitations.size();
+                break;
+        }
+
+        if(adapter!=null) {
+            adapter.setCount(count);
+            adapter.notifyDataSetChanged();
+        } else
+            configureAndShowDisplayFragmentsInViewPager();
+    }
+
     public void synchronizeWithFirebaseAndRefreshFragment(){
 
         if(typeDisplay!=null && UtilsApp.isInternetAvailable(getApplicationContext())){
@@ -143,56 +173,66 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         SaveAndRestoreDisplayActivity.saveData(outState,this);
     }
 
+    private void definePositionToDisplay(){
+        switch (typeDisplay) {
+            case DISPLAY_MY_ROUTES:
+                position = UtilsApp.findIndexRouteInList(idSelected, listRoutes);
+                break;
+            case DISPLAY_MY_EVENTS:
+                position = UtilsApp.findIndexEventInList(idSelected, listEvents);
+                break;
+            case DISPLAY_MY_INVITS:
+                position = UtilsApp.findIndexEventInList(idSelected, listInvitations);
+                break;
+        }
+    }
+
     public void configureAndShowDisplayFragmentsInViewPager(){
 
         if(adapter!=null){
             adapter.notifyDataSetChanged();
+
         } else {
             // Define page to display
-            switch (typeDisplay) {
-                case DISPLAY_MY_ROUTES:
-                    position = UtilsApp.findIndexRouteInList(idSelected, listRoutes);
-                    break;
-                case DISPLAY_MY_EVENTS:
-                    position = UtilsApp.findIndexEventInList(idSelected, listEvents);
-                    break;
-                case DISPLAY_MY_INVITS:
-                    position = UtilsApp.findIndexEventInList(idSelected, listInvitations);
-                    break;
-            }
+            definePositionToDisplay();
 
             // Configure pager
-            pager = findViewById(R.id.activity_display_viewpager);
-            pager.setOffscreenPageLimit(0);
-            adapter = new PageAdapter(getSupportFragmentManager(), typeDisplay, count);
-            pager.setAdapter(adapter);
+            configureViewPager();
 
-            pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
-
-                @Override
-                public void onPageSelected(int position) {
-                    setPosition(position);
-                    configureArrows();
-                    configureButtons(count > 0, position);
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int state) {
-                    if(state == ViewPager.SCROLL_STATE_IDLE)
-                        synchronizeWithFirebaseAndRefreshFragment();
-                }
-            });
-
-            // Set current page
-            if(position!=-1)
-                pager.setCurrentItem(position);
-            else
-                position = 0;
-
+            // Configure other views (arrows, buttons, ... )
             configureViews(position);
         }
+    }
+
+    private void configureViewPager(){
+        pager = findViewById(R.id.activity_display_viewpager);
+        pager.setOffscreenPageLimit(0);
+        adapter = new PageAdapter(getSupportFragmentManager(), typeDisplay, count);
+        pager.setAdapter(adapter);
+
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+            @Override
+            public void onPageSelected(int position) {
+                setPosition(position);
+                configureArrows();
+                configureButtons(count > 0, position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if(state == ViewPager.SCROLL_STATE_IDLE && (position == 0 || position == count-1))
+                    synchronizeWithFirebaseAndRefreshFragment();
+            }
+        });
+
+        // Set current page
+        if(position!=-1)
+            pager.setCurrentItem(position);
+        else
+            position = 0;
     }
 
     public void configureViews(int position){
@@ -324,7 +364,7 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
             case DISPLAY_MY_ROUTES:
                 // DELETE ROUTE
                 buttonLeft.setOnClickListener(v -> {
-                    Action.showAlertDialogDeleteRoute(listRoutes.get(position), position, userId, this);
+                    Action.showAlertDialogDeleteRoute(listRoutes.get(position), userId, this);
                 });
                 // CHANGE ROUTE
                 buttonRight.setOnClickListener(v -> launchTraceActivity(listRoutes.get(position)));
@@ -339,9 +379,9 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
 
                     if(!isEventCancelled) { // If event not cancelled
                         if(isEventFromOrganizer) // If user is the organizer
-                            Action.showAlertDialogCancelBikeEvent(listEvents.get(position), position, userId, this);
+                            Action.showAlertDialogCancelBikeEvent(listEvents.get(position), userId, this);
                         else // If user is NOT the organizer
-                            Action.showAlertDialogRejectEvent(listEvents.get(position),position,userId,this);
+                            Action.showAlertDialogRejectEvent(listEvents.get(position),userId,this);
                     } else // if event cancelled by organizer, delete it
                         Action.deleteBikeEvent(listEvents.get(position), userId, getApplicationContext());
 
@@ -353,7 +393,7 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
             case DISPLAY_MY_INVITS:
                 // REJECT INVITATION
                 buttonLeft.setOnClickListener(v -> {
-                    Action.showAlertDialogRejectInvitation(listInvitations.get(position),position,userId,this);
+                    Action.showAlertDialogRejectInvitation(listInvitations.get(position),userId,this);
                 });
 
                 // ACCEPT INVITATION
@@ -361,31 +401,10 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
                     Action.acceptInvitation(listInvitations.get(position),userId,getApplicationContext());
                     // set alarm for event
                     configureAlarmManager(listInvitations.get(position));
-                    removeItemListInvits(position, getApplicationContext().getResources().getString(R.string.accept_invitation));
+                    updateListAfterDeletion(getApplicationContext().getResources().getString(R.string.accept_invitation));
                 });
                 break;
         }
-    }
-
-    public void removeItemListRoutes(int position, String message){
-        count--;
-        listRoutes.remove(position);
-        configureAndShowDisplayFragmentsInViewPager();
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-    }
-
-    public void removeItemListEvent(int position, String message){
-        count--;
-        listEvents.remove(position);
-        configureAndShowDisplayFragmentsInViewPager();
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-    }
-
-    public void removeItemListInvits(int position, String message){
-        count--;
-        listInvitations.remove(position);
-        configureAndShowDisplayFragmentsInViewPager();
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 
     private void configureAddButton(){

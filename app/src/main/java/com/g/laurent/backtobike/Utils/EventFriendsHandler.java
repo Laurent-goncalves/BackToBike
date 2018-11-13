@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.R;
@@ -30,7 +32,6 @@ public class EventFriendsHandler {
 
         // Button delete
         ImageView buttonDelete = guestView.findViewById(R.id.button_delete);
-        //buttonDelete.setColorFilter(context.getResources().getColor(R.color.colorButtonDelete));
         buttonDelete.setOnClickListener(v -> deleteGuestView(friend,guestView,guestsLayout,config));
 
         // add view

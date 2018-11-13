@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class NetworkSchedulerService extends JobService implements ConnectivityReceiver.ConnectivityReceiverListener {
 
+    private static final String ACCEPTED = "accepted";
     private static final String NEED_SYNCHRONIZATION = "need_synchronization";
     private static final String LOGIN_SHARED ="login_shared";
     private ConnectivityReceiver mConnectivityReceiver;
@@ -54,7 +55,7 @@ public class NetworkSchedulerService extends JobService implements ConnectivityR
             // Build friend from user
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             String login = sharedPref.getString(LOGIN_SHARED, null);
-            Friend user = new Friend(firebaseUser.getUid(), login, firebaseUser.getDisplayName(), firebaseUser.getPhotoUrl().toString(),true, true);
+            Friend user = new Friend(firebaseUser.getUid(), login, firebaseUser.getDisplayName(), firebaseUser.getPhotoUrl().toString(),ACCEPTED, ACCEPTED);
 
             // Launch synchronization (after completion, change status of NEED_SYNCHRONIZATION to false)
             SynchronizeWithDatabase.synchronizeFriends(getApplicationContext(), user, () -> sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, false).apply());
