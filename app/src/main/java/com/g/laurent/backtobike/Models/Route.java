@@ -117,6 +117,24 @@ public class Route {
         return route;
     }
 
+    public static List<Route> getListRoutesValidFromCursor(Cursor cursor) {
+
+        List<Route> listRoutes = new ArrayList<>();
+
+        if(cursor!=null){
+            while (cursor.moveToNext()) {
+                final Route route = new Route();
+                route.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+                route.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
+                route.setValid(cursor.getInt(cursor.getColumnIndexOrThrow("valid")) > 0);
+                listRoutes.add(route);
+            }
+            cursor.close();
+        }
+
+        return listRoutes;
+    }
+
     public static List<Route> getListRoutesFromCursor(Cursor cursor) {
 
         List<Route> listRoutes = new ArrayList<>();

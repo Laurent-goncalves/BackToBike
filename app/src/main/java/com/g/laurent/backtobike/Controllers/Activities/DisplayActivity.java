@@ -33,7 +33,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class DisplayActivity extends BaseActivity implements CallbackDisplayActivity {
+public class DisplayActivity extends BaseActivity implements CallbackDisplayActivity, View.OnClickListener {
 
     private static final String CANCELLED = "cancelled";
     private List<Route> listRoutes;
@@ -45,8 +45,8 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
     private String idSelected;
     private int count;
     private int position;
-    @BindView(R.id.arrow_next) ImageView arrowNext;
-    @BindView(R.id.arrow_back) ImageView arrowBack;
+    @BindView(R.id.arrow_next) ImageButton arrowNext;
+    @BindView(R.id.arrow_back) ImageButton arrowBack;
     @BindView(R.id.left_button)  Button buttonLeft;
     @BindView(R.id.right_button) Button buttonRight;
 
@@ -95,6 +95,8 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         if(adapter!=null) {
             adapter.setCount(count);
             adapter.notifyDataSetChanged();
+            configureArrows();
+            configureButtons(count > 0,position);
         } else
             configureAndShowDisplayFragmentsInViewPager();
     }
@@ -267,7 +269,28 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
                 break;
         }
 
-        UtilsApp.configureArrows(position, sizeList, arrowBack, arrowNext, this);
+        configureArrows(position, sizeList);
+    }
+
+    public void configureArrows(int position, int sizeList){
+
+        if(UtilsApp.needLeftArrow(position,sizeList)) {
+            arrowBack.setVisibility(View.VISIBLE);
+            arrowBack.setOnClickListener(v -> {
+                pager.setCurrentItem(position-1);
+                adapter.notifyDataSetChanged();
+            });
+        } else
+            arrowBack.setVisibility(View.INVISIBLE);
+
+        if(UtilsApp.needRightArrow(position,sizeList)) {
+            arrowNext.setVisibility(View.VISIBLE);
+            arrowNext.setOnClickListener(v -> {
+                pager.setCurrentItem(position+1);
+                adapter.notifyDataSetChanged();
+            });
+        } else
+            arrowNext.setVisibility(View.INVISIBLE);
     }
 
     private void configureButtons(Boolean showButtons, int position){
@@ -491,5 +514,10 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    @Override
+    public void onClick(View v) {
+        System.out.println("eee " + v.toString());
     }
 }

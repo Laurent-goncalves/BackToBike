@@ -76,7 +76,7 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
 
         savePreviousPage(MENU_MAIN_PAGE);
 
-        //clearDatabase(userId,getApplicationContext());
+        clearDatabase(userId,getApplicationContext());
 
         deleteOverdueEvents();
 

@@ -101,12 +101,10 @@ public class ConfigureTraceActivity {
             if(deleteMode){
                 if(marker.getTag()!=null){
                     if(marker.getTag().equals(TAG_START_POINT)){
-                        graphicsHandler.getRoute().remove(0);
                         graphicsHandler.getMarkersHandler().removeStartPoint();
                         handleDrawMap();
                         graphicsHandler.updateButtonsState(TAG_DELETE);
                     } else if(marker.getTag().equals(TAG_END_POINT)){
-                        graphicsHandler.getRoute().remove(graphicsHandler.getRoute().size()-1);
                         graphicsHandler.getMarkersHandler().removeEndPoint();
                         handleDrawMap();
                         graphicsHandler.updateButtonsState(TAG_DELETE);
@@ -173,7 +171,10 @@ public class ConfigureTraceActivity {
     @OnClick(R.id.button_save)
     public void save(){
         // Open dialog fragment to give name to the route
-        traceActivity.showAlertDialogAddNewRoute(graphicsHandler.getRoute());
+        if(graphicsHandler.getRoute().size()>=2 && graphicsHandler.getRouteAlt()==null && graphicsHandler.getMarkersHandler().getStartPoint()!=null && graphicsHandler.getMarkersHandler().getEndPoint()!=null)
+            traceActivity.showAlertDialogAddNewRoute(graphicsHandler.getRoute());
+        else
+            Toast.makeText(context, context.getResources().getString(R.string.error_route_not_finished), Toast.LENGTH_LONG).show();
     }
 
     private void setButtonAsPressed(final ImageButton button){

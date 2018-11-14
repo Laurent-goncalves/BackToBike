@@ -30,6 +30,10 @@ public class SegmentsHandler {
         this.context=context;
     }
 
+    // ----------------------------------------------------------------------------------------------------------
+    // ------------------------------------ DELETING SEGMENTS ---------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------
+
     public void handleClickSegmentToDelete(LatLng fingerPosition) {
 
         route = graphicsHandler.getRoute();
@@ -46,7 +50,7 @@ public class SegmentsHandler {
                     routeAlt.remove(0); // remove first point of routeAlt
             }
 
-            if(routeAlt.size()==0)
+            if(routeAlt.size()==0 || (routeAlt.size()==1 && graphicsHandler.getMarkersHandler().getEndPoint()==null))
                 routeAlt = null;
 
             graphicsHandler.setRoute(route);
@@ -60,7 +64,7 @@ public class SegmentsHandler {
 
                 if(index1!=-1 && index2!=-1){ // if a segment has been found
 
-                    graphicsHandler.setRouteAlt(new ArrayList<LatLng>());
+                    graphicsHandler.setRouteAlt(new ArrayList<>());
 
                     // divide the polyline in 2
                     divideRoutes(index1,index2);
@@ -124,6 +128,10 @@ public class SegmentsHandler {
         graphicsHandler.setRoute(route1);
         graphicsHandler.setRouteAlt(null);
     }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // ---------------------------------------- DRAW UTILS ------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------
 
     public void drawSegments(boolean routeFinished) {
 

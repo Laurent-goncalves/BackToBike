@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -173,12 +174,16 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
                         Action.updateRoute(routeToSave,userId,getApplicationContext());
                         // Launch displayActivity with the updated route
                         launchDisplayActivity(DISPLAY_MY_ROUTES, String.valueOf(routeToSave.getId()));
+                        // Display message to user
+                        showSnackBar(this, getApplicationContext().getResources().getString(R.string.route_update_saved));
 
                     } else { // IF NEW ROUTE
                         // Add route to Firebase and database
                         int idRoute = Action.addNewRoute(routeToSave, userId, getApplicationContext());
                         // Launch displayActivity with this new route
                         launchDisplayActivity(DISPLAY_MY_ROUTES, String.valueOf(idRoute));
+                        // Display message to user
+                        showSnackBar(this, getApplicationContext().getResources().getString(R.string.new_route_saved));
                     }
 
                     dialog.dismiss();
@@ -221,6 +226,10 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    public static void showSnackBar(TraceActivity traceActivity, String text) {
+        Snackbar.make(traceActivity.findViewById(R.id.map), text, Snackbar.LENGTH_LONG).show();
     }
 
     // ---------------------------------------------------------------------------------------------------

@@ -14,8 +14,8 @@ public interface RoutesDao {
     @Query("SELECT * FROM Route WHERE id = :id")
     Cursor getRoute(long id);
 
-    @Query("SELECT * FROM Route WHERE valid =:valid")
-    Cursor getAllRoutes(Boolean valid);
+    @Query("SELECT * FROM Route WHERE valid = 1")
+    Cursor getAllRoutesValid();
 
     @Query("SELECT * FROM Route")
     Cursor getAllRoutes();

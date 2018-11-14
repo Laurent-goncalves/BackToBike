@@ -80,6 +80,9 @@
     <string name="error_current_location">Error to get current location</string>
     <string name="give_permission">Please give your permission</string>
     <string name="leave_authorization">Are you sure that you want to leave ?</string>
+    <string name="error_route_not_finished">Route is not finished. Please complete it before saving.</string>
+    <string name="new_route_saved">The new route has been saved!</string>
+    <string name="route_update_saved">Modifications have been saved!</string>
 
     <!-- ALARM -->
     <string name="alarm_notif_title">Next bike trip</string>

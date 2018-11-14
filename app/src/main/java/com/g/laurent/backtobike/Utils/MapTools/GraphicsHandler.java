@@ -6,13 +6,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.Configurations.ConfigureTraceActivity;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -247,7 +245,7 @@ public class GraphicsHandler {
 
     public void drawOnlySegments(){
 
-        segmentsHandler.drawSegments(isRouteFinished());
+        segmentsHandler.drawSegments(UtilsGoogleMaps.isRouteFinished(markersHandler, routeAlt));
 
         config.updateMileage(route, routeAlt);
         config.updateTimeEstimation(route, routeAlt);
@@ -257,8 +255,8 @@ public class GraphicsHandler {
 
         map.clear();
 
-        markersHandler.drawMarkers(isRouteFinished(), drawDragPoints);
-        segmentsHandler.drawSegments(isRouteFinished());
+        markersHandler.drawMarkers(UtilsGoogleMaps.isRouteFinished(markersHandler, routeAlt), drawDragPoints);
+        segmentsHandler.drawSegments(UtilsGoogleMaps.isRouteFinished(markersHandler, routeAlt));
 
         config.updateMileage(route, routeAlt);
         config.updateTimeEstimation(route, routeAlt);
@@ -284,24 +282,11 @@ public class GraphicsHandler {
         return routeAlt;
     }
 
-    public ConfigureTraceActivity getConfig() {
-        return config;
-    }
-
     public MarkersHandler getMarkersHandler() {
         return markersHandler;
     }
 
     public Context getContext() {
         return context;
-    }
-
-    public Boolean isRouteFinished(){
-
-        Boolean hasStartPoint = (markersHandler.getStartPoint()!=null);
-        Boolean hasEndPoint = (markersHandler.getEndPoint()!=null);
-        Boolean isRouteFinished = (routeAlt==null);
-
-        return hasStartPoint && hasEndPoint && isRouteFinished;
     }
 }

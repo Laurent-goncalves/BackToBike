@@ -99,11 +99,7 @@
             android:name=".Controllers.Activities.AuthActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".Controllers.Activities.BaseActivity"
@@ -123,7 +119,13 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".Controllers.Activities.TraceActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
     </application>
 

@@ -2,7 +2,6 @@ package com.g.laurent.backtobike.Utils.MapTools;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-
 import com.g.laurent.backtobike.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -24,8 +23,6 @@ public class MarkersHandler {
     private List<Marker> markers;
     private List<LatLng> route;
     private List<LatLng> routeAlt;
-    private int limitInf;
-    private int limitSup;
 
     public MarkersHandler(GraphicsHandler graphicsHandler, GoogleMap map) {
         this.graphicsHandler = graphicsHandler;
@@ -34,6 +31,10 @@ public class MarkersHandler {
         routeAlt = graphicsHandler.getRouteAlt();
         markers = new ArrayList<>();
     }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // ------------------------------------- ADDING MARKERS -----------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------
 
     public void addDragMarker(LatLng position, Boolean routeFinished, String tag){
 
@@ -73,19 +74,6 @@ public class MarkersHandler {
         }
     }
 
-    public void removeStartPoint(){
-
-        route = graphicsHandler.getRoute();
-
-        // change hasEndPoint state
-        startPoint = null;
-
-        // Remove first point of route
-        route.remove(0);
-
-        graphicsHandler.setRoute(route);
-    }
-
     public void addEndPoint(LatLng latLng){
 
         route = graphicsHandler.getRoute();
@@ -104,6 +92,23 @@ public class MarkersHandler {
         graphicsHandler.setRouteAlt(routeAlt);
     }
 
+    // ----------------------------------------------------------------------------------------------------------
+    // ------------------------------------- REMOVING MARKERS ---------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------
+
+    public void removeStartPoint(){
+
+        route = graphicsHandler.getRoute();
+
+        // change hasEndPoint state
+        startPoint = null;
+
+        // Remove first point of route
+        route.remove(0);
+
+        graphicsHandler.setRoute(route);
+    }
+
     public void removeEndPoint(){
 
         route = graphicsHandler.getRoute();
@@ -117,13 +122,17 @@ public class MarkersHandler {
             route.remove(route.size()-1);
         else {
             routeAlt.remove(routeAlt.size() - 1);
-            if(routeAlt.size()==0)
+            if(routeAlt.size()==0 || (routeAlt.size()==1 && endPoint==null))
                 routeAlt = null;
         }
 
         graphicsHandler.setRoute(route);
         graphicsHandler.setRouteAlt(routeAlt);
     }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // ---------------------------------------- DRAW UTILS ------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------
 
     public void drawMarkers(Boolean routeFinished, Boolean addDragMarkers){
 
@@ -202,6 +211,8 @@ public class MarkersHandler {
 
     public void drawDragMarkers(Boolean routeFinished){
 
+        int limitInf;
+        int limitSup;
         if(route.size()>=3){
 
             if(endPoint!=null)
@@ -214,7 +225,7 @@ public class MarkersHandler {
             else
                 limitInf = 0;
 
-            for(int i = limitInf; i <= limitSup ; i++){
+            for(int i = limitInf; i <= limitSup; i++){
                 addDragMarker(route.get(i), routeFinished, "ROUTE-" + i);
             }
         }
@@ -229,7 +240,7 @@ public class MarkersHandler {
                 else
                     limitSup = routeAlt.size()-1;
 
-                for(int i = limitInf; i <= limitSup ; i++){
+                for(int i = limitInf; i <= limitSup; i++){
                     addDragMarker(routeAlt.get(i), routeFinished, "ROUTEALT-" + i);
                 }
             }
@@ -248,10 +259,6 @@ public class MarkersHandler {
         return endPoint;
     }
 
-    public List<Marker> getMarkers() {
-        return markers;
-    }
-
     public void setStartPoint(LatLng startPoint) {
         this.startPoint = startPoint;
     }
@@ -260,44 +267,3 @@ public class MarkersHandler {
         this.endPoint = endPoint;
     }
 }
-
-
-        /*if(addMarker){
-
-
-
-            if(route.size()>=3){
-
-
-
-                if(endPoint!=null)
-                    limitSup = route.size()-1;
-                else
-                    limitSup = route.size();
-
-                if(startPoint!=null)
-                    limitInf = 1;
-                else
-                    limitInf = 0;
-
-                for(int i = limitInf; i<=limitSup ; i++){
-                    Marker marker = map.addMarker(new MarkerOptions())
-                }
-            }
-
-            if(routeAlt!=null){
-                if(routeAlt.size()>=3) {
-
-                    int limitSup;
-
-                    if(endPoint!=null)
-                        limitSup = routeAlt.size()-1;
-                    else
-                        limitSup = routeAlt.size();
-
-                    for(int i = 0; i<=limitSup ; i++){
-
-                    }
-                }
-            }
-        }*/

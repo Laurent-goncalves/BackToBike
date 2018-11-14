@@ -25,6 +25,9 @@ import java.util.TimeZone;
 
 public class UtilsGoogleMaps {
 
+    // ----------------------------------------------------------------------------------------------------------
+    // ----------------------------------- FIND NEAREST POINTS --------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------
 
     public static String getCityWithLatLng(Context context, LatLng latLng) throws IOException {
 
@@ -34,45 +37,6 @@ public class UtilsGoogleMaps {
             return addresses.get(0).getLocality();
         else
             return null;
-    }
-
-    public static int findIndexNearestPolyLinePoint(LatLng pointSelect, Polyline route){
-
-        int index=-1;
-
-        Location selectPoint = new Location("location_selected");
-        selectPoint.setLatitude(pointSelect.latitude);
-        selectPoint.setLongitude(pointSelect.longitude);
-
-        double distance = 9999999;
-
-        if(route!=null){
-            if(route.getPoints()!=null){
-                if(route.getPoints().size()>=2) {
-
-                    List<LatLng> listPoints = route.getPoints();
-
-                    for (int i = 0; i < listPoints.size(); i++) {
-
-                        Location testPoint = new Location("test_location");
-                        testPoint.setLatitude(listPoints.get(i).latitude);
-                        testPoint.setLongitude(listPoints.get(i).longitude);
-
-                        if (distance == 9999999) {
-                            distance = testPoint.distanceTo(selectPoint);
-                            index = i;
-                        }
-
-                        if (testPoint.distanceTo(selectPoint) < distance) {
-                            distance = testPoint.distanceTo(selectPoint);
-                            index = i;
-                        }
-                    }
-                }
-            }
-        }
-
-        return index;
     }
 
     public static int findIndexNearestPolyLinePoint(LatLng pointSelect, List<LatLng> points, Boolean hasStartPoint, Boolean hasEndPoint, GoogleMap map){
@@ -141,37 +105,7 @@ public class UtilsGoogleMaps {
 
         return selectPoint.distanceTo(infPoint) < selectPoint.distanceTo(supPoint);
     }
-
-    public static int extractRouteFromTag(String tag){
-
-        int answer = -1;
-
-        if(tag!=null){
-            if(tag.contains("ROUTE-"))
-                return 1;
-            else if (tag.contains("ROUTEALT-"))
-                return 2;
-        }
-
-        return answer;
-    }
-
-    public static int extractIndexFromTag(String tag){
-
-        int answer = -1;
-
-        if(tag!=null){
-
-            if(extractRouteFromTag(tag)==1){
-                return Integer.parseInt(tag.substring(6, tag.length()));
-            } else if(extractRouteFromTag(tag)==2){
-                return Integer.parseInt(tag.substring(9, tag.length()));
-            }
-        }
-
-        return answer;
-    }
-
+    
     public static Boolean isMarkerADragPoint(Marker marker){
 
         if(marker.getTag()!=null)
@@ -180,50 +114,13 @@ public class UtilsGoogleMaps {
             return false;
     }
 
-    public static int findIndexOnRoute(LatLng point, List<LatLng> route){
-        int index = -1;
+    public static Boolean isRouteFinished(MarkersHandler markersHandler, List<LatLng> routeAlt){
 
-        for(int i = 0; i < route.size(); i++){
-            if(arePositionsEquals(point,route.get(i)))
-                index = i;
-        }
+        Boolean hasStartPoint = (markersHandler.getStartPoint()!=null);
+        Boolean hasEndPoint = (markersHandler.getEndPoint()!=null);
+        Boolean isRouteFinished = (routeAlt==null);
 
-        return index;
-    }
-
-    public static Boolean arePositionsEquals(LatLng position1, LatLng position2){
-
-        Location locPosition1 = new Location("position1");
-        locPosition1.setLatitude(position1.latitude);
-        locPosition1.setLongitude(position1.longitude);
-
-        Location locPosition2 = new Location("position2");
-        locPosition2.setLatitude(position2.latitude);
-        locPosition2.setLongitude(position2.longitude);
-
-        System.out.println("eee distance = " + locPosition1.distanceTo(locPosition2) );
-
-        return locPosition1.distanceTo(locPosition2) <= 1;
-    }
-
-    public static int findIndexOnRouteAlt(LatLng point, List<LatLng> routeAlt){
-        int index = -1;
-
-        for(int i = 0; i < routeAlt.size(); i++){
-            if(arePositionsEquals(point,routeAlt.get(i)))
-                index = i;
-        }
-
-        return index;
-    }
-
-    public static void removeRouteMarker(List<Marker> markers){
-        for(Marker mark : markers){
-            if(mark.getTag()!=null) {
-                if (UtilsGoogleMaps.isMarkerADragPoint(mark))
-                    mark.remove();
-            }
-        }
+        return hasStartPoint && hasEndPoint && isRouteFinished;
     }
 
     public static Boolean isDistanceToFingerOK(LatLng refPoint, LatLng testPoint, GoogleMap map){
@@ -235,6 +132,10 @@ public class UtilsGoogleMaps {
 
         return Math.sqrt(Math.pow(screenRefPosition.x - screenTestPosition.x, 2) + Math.pow(screenRefPosition.y - screenTestPosition.y, 2)) < 40;
     }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // ------------------------------- CALCULATION TIME & MILEAGE -----------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------
 
     public static double getMileageRoute(List<LatLng> route){
 
@@ -310,6 +211,10 @@ public class UtilsGoogleMaps {
         }
     }
 
+    // ----------------------------------------------------------------------------------------------------------
+    // ------------------------------- TRANSFORMATION & EXTRACT -------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------
+
     public static List<RouteSegment> transformListPointsToListRouteSegments(List<LatLng> listPoints){
 
         List<RouteSegment> listRouteSegments = new ArrayList<>();
@@ -357,4 +262,33 @@ public class UtilsGoogleMaps {
         return listPoints;
     }
 
+    public static int extractRouteFromTag(String tag){
+
+        int answer = -1;
+
+        if(tag!=null){
+            if(tag.contains("ROUTE-"))
+                return 1;
+            else if (tag.contains("ROUTEALT-"))
+                return 2;
+        }
+
+        return answer;
+    }
+
+    public static int extractIndexFromTag(String tag){
+
+        int answer = -1;
+
+        if(tag!=null){
+
+            if(extractRouteFromTag(tag)==1){
+                return Integer.parseInt(tag.substring(6, tag.length()));
+            } else if(extractRouteFromTag(tag)==2){
+                return Integer.parseInt(tag.substring(9, tag.length()));
+            }
+        }
+
+        return answer;
+    }
 }

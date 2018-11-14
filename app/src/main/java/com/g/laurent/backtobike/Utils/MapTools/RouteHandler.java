@@ -120,9 +120,9 @@ public class RouteHandler {
         RoutesContentProvider routesContentProvider = new RoutesContentProvider();
         routesContentProvider.setUtils(context, userId);
 
-        final Cursor cursor = AppDatabase.getInstance(context, userId).routesDao().getAllRoutes(true);
+        final Cursor cursor = AppDatabase.getInstance(context, userId).routesDao().getAllRoutesValid();
 
-        List<Route> listRoutes = Route.getListRoutesFromCursor(cursor);
+        List<Route> listRoutes = Route.getListRoutesValidFromCursor(cursor);
 
         if(listRoutes!=null){
             if(listRoutes.size()>0){

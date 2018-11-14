@@ -402,7 +402,7 @@ public class UtilsApp {
         return Math.round(dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
-    private static Boolean needLeftArrow(int position, int sizeList){
+    public static Boolean needLeftArrow(int position, int sizeList){
 
         if(sizeList==0)
             return false;
@@ -411,28 +411,13 @@ public class UtilsApp {
         }
     }
 
-    private static Boolean needRightArrow(int position, int sizeList){
+    public static Boolean needRightArrow(int position, int sizeList){
 
         if(sizeList==0)
             return false;
         else {
             return position != sizeList-1;
         }
-    }
-
-    public static void configureArrows(int position, int sizeList, ImageView arrowLeft, ImageView arrowRight, DisplayActivity activity){
-
-        if(needLeftArrow(position,sizeList)) {
-            arrowLeft.setVisibility(View.VISIBLE);
-            arrowLeft.setOnClickListener(v -> activity.getPager().setCurrentItem(position-1));
-        } else
-            arrowLeft.setVisibility(View.INVISIBLE);
-
-        if(needRightArrow(position,sizeList)) {
-            arrowRight.setVisibility(View.VISIBLE);
-            arrowRight.setOnClickListener(v -> activity.getPager().setCurrentItem(position+1));
-        } else
-            arrowRight.setVisibility(View.INVISIBLE);
     }
 
     // -------------------------------------------------------------------------------------------------

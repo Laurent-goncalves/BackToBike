@@ -191,10 +191,10 @@ public class Action {
 
         route.setValid(false);
 
-        // Delete route in database
+        // Set route as status false in database
         RouteHandler.updateRoute(context, route, userId);
 
-        // Delete route in Firebase
+        // Set route as status false in Firebase
         if(UtilsApp.isInternetAvailable(context)) {
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
             firebaseUpdate.updateMyRoutes(userId, route, route.getListRouteSegment());
