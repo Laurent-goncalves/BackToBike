@@ -7,6 +7,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.Route;
@@ -27,6 +28,8 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.List;
+
+import static com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps.routeNotInDatabase;
 
 
 public class ConfigureMap implements OnMapReadyCallback {
@@ -128,37 +131,19 @@ public class ConfigureMap implements OnMapReadyCallback {
     public void configureButtonAddToMyRoutes(Context context, String userId, BikeEvent bikeEvent) {
 
         if(bikeEvent.getRoute()!=null) {
-            if (routeNotInDatabase(context, userId, bikeEvent.getRoute()) && !bikeEvent.getRoute().getValid()) {
+            if (!bikeEvent.getRoute().getValid()) {
                 buttonAddRoute.setVisibility(View.VISIBLE);
                 buttonAddRoute.setOnClickListener(v -> {
-                    bikeEvent.getRoute().setValid(true);
-                    RouteHandler.updateRoute(context,bikeEvent.getRoute(),userId);
-                    FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-                    firebaseUpdate.acceptRoute(userId, bikeEvent.getRoute(), bikeEvent);
-                    buttonAddRoute.setVisibility(View.INVISIBLE);
+                    if(UtilsApp.isInternetAvailable(context)) {
+                        bikeEvent.getRoute().setValid(true);
+                        RouteHandler.updateRoute(context, bikeEvent.getRoute(), userId);
+                        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+                        firebaseUpdate.acceptRoute(userId, bikeEvent.getRoute(), bikeEvent);
+                        buttonAddRoute.setVisibility(View.INVISIBLE);
+                        Toast.makeText(context, context.getResources().getString(R.string.route_added_to_my_routes), Toast.LENGTH_SHORT).show();
+                    }
                 });
             }
         }
-    }
-
-    private Boolean routeNotInDatabase(Context context, String userId, Route route){
-
-        Boolean answer = true;
-
-        List<Route> listRouteDatabase = RouteHandler.getAllRoutes(context, userId);
-
-        if(listRouteDatabase!=null){
-            if(listRouteDatabase.size()>0){
-                for(Route routeDB : listRouteDatabase){
-                    if(UtilsApp.areRoutesEquals(routeDB, route)) {
-                        answer = false;
-                        break;
-                    }
-                }
-                return answer;
-            } else
-                return true;
-        } else
-            return true;
     }
 }

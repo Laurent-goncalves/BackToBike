@@ -13,6 +13,7 @@ import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
 import com.g.laurent.backtobike.Models.RoutesContentProvider;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
+import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,13 +32,22 @@ public class BikeEventHandler {
 
     public static void insertNewBikeEvent(Context context, BikeEvent bikeEvent, String userId){
 
+        Route route = bikeEvent.getRoute();
+
         // Insert new route if invitation
         if(!userId.equals(bikeEvent.getOrganizerId())){
-            int idRoute = RouteHandler.insertNewRoute(context, bikeEvent.getRoute(), userId);
-            bikeEvent.setIdRoute(idRoute);
-            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-            firebaseUpdate.setIdRouteForInvitation(bikeEvent.getIdRoute(), bikeEvent.getId(), userId);
+            if(UtilsGoogleMaps.routeNotInDatabase(context, userId, bikeEvent.getRoute())){
+                route.setValid(false);
+                int idRoute = RouteHandler.insertNewRoute(context, route, userId);
+                bikeEvent.setIdRoute(idRoute);
+                route.setId(idRoute);
+                FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+                firebaseUpdate.setIdRouteForInvitation(bikeEvent.getIdRoute(), bikeEvent.getId(), userId);
+                firebaseUpdate.updateMyRoutes(userId, route, route.getListRouteSegment());
+            }
         }
+
+        bikeEvent.setRoute(route);
 
         // Insert bikeEvent in database
         BikeEventContentProvider bikeEventContentProvider = new BikeEventContentProvider();

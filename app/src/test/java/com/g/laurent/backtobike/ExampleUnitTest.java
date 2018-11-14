@@ -196,4 +196,14 @@ public class ExampleUnitTest {
         Assert.assertEquals(70031110, id2days);
         Assert.assertEquals(70031112, idDayEvent);
     }
+
+    @Test
+    public void test_getTimeInDays(){
+        String time = UtilsGoogleMaps.getTimeInDays(100000000);
+        Assert.assertEquals("2 days", time);
+        time = UtilsGoogleMaps.getTimeInDays(216000000);
+        Assert.assertEquals("3 days", time);
+    }
+
+
 }

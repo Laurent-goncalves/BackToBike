@@ -246,7 +246,7 @@ public class Action {
         // Cancel event and invitations in Firebase
         if(UtilsApp.isInternetAvailable(context)) {
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-            firebaseUpdate.cancelMyBikeEvent(userId, event.getListEventFriends(), event);
+            firebaseUpdate.cancelMyBikeEvent(context, userId, event.getListEventFriends(), event);
 
             // Send notification of cancellation to each guest
             if(event.getListEventFriends()!=null){
@@ -292,7 +292,7 @@ public class Action {
 
             // Accept invitation in Firebase
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-            firebaseUpdate.giveAnswerToInvitation(userId, invitation, ACCEPTED);
+            firebaseUpdate.giveAnswerToInvitation(context, userId, invitation, ACCEPTED);
 
             // Send notification to organizer
             NotificationUtils.configureAndSendNotification(context, invitation.getOrganizerId(), sharedPref.getString(LOGIN_SHARED, null),NotificationUtils.ACCEPT_INVITATION);
@@ -313,7 +313,7 @@ public class Action {
 
             // Reject invitation in Firebase
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-            firebaseUpdate.giveAnswerToInvitation(userId, invitation, REJECTED);
+            firebaseUpdate.giveAnswerToInvitation(context, userId, invitation, REJECTED);
 
             // Send notification to organizer
             NotificationUtils.configureAndSendNotification(context, invitation.getOrganizerId(), sharedPref.getString(LOGIN_SHARED, null),NotificationUtils.REJECT_INVITATION);
@@ -334,7 +334,7 @@ public class Action {
 
             // Reject invitation in Firebase
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-            firebaseUpdate.rejectEvent(userId, invitation);
+            firebaseUpdate.rejectEvent(context, userId, invitation);
 
             // Send notification to organizer
             NotificationUtils.configureAndSendNotification(context, invitation.getOrganizerId(), sharedPref.getString(LOGIN_SHARED, null),NotificationUtils.REJECT_EVENT);

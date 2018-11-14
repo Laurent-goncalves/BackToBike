@@ -194,6 +194,9 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         if(adapter!=null){
             adapter.notifyDataSetChanged();
 
+            // Configure other views (arrows, buttons, ... )
+            configureViews(position);
+
         } else {
             // Define page to display
             definePositionToDisplay();
@@ -405,8 +408,11 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
                             Action.showAlertDialogCancelBikeEvent(listEvents.get(position), userId, this);
                         else // If user is NOT the organizer
                             Action.showAlertDialogRejectEvent(listEvents.get(position),userId,this);
-                    } else // if event cancelled by organizer, delete it
+                    } else { // if event cancelled by organizer, delete it
                         Action.deleteBikeEvent(listEvents.get(position), userId, getApplicationContext());
+                        String message = getApplicationContext().getResources().getString(R.string.delete_event);
+                        updateListAfterDeletion(message);
+                    }
 
                     // cancel alarm bikeEvent
                     cancelAlarmEvent(listEvents.get(position));

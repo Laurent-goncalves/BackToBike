@@ -9,6 +9,7 @@ import android.util.Log;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
+import com.g.laurent.backtobike.Models.OnChildChecking;
 import com.g.laurent.backtobike.Models.OnCompletedSynchronization;
 import com.g.laurent.backtobike.Models.OnFriendDataGetListener;
 import com.g.laurent.backtobike.Models.OnLoginChecked;
@@ -40,6 +41,8 @@ public class FirebaseUpdate {
     private static final String MY_EVENTS = "my_events";
     private static final String MY_INVITATIONS = "my_invitations";
     private static final String MY_ROUTES = "my_routes";
+    private static final String EVENT_FRIEND = "event_friend";
+    private static final String INVIT_FRIEND = "invit_friend";
     private static final String GUESTS = "guests";
     private static final String ROUTE = "route";
     private static final String STATUS = "status";
@@ -165,7 +168,7 @@ public class FirebaseUpdate {
         }
     }
 
-    public void giveAnswerToInvitation(String userId, BikeEvent bikeEvent, String acceptance){
+    public void giveAnswerToInvitation(Context context, String userId, BikeEvent bikeEvent, String acceptance){
 
         // create idInvitation
         String idInvitation = UtilsApp.getIdEvent(bikeEvent);
@@ -178,7 +181,7 @@ public class FirebaseUpdate {
             moveInvitationToMyEvents(databaseReferenceInvitation, databaseReferenceEvent);
 
             // update datas from organizer and other eventFriends
-            updateAcceptanceEventFriend(userId, bikeEvent, bikeEvent.getOrganizerId(), true);
+            updateAcceptanceEventFriend(context, userId, bikeEvent, true);
 
         } else {
             // Delete invitation if user rejected
@@ -186,11 +189,11 @@ public class FirebaseUpdate {
             databaseReferenceUsers.child(userId).child(MY_EVENTS).child(idInvitation).removeValue();
 
             // update datas from organizer and other eventFriends
-            updateAcceptanceEventFriend(userId, bikeEvent, bikeEvent.getOrganizerId(), false);
+            updateAcceptanceEventFriend(context, userId, bikeEvent, false);
         }
     }
 
-    public void rejectEvent(String userId, BikeEvent bikeEvent){
+    public void rejectEvent(Context context, String userId, BikeEvent bikeEvent){
 
         // create idEvent
         String idEvent = UtilsApp.getIdEvent(bikeEvent);
@@ -199,7 +202,7 @@ public class FirebaseUpdate {
         databaseReferenceUsers.child(userId).child(MY_EVENTS).child(idEvent).child(STATUS).child(REJECTED);
 
         // update datas from organizer and other eventFriends
-        updateAcceptanceEventFriend(userId, bikeEvent, bikeEvent.getOrganizerId(), false);
+        updateAcceptanceEventFriend(context, userId, bikeEvent, false);
     }
 
     private void moveInvitationToMyEvents(DatabaseReference fromPath, final DatabaseReference toPath) {
@@ -217,7 +220,7 @@ public class FirebaseUpdate {
         });
     }
 
-    public void updateAcceptanceEventFriend(String guestId, BikeEvent bikeEvent, String idEventFriend, Boolean accepted){
+    public void updateAcceptanceEventFriend(Context context, String guestId, BikeEvent bikeEvent, Boolean accepted){
 
         String idInvitation = UtilsApp.getIdEvent(bikeEvent);
 
@@ -229,7 +232,7 @@ public class FirebaseUpdate {
 
         // change status acceptance for event of the organizer
         databaseReferenceUsers.child(bikeEvent.getOrganizerId()).child(MY_EVENTS).child(bikeEvent.getId()).child(GUESTS)
-                .child(idEventFriend).child(ACCEPTED).setValue(acceptance);
+                .child(guestId).child(ACCEPTED).setValue(acceptance);
 
         // change status acceptance for invitations of each eventFriend
         if(bikeEvent.getListEventFriends()!=null){
@@ -237,13 +240,24 @@ public class FirebaseUpdate {
                 for(EventFriends eventFriends : bikeEvent.getListEventFriends()){
                     if(!guestId.equals(eventFriends.getIdFriend()) && !bikeEvent.getOrganizerId().equals(eventFriends.getIdFriend())) {
 
-                        if(eventFriends.getAccepted().equals(ONGOING)){ // if still an invitation,...
-                            databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_INVITATIONS).child(idInvitation).child(GUESTS)
-                                    .child(idEventFriend).child(ACCEPTED).setValue(acceptance);
+                        FirebaseRecover firebaseRecover = new FirebaseRecover(context);
 
-                        } else if(eventFriends.getAccepted().equals(ACCEPTED)){ // if friend accepted,...
-                            databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_EVENTS).child(idInvitation).child(GUESTS)
-                                    .child(idEventFriend).child(ACCEPTED).setValue(acceptance);
+                        if(eventFriends.getAccepted().equals(ONGOING)){ // if still an invitation,...
+
+                            firebaseRecover.checkIfBikeEventExists(MY_INVITATIONS, eventFriends.getIdFriend(), null, idInvitation, hasChild -> {
+                                if(hasChild) {
+                                    databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_INVITATIONS).child(idInvitation).child(GUESTS)
+                                            .child(guestId).child(ACCEPTED).setValue(acceptance);
+                                }
+                            });
+
+                        } else { // if friend accepted or rejected,...
+                            firebaseRecover.checkIfBikeEventExists(MY_EVENTS, eventFriends.getIdFriend(), null, idInvitation, hasChild -> {
+                                if(hasChild) {
+                                    databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_EVENTS).child(idInvitation).child(GUESTS)
+                                            .child(guestId).child(ACCEPTED).setValue(acceptance);
+                                }
+                            });
                         }
                     }
                 }
@@ -262,7 +276,7 @@ public class FirebaseUpdate {
         databaseReferenceUsers.child(user_id).child(MY_EVENTS).child(idInvitation).child(ROUTE).removeValue();
     }
 
-    public void cancelMyBikeEvent(String user_id, List<EventFriends> listEventFriends, BikeEvent bikeEvent){
+    public void cancelMyBikeEvent(Context context, String user_id, List<EventFriends> listEventFriends, BikeEvent bikeEvent){
 
         // Delete BikeEvent from my_events
         databaseReferenceUsers.child(user_id).child(MY_EVENTS).child(String.valueOf(bikeEvent.getId())).child(STATUS).setValue(CANCELLED);
@@ -274,14 +288,24 @@ public class FirebaseUpdate {
             if(listEventFriends.size()>0){
                 for(EventFriends eventFriends : listEventFriends){
 
+                    FirebaseRecover firebaseRecover = new FirebaseRecover(context);
+
                     if(eventFriends.getAccepted().equals(ONGOING)) {
-                        databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_INVITATIONS)
-                                .child(idInvitation).child(STATUS).setValue(CANCELLED);
+                        firebaseRecover.checkIfBikeEventExists(MY_INVITATIONS, user_id, null, bikeEvent.getId(), hasChild -> {
+                            if(hasChild) {
+                                databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_INVITATIONS)
+                                        .child(idInvitation).child(STATUS).setValue(CANCELLED);
+                            }
+                        });
                     }
 
                     if(eventFriends.getAccepted().equals(ACCEPTED)) {
-                        databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_EVENTS)
-                                .child(idInvitation).child(STATUS).setValue(CANCELLED);
+                        firebaseRecover.checkIfBikeEventExists(MY_INVITATIONS, user_id, null, bikeEvent.getId(), hasChild -> {
+                            if(hasChild) {
+                                databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_EVENTS)
+                                        .child(idInvitation).child(STATUS).setValue(CANCELLED);
+                            }
+                        });
                     }
                 }
             }

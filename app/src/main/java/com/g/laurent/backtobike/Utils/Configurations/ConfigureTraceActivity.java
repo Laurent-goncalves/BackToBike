@@ -43,27 +43,31 @@ public class ConfigureTraceActivity {
     private TraceActivity traceActivity;
     private GraphicsHandler graphicsHandler;
     private Context context;
-    private View view;
-    private Route initialRoute;
 
     public ConfigureTraceActivity(View view, TraceActivity traceActivity, Route route, final GoogleMap map) {
 
-        this.view=view;
-        this.initialRoute = route;
         this.traceActivity=traceActivity;
         this.map = map;
         context = traceActivity.getApplicationContext();
 
+        // Assign views
         ButterKnife.bind(this, view);
 
+        // Get list of points
         List<LatLng> points = UtilsGoogleMaps.transformListRouteSegmentsToListPoints(route.getListRouteSegment());
 
+        // Configure graphicsHandler
         graphicsHandler = new GraphicsHandler(this,view, points, map, context);
         graphicsHandler.updateButtonsState("any");
 
+        // Configure map listeners
         configureMapListeners();
         traceActivity.getProgressBar().setVisibility(View.GONE);
     }
+
+    // ---------------------------------------------------------------------------------------------------
+    // -------------------------------------- CLICK LISTENERS --------------------------------------------
+    // ---------------------------------------------------------------------------------------------------
 
     private void configureMapListeners(){
 
@@ -141,6 +145,13 @@ public class ConfigureTraceActivity {
         });
     }
 
+    public void handleDrawMap(){
+        if(buttonDelete.isSelected() || buttonAddSegment.isSelected())
+            graphicsHandler.drawMap(true);
+        else
+            graphicsHandler.drawMap(false);
+    }
+
     @OnClick(R.id.button_add_segment)
     public void addSegment(){
         setButtonAsPressed(buttonAddSegment);
@@ -177,6 +188,10 @@ public class ConfigureTraceActivity {
             Toast.makeText(context, context.getResources().getString(R.string.error_route_not_finished), Toast.LENGTH_LONG).show();
     }
 
+    // ---------------------------------------------------------------------------------------------------
+    // ---------------------------- BUTTONS TO BUILD ROUTE -----------------------------------------------
+    // ---------------------------------------------------------------------------------------------------
+
     private void setButtonAsPressed(final ImageButton button){
 
         // set deleteMode value
@@ -192,24 +207,14 @@ public class ConfigureTraceActivity {
         handleDrawMap();
 
         // Button remain pressed
-        button.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    deleteMode = false;
-                    button.setOnTouchListener(null);
-                    graphicsHandler.setButtonPressed(null);
-                }
-                return true;
+        button.setOnTouchListener((v, event) -> {
+            if(event.getAction() == MotionEvent.ACTION_DOWN){
+                deleteMode = false;
+                button.setOnTouchListener(null);
+                graphicsHandler.setButtonPressed(null);
             }
+            return true;
         });
-    }
-
-    public void handleDrawMap(){
-        if(buttonDelete.isSelected() || buttonAddSegment.isSelected())
-            graphicsHandler.drawMap(true);
-        else
-            graphicsHandler.drawMap(false);
     }
 
     private void displayMessageToUser(ImageButton button){
@@ -225,7 +230,9 @@ public class ConfigureTraceActivity {
         }
     }
 
-    // ---------------------------- ESTIMATE MILEAGE AND TIME ---------------------------------------
+    // ---------------------------------------------------------------------------------------------------
+    // ---------------------------- ESTIMATE MILEAGE AND TIME --------------------------------------------
+    // ---------------------------------------------------------------------------------------------------
 
     public void updateMileage(List<LatLng> route, List<LatLng> routeAlt){
 
@@ -251,10 +258,4 @@ public class ConfigureTraceActivity {
 
         timeView.setText(timeEstimated);
     }
-
-    // --------------------------------------------------------------------------------------------------------
-    // ------------------------------------- GETTERS AND SETTERS ----------------------------------------------
-    // --------------------------------------------------------------------------------------------------------
-
-
 }

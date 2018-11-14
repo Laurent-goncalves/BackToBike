@@ -42,7 +42,7 @@ public class SegmentsHandler {
         if(routeAlt!=null){ // ----------------- if a segment has already been deleted
 
             // find nearest point on route and delete it
-            if(UtilsGoogleMaps.isNearestPointOnMainRoute(fingerPosition,route,routeAlt,map)){
+            if(UtilsGoogleMaps.isNearestPointOnMainRoute(fingerPosition,route,routeAlt)){
                 if(route.size()>=2)
                     route.remove(route.size()-1); // remove last point of main route
             } else {

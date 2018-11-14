@@ -7,10 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
-
 import com.g.laurent.backtobike.Controllers.Activities.MainActivity;
 import com.g.laurent.backtobike.Controllers.Activities.TraceActivity;
-import com.g.laurent.backtobike.Controllers.Fragments.MainFragment;
 import com.g.laurent.backtobike.Models.OnCurrentLocationFound;
 import com.g.laurent.backtobike.R;
 import com.google.android.gms.location.places.PlaceDetectionClient;
@@ -21,7 +19,6 @@ import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Task;
-
 
 public class GetCurrentLocation {
 

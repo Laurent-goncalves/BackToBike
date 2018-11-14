@@ -205,12 +205,12 @@ public class SynchronizeWithDatabase {
                             if(event.getStatus()!=null){
                                 switch (event.getStatus()) {
                                     case ACCEPTED:  // if user has accepted invitation
-                                        firebaseUpdate.giveAnswerToInvitation(userId, event, ACCEPTED);
+                                        firebaseUpdate.giveAnswerToInvitation(context, userId, event, ACCEPTED);
                                         NotificationUtils.configureAndSendNotification(context, event.getOrganizerId(),myLogin,
                                                 NotificationUtils.ACCEPT_INVITATION);
                                         break;
                                     case REJECTED:  // if user has rejected invitation
-                                        firebaseUpdate.giveAnswerToInvitation(userId, event, REJECTED);
+                                        firebaseUpdate.giveAnswerToInvitation(context, userId, event, REJECTED);
                                         NotificationUtils.configureAndSendNotification(context, event.getOrganizerId(), myLogin,
                                                 NotificationUtils.REJECT_INVITATION);
                                         break;
@@ -245,7 +245,7 @@ public class SynchronizeWithDatabase {
 
                             if(event.getOrganizerId().equals(userId)) { // if user is the organizer
                                 if(event.getStatus().equals(CANCELLED)) {
-                                    firebaseUpdate.cancelMyBikeEvent(userId, event.getListEventFriends(), event);
+                                    firebaseUpdate.cancelMyBikeEvent(context, userId, event.getListEventFriends(), event);
 
                                     // Send notifications to guests
                                     if(event.getListEventFriends()!=null){
@@ -259,7 +259,7 @@ public class SynchronizeWithDatabase {
                             } else { // if user is NOT the organizer
                                 if(event.getStatus().equals(REJECTED)) {
 
-                                    firebaseUpdate.rejectEvent(userId, event);
+                                    firebaseUpdate.rejectEvent(context, userId, event);
 
                                     // Send notifications to guests
                                     if(event.getListEventFriends()!=null){

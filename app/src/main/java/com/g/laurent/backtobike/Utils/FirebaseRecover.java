@@ -13,6 +13,7 @@ import com.g.laurent.backtobike.Models.Difference;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.OnBikeEventDataGetListener;
+import com.g.laurent.backtobike.Models.OnChildChecking;
 import com.g.laurent.backtobike.Models.OnCompletedSynchronization;
 import com.g.laurent.backtobike.Models.OnFriendDataGetListener;
 import com.g.laurent.backtobike.Models.OnLoginChecked;
@@ -42,6 +43,8 @@ public class FirebaseRecover {
     private static final String MY_FRIENDS = "my_friends";
     private static final String MY_EVENTS = "my_events";
     private static final String MY_INVITATIONS = "my_invitations";
+    private static final String EVENT_FRIEND = "event_friend";
+    private static final String INVIT_FRIEND = "invit_friend";
     private static final String MY_ROUTES = "my_routes";
     private static final String GUESTS = "guests";
     private static final String ROUTE = "route";
@@ -219,6 +222,49 @@ public class FirebaseRecover {
                 onBikeEventDataGetListener.onFailure(databaseError.toString());
             }
         });
+    }
+
+    public void checkIfBikeEventExists(String typeChild, String user_id, String idEvent, String child, OnChildChecking onChildChecking){
+
+        DatabaseReference databaseReference = null;
+
+        switch(typeChild){
+            case MY_EVENTS:
+                databaseReference = databaseReferenceUsers.child(user_id).child(MY_EVENTS);
+                break;
+            case MY_INVITATIONS:
+                databaseReference = databaseReferenceUsers.child(user_id).child(MY_INVITATIONS);
+                break;
+            case MY_FRIENDS:
+                databaseReference = databaseReferenceUsers.child(user_id).child(MY_FRIENDS);
+                break;
+            case EVENT_FRIEND:
+                databaseReference = databaseReferenceUsers.child(user_id).child(MY_EVENTS).child(idEvent).child(GUESTS);
+                break;
+            case INVIT_FRIEND:
+                databaseReference = databaseReferenceUsers.child(user_id).child(MY_INVITATIONS).child(idEvent).child(GUESTS);
+                break;
+        }
+
+        if(databaseReference!=null){
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.hasChild(child))
+                        onChildChecking.hasChild(true);
+                    else
+                        onChildChecking.hasChild(false);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    onChildChecking.hasChild(false);
+                }
+            });
+
+        } else {
+            onChildChecking.hasChild(false);
+        }
     }
 
     // ----------------------------------------------------------------------------------------------

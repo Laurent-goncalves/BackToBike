@@ -5,13 +5,15 @@ import android.graphics.Point;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+
+import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
+import com.g.laurent.backtobike.R;
+import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.Polyline;
-
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -78,7 +80,7 @@ public class UtilsGoogleMaps {
         return index;
     }
 
-    public static Boolean isNearestPointOnMainRoute(LatLng latLng, List<LatLng> route, List<LatLng> routeAlt, GoogleMap map) {
+    public static Boolean isNearestPointOnMainRoute(LatLng latLng, List<LatLng> route, List<LatLng> routeAlt) {
 
         Location selectPoint = new Location("select_location");
         selectPoint.setLatitude(latLng.latitude);
@@ -105,7 +107,11 @@ public class UtilsGoogleMaps {
 
         return selectPoint.distanceTo(infPoint) < selectPoint.distanceTo(supPoint);
     }
-    
+
+    // ----------------------------------------------------------------------------------------------------------
+    // --------------------------------------- BOOLEANS ---------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------
+
     public static Boolean isMarkerADragPoint(Marker marker){
 
         if(marker.getTag()!=null)
@@ -133,6 +139,27 @@ public class UtilsGoogleMaps {
         return Math.sqrt(Math.pow(screenRefPosition.x - screenTestPosition.x, 2) + Math.pow(screenRefPosition.y - screenTestPosition.y, 2)) < 40;
     }
 
+    public static Boolean routeNotInDatabase(Context context, String userId, Route route){
+
+        Boolean answer = true;
+
+        List<Route> listRouteDatabase = RouteHandler.getAllRoutes(context, userId);
+
+        if(listRouteDatabase!=null){
+            if(listRouteDatabase.size()>0){
+                for(Route routeDB : listRouteDatabase){
+                    if(UtilsApp.areRoutesEquals(routeDB, route)) {
+                        answer = false;
+                        break;
+                    }
+                }
+                return answer;
+            } else
+                return true;
+        } else
+            return true;
+    }
+
     // ----------------------------------------------------------------------------------------------------------
     // ------------------------------- CALCULATION TIME & MILEAGE -----------------------------------------------
     // ----------------------------------------------------------------------------------------------------------
@@ -144,7 +171,7 @@ public class UtilsGoogleMaps {
         if(route!=null) {
             if (route.size() >= 2) { // at least 2 points
 
-                for (int i = 0; i < route.size() - 2; i++) {
+                for (int i = 0; i < route.size(); i++) {
 
                     Location lastPoint = new Location("last_location");
                     lastPoint.setLatitude(route.get(i).latitude);
@@ -172,8 +199,13 @@ public class UtilsGoogleMaps {
             mileage = df.format(distance) + " m";
         } else {
             distance = distance / 1000;
-            df = new DecimalFormat("#.#");
-            mileage = df.format(distance) + " km";
+
+            if(distance>9999){
+                mileage = "+9999km";
+            } else {
+                df = new DecimalFormat("#.#");
+                mileage = df.format(distance) + " km";
+            }
         }
 
         return mileage;
@@ -190,8 +222,13 @@ public class UtilsGoogleMaps {
             mileage = df.format(distance) + " m";
         } else {
             distance = distance / 1000;
-            df = new DecimalFormat("#.#");
-            mileage = df.format(distance) + " km";
+
+            if(distance>9999){
+                mileage = "+9999km";
+            } else {
+                df = new DecimalFormat("#.#");
+                mileage = df.format(distance) + " km";
+            }
         }
 
         return mileage;
@@ -200,15 +237,25 @@ public class UtilsGoogleMaps {
     public static String getTimeRoute(double mileage){
         Date date = new Date((long) mileage * 225); // by taking an average speed of 16km/h for a bike ---- date gives a time in milliseconds
 
-        if((long) mileage * 225 < 3600000) { // if the estimated time is below 1 hour, set the time in minutes, else in hour
+        if((long) mileage * 225 < 3600000) { // if the estimated time is below 1 hour, set the time in minutes
             DecimalFormat df = new DecimalFormat("#");
-
             return df.format(mileage * 225 / 60000) + " min";
-        } else {
-            DateFormat formatter = new SimpleDateFormat("h:mm", Locale.FRANCE);
+
+        } else if((long) mileage * 225 < 24 * 3600000) { // if the estimated time is below 24 hours, set the time in hours
+            DateFormat formatter = new SimpleDateFormat("hh:mm", Locale.FRANCE);
             formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
             return formatter.format(date);
+
+        } else if((long) mileage * 225 < 7 * 24 * 3600000) {
+            return getTimeInDays((long) mileage * 225);
+        } else {
+            return "+7days";
         }
+    }
+
+    public static String getTimeInDays(long time){
+        int daysLong = (int) Math.ceil((double) time / (24 * 3600000));
+        return String.valueOf(daysLong) + " days";
     }
 
     // ----------------------------------------------------------------------------------------------------------

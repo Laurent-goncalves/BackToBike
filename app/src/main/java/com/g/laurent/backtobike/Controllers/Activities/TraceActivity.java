@@ -3,7 +3,6 @@ package com.g.laurent.backtobike.Controllers.Activities;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -34,7 +33,6 @@ import java.util.List;
 
 public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
 
-    private static final String SHAREDPREFERENCES = "MAPSPREFERRENCES";
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
     private GoogleMap mMap;
     private Route route;
@@ -68,6 +66,7 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
         if(extras!=null || savedInstanceState!=null){
             int idRoute;
 
+            // Get idRoute if exists
             if(extras!=null)
                 idRoute = extras.getInt(BUNDLE_ROUTE_ID);
             else
@@ -103,13 +102,18 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
     }
 
     private void scaleMap(GoogleMap googleMap){
+
+        // Create bounds for camera zooming
         LatLngBounds.Builder bounds = new LatLngBounds.Builder();
 
+        // Recover list of points to show
         List<LatLng> listPoints = UtilsGoogleMaps.transformListRouteSegmentsToListPoints(route.getListRouteSegment());
 
+        // Define bounds to include all points
         for(LatLng point : listPoints)
             bounds.include(point);
 
+        // Zoom on specified area
         googleMap.setOnMapLoadedCallback(() -> {
             googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 50));
             configureTraceActivity();

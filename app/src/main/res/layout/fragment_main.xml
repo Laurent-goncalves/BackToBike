@@ -226,7 +226,7 @@
             android:id="@+id/image_panel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/panel_draw"/>
+            android:src="@drawable/panel_drawable"/>
 
         <TextView
             android:id="@+id/textview_differences"
