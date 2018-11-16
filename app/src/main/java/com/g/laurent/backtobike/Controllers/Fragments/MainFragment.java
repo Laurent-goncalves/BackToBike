@@ -221,13 +221,15 @@ public class MainFragment extends Fragment {
 
         EventAdapter eventAdapter = new EventAdapter(context, listBikeEvent, userId, callbackMainActivity);
 
-        callbackMainActivity.getMainActivity().runOnUiThread(() -> {
-            // set adapter to recyclerView
-            bikeEventView.setAdapter(eventAdapter);
+        if(callbackMainActivity.getMainActivity()!=null){
+            callbackMainActivity.getMainActivity().runOnUiThread(() -> {
+                // set adapter to recyclerView
+                bikeEventView.setAdapter(eventAdapter);
 
-            // Set layout manager to position the items
-            bikeEventView.setLayoutManager(layoutManager);
-        });
+                // Set layout manager to position the items
+                bikeEventView.setLayoutManager(layoutManager);
+            });
+        }
     }
 
     private void setTitleWeather(LatLng currentLocation){
@@ -272,7 +274,8 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onFailure(String error) {
-                callbackMainActivity.getMainActivity().runOnUiThread(() -> Toast.makeText(context, error, Toast.LENGTH_LONG).show());
+                if(callbackMainActivity.getMainActivity()!=null)
+                    callbackMainActivity.getMainActivity().runOnUiThread(() -> Toast.makeText(context, error, Toast.LENGTH_LONG).show());
             }
         });
 
@@ -285,13 +288,15 @@ public class MainFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
 
         WeatherAdapter adapter = new WeatherAdapter(listWeatherForecast, context);
+        
+        if(callbackMainActivity.getMainActivity()!=null) {
+            callbackMainActivity.getMainActivity().runOnUiThread(() -> {
+                // set adapter to recyclerView
+                weatherView.setAdapter(adapter);
 
-        callbackMainActivity.getMainActivity().runOnUiThread(() -> {
-            // set adapter to recyclerView
-            weatherView.setAdapter(adapter);
-
-            // Set layout manager to position the items
-            weatherView.setLayoutManager(layoutManager);
-        });
+                // Set layout manager to position the items
+                weatherView.setLayoutManager(layoutManager);
+            });
+        }
     }
 }
