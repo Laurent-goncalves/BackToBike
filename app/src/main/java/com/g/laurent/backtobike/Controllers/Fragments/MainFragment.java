@@ -96,6 +96,9 @@ public class MainFragment extends Fragment {
         if(getArguments()!=null){
             currentLocation = new LatLng(getArguments().getDouble(BUNDLE_LATITUDE),getArguments().getDouble(BUNDLE_LONGITUDE));
         }
+        if(context==null)
+            context= getActivity().getApplicationContext();
+
         setLoginInCenterArea();
         configureMainFragment();
 
@@ -246,10 +249,13 @@ public class MainFragment extends Fragment {
     }
 
     private void setLoginInCenterArea(){
-        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
-        String login = sharedPref.getString(LOGIN_SHARED, null);
-        String loginToShow = context.getResources().getString(R.string.hi) + " " + login + "!";
-        hiLogin.setText(loginToShow);
+
+        if(context!=null) {
+            SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
+            String login = sharedPref.getString(LOGIN_SHARED, null);
+            String loginToShow = context.getResources().getString(R.string.hi) + " " + login + "!";
+            hiLogin.setText(loginToShow);
+        }
     }
 
     private void configureMainFragment(){

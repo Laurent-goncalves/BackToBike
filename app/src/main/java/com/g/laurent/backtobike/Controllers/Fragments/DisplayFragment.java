@@ -54,6 +54,9 @@ public class DisplayFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_display, container, false);
         mapView = view.findViewById(R.id.map_layout).findViewById(R.id.map);
 
+        if(context==null)
+            context= getActivity().getApplicationContext();
+
         if(getArguments()!=null){
             position = getArguments().getInt(BUNDLE_POSITION);
             String typeDisplay = getArguments().getString(BUNDLE_TYPE_DISPLAY);

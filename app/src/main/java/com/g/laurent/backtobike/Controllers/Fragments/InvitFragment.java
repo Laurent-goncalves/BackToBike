@@ -56,6 +56,10 @@ public class InvitFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_event, container, false);
         ButterKnife.bind(this, view);
+
+        if(context==null)
+            context= getActivity().getApplicationContext();
+
         config = new ConfigureInvitFragment(view,this, mCallbackEventActivity);
         config.configureViews(mCallbackEventActivity.getInvitation());
         return view;

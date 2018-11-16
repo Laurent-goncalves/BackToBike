@@ -57,6 +57,8 @@ public class FriendFragment extends Fragment {
         defineMode(view);
 
         // Get login of user
+        if(context==null)
+            context= getActivity().getApplicationContext();
         SharedPreferences sharedPref = context.getSharedPreferences(
                 getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
         myLogin = sharedPref.getString(LOGIN_SHARED,null);
