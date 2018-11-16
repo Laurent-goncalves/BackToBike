@@ -25,10 +25,11 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.g.laurent.backtobike.Controllers.Activities.BaseActivity.LOGIN_SHARED;
+
 
 public class FriendFragment extends Fragment {
 
-    private static final String LOGIN_SHARED ="login_shared";
     private final static String BUNDLE_SELECT_MODE = "bundle_select_mode";
     @BindView(R.id.gridview_check_box) GridView gridView;
     @BindView(R.id.my_id_view) TextView myIdView;

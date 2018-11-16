@@ -2,19 +2,14 @@ package com.g.laurent.backtobike.Utils;
 
 import android.content.Context;
 import android.database.Cursor;
-
-import com.g.laurent.backtobike.Models.AppDatabase;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.BikeEventContentProvider;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.EventFriendsContentProvider;
-import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
-import com.g.laurent.backtobike.Models.RoutesContentProvider;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
-
 import java.util.ArrayList;
 import java.util.List;
 

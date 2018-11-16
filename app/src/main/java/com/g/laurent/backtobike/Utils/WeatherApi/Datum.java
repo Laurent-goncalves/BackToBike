@@ -391,5 +391,4 @@ public class Datum {
     public void setCloudsLow(Integer cloudsLow) {
         this.cloudsLow = cloudsLow;
     }
-
 }

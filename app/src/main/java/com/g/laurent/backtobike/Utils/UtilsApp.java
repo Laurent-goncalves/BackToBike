@@ -1,7 +1,6 @@
 package com.g.laurent.backtobike.Utils;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,32 +11,31 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
-import android.view.View;
-import android.widget.ImageView;
-
 import com.g.laurent.backtobike.Controllers.Activities.DisplayActivity;
-import com.g.laurent.backtobike.Controllers.Fragments.DisplayFragment;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
-import com.g.laurent.backtobike.Models.WeatherIcons;
 import com.google.firebase.auth.FirebaseUser;
-
+import org.apache.commons.codec.binary.Base64;
 import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
+import static com.g.laurent.backtobike.Controllers.Activities.BaseActivity.DISPLAY_MY_EVENTS;
+import static com.g.laurent.backtobike.Controllers.Activities.BaseActivity.DISPLAY_MY_INVITS;
+import static com.g.laurent.backtobike.Controllers.Activities.BaseActivity.DISPLAY_MY_ROUTES;
+
 
 public class UtilsApp {
 
     private static final String ONGOING = "ongoing";
     private static final String ACCEPTED = "accepted";
     private static final String REJECTED = "rejected";
+
+    public static boolean areCharactersAllowed(String login){
+        return Base64.isArrayByteBase64(login.getBytes());
+    }
 
     // ------------------------------------------------------------------------------------------------------------
     // ------------------------------------  ADD COUNT ON ICON APP  -----------------------------------------------
@@ -70,26 +68,6 @@ public class UtilsApp {
             }
         }
         return null;
-    }
-
-    public static String getIdEventFriend(String idFriend, BikeEvent bikeEvent){
-
-        String idEventFriend = null;
-
-        if(bikeEvent!=null){
-            if(bikeEvent.getListEventFriends()!=null){
-                if(bikeEvent.getListEventFriends().size()>0){
-                    for(EventFriends eventFriends : bikeEvent.getListEventFriends()){
-                        if(eventFriends.getIdFriend().equals(idFriend)) {
-                            idEventFriend = eventFriends.getIdEvent();
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        return idEventFriend;
     }
 
     // ------------------------------------------------------------------------------------------------------------
@@ -197,24 +175,6 @@ public class UtilsApp {
             if(listRoutes.size()>0){
                 for(int i = 0; i < listRoutes.size(); i++){
                     if(UtilsApp.areRoutesEquals(listRoutes.get(i), route)){
-                        index = i;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return index;
-    }
-
-    public static int findFriendIndexInListEventFriends(Friend friend, List<EventFriends> listEventFriends){
-
-        int index = -1;
-
-        if(listEventFriends!=null){
-            if(listEventFriends.size()>0){
-                for(int i = 0; i < listEventFriends.size(); i++){
-                    if(listEventFriends.get(i).getIdFriend().equals(friend.getId())){
                         index = i;
                         break;
                     }
@@ -417,6 +377,19 @@ public class UtilsApp {
             return false;
         else {
             return position != sizeList-1;
+        }
+    }
+
+    public static int definePositionToDisplay(String typeDisplay, String idSelected, DisplayActivity displayActivity){
+        switch (typeDisplay) {
+            case DISPLAY_MY_ROUTES:
+                return UtilsApp.findIndexRouteInList(idSelected, displayActivity.getListRoutes());
+            case DISPLAY_MY_EVENTS:
+                return UtilsApp.findIndexEventInList(idSelected, displayActivity.getListEvents());
+            case DISPLAY_MY_INVITS:
+                return UtilsApp.findIndexEventInList(idSelected, displayActivity.getListInvitations());
+            default:
+                return -1;
         }
     }
 

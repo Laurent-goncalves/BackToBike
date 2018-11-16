@@ -2,7 +2,6 @@ package com.g.laurent.backtobike.Controllers.Activities;
 
 import android.Manifest;
 import android.app.AlarmManager;
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -14,16 +13,12 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-
 import com.firebase.ui.auth.AuthUI;
 import com.g.laurent.backtobike.Models.AlarmEvent;
 import com.g.laurent.backtobike.Models.BikeEvent;
@@ -34,37 +29,36 @@ import com.g.laurent.backtobike.Models.NetworkSchedulerService;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.ToolbarManager;
 import com.g.laurent.backtobike.R;
-import com.g.laurent.backtobike.Utils.Action;
 import com.g.laurent.backtobike.Utils.FirebaseRecover;
 import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.g.laurent.backtobike.Utils.UtilsTime;
 import com.google.android.gms.tasks.OnSuccessListener;
-
 import java.util.Calendar;
 import java.util.List;
+
 
 public class BaseActivity extends AppCompatActivity implements CallbackBaseActivity{
 
     protected final static String PREVIOUS_PAGE = "previous_page";
     protected final static String MENU_MAIN_PAGE = "menu_main_page";
     protected final static String MENU_MY_FRIENDS = "menu_my_friends";
-    protected final static String DISPLAY_MY_ROUTES ="display_my_routes";
-    protected final static String DISPLAY_MY_EVENTS ="display_my_events";
-    protected final static String DISPLAY_MY_INVITS ="display_my_invits";
     protected final static String MENU_TRACE_ROUTE = "menu_trace_route";
     protected final static String MENU_CREATE_EVENT = "menu_create_event";
     protected static final String BUNDLE_TYPE_DISPLAY ="bundle_type_display";
     protected static final String BUNDLE_ROUTE_ID ="bundle_route_id";
     protected static final String BUNDLE_ID ="bundle_id";
-    protected static final String LOGIN_SHARED ="login_shared";
-    protected static final int SIGN_OUT_TASK = 10;
-    protected final static String MENU_SIGN_OUT= "menu_sign_out";
     protected static final String EXTRA_EVENT_ID ="extra_event_id";
     protected static final String EXTRA_USER_ID ="extra_user_id";
     protected static final String EXTRA_TYPE_ALARM ="extra_type_alarm";
     protected static final String ALARM_2_DAYS ="alarm_2_days";
     protected static final String ALARM_4_HOURS ="alarm_4_hours";
     protected static final String CURRENT_PAGE ="current_page";
+    protected static final String CANCEL ="CANCEL";
+    protected static final String DELETE ="DELETE";
+    public static final String LOGIN_SHARED ="login_shared";
+    public final static String DISPLAY_MY_ROUTES ="display_my_routes";
+    public final static String DISPLAY_MY_EVENTS ="display_my_events";
+    public final static String DISPLAY_MY_INVITS ="display_my_invits";
     protected static final int PERMISSIONS_REQUEST_ACCESS_WIFI_STATE = 44;
     protected SharedPreferences sharedPref;
     protected CallbackBaseActivity callbackBaseActivity;
@@ -78,10 +72,13 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
+
+        // Assign variables
         toolbarManager = new ToolbarManager();
         sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
         callbackBaseActivity = this;
 
+        // Check or ask permission to access wifi state
         if (getApplicationContext() != null) {
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_WIFI_STATE)
@@ -93,8 +90,41 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
             }
         }
 
+        // Schedule Job for listening connectivity state changes
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             scheduleJob();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        String previousPage = sharedPref.getString(PREVIOUS_PAGE, null);
+
+        switch(previousPage){
+
+            case MENU_MAIN_PAGE:
+                launchMainActivity();
+                break;
+            case MENU_CREATE_EVENT:
+                launchEventActivity();
+                break;
+            case MENU_MY_FRIENDS:
+                launchFriendsActivity();
+                break;
+            case MENU_TRACE_ROUTE:
+                launchTraceActivity(null);
+                break;
+            case DISPLAY_MY_EVENTS:
+                launchDisplayActivity(DISPLAY_MY_EVENTS, null);
+                break;
+            case DISPLAY_MY_INVITS:
+                launchDisplayActivity(DISPLAY_MY_INVITS, null);
+                break;
+            case DISPLAY_MY_ROUTES:
+                launchDisplayActivity(DISPLAY_MY_ROUTES, null);
+                break;
         }
     }
 
@@ -111,6 +141,10 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
             sharedPref.edit().putString(CURRENT_PAGE, newPage).apply();
         }
     }
+
+    // -------------------------------------------------------------------------------------------------------
+    // -------------------------- JOBSCHEDULER FOR CONNECTIVITY STATE ----------------------------------------
+    // -------------------------------------------------------------------------------------------------------
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void scheduleJob() {
@@ -144,6 +178,34 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
         startService(startServiceIntent);
     }
 
+    // -------------------------------------------------------------------------------------------------------
+    // ------------------------------------- VIEWS AND TOOLBAR -----------------------------------------------
+    // -------------------------------------------------------------------------------------------------------
+
+    public void defineCountersAndConfigureToolbar(String typeDisplay){
+
+        if(UtilsApp.isInternetAvailable(getApplicationContext())){
+
+            FirebaseRecover firebaseRecover = new FirebaseRecover(getApplicationContext());
+            firebaseRecover.recoverDatasForCounters(userId, getApplicationContext(), new CallbackCounters() {
+                @Override
+                public void onCompleted(List<Difference> differenceList, List<String> differenceStringList,int counterFriend, int counterEvents, int counterInvits) {
+                    toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, counterFriend, counterEvents, counterInvits);
+                    int count = counterFriend + counterEvents + counterInvits;
+                    UtilsApp.setBadge(getApplicationContext(), count);
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, 0, 0,0);
+                    UtilsApp.setBadge(getApplicationContext(), 0);
+                }
+            });
+        } else {
+            toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, 0, 0,0);
+        }
+    }
+
     protected void assignToolbarViews(){
 
         toolbar = findViewById(R.id.activity_main_toolbar);
@@ -152,6 +214,10 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
         drawerLayout = findViewById(R.id.activity_drawer_layout);
         navigationView = findViewById(R.id.activity_nav_view);
     }
+
+    // -------------------------------------------------------------------------------------------------------
+    // ----------------------------------- LAUNCH ACTIVITIES -------------------------------------------------
+    // -------------------------------------------------------------------------------------------------------
 
     public void launchAuthActivity(){
         Intent intent = new Intent(this,AuthActivity.class);
@@ -193,30 +259,9 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
         finish();
     }
 
-    public void defineCountersAndConfigureToolbar(String typeDisplay){
-
-        if(UtilsApp.isInternetAvailable(getApplicationContext())){
-
-            FirebaseRecover firebaseRecover = new FirebaseRecover(getApplicationContext());
-            firebaseRecover.recoverDatasForCounters(userId, getApplicationContext(), new CallbackCounters() {
-                @Override
-                public void onCompleted(List<Difference> differenceList, List<String> differenceStringList,int counterFriend, int counterEvents, int counterInvits) {
-                    toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, counterFriend, counterEvents, counterInvits);
-                    int count = counterFriend + counterEvents + counterInvits;
-                    UtilsApp.setBadge(getApplicationContext(), count);
-                }
-
-                @Override
-                public void onFailure(String error) {
-                    toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, 0, 0,0);
-                    UtilsApp.setBadge(getApplicationContext(), 0);
-                }
-            });
-        } else {
-            toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, 0, 0,0);
-        }
-
-    }
+    // -------------------------------------------------------------------------------------------------------
+    // -------------------------------------- ALARM MANAGER --------------------------------------------------
+    // -------------------------------------------------------------------------------------------------------
 
     public void configureAlarmManager(BikeEvent event) {
 
@@ -274,62 +319,25 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
         }
     }
 
-    public static void showSnackBar(BaseActivity baseActivity, String text) {
-        //Snackbar.make(baseActivity.findViewById(R.id.fragment_position), text, Snackbar.LENGTH_LONG).show();
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-
-        String previousPage = sharedPref.getString(PREVIOUS_PAGE, null);
-
-        switch(previousPage){
-
-            case MENU_MAIN_PAGE:
-                launchMainActivity();
-                break;
-            case MENU_CREATE_EVENT:
-                launchEventActivity();
-                break;
-            case MENU_MY_FRIENDS:
-                launchFriendsActivity();
-                break;
-            case MENU_TRACE_ROUTE:
-                launchTraceActivity(null);
-                break;
-            case DISPLAY_MY_EVENTS:
-                launchDisplayActivity(DISPLAY_MY_EVENTS, null);
-                break;
-            case DISPLAY_MY_INVITS:
-                launchDisplayActivity(DISPLAY_MY_INVITS, null);
-                break;
-            case DISPLAY_MY_ROUTES:
-                launchDisplayActivity(DISPLAY_MY_ROUTES, null);
-                break;
-        }
-    }
+    // -------------------------------------------------------------------------------------------------------
+    // ------------------------------------ SIGN OUT FIREBASE ------------------------------------------------
+    // -------------------------------------------------------------------------------------------------------
 
     public void signOutUserFromFirebase(Context context) {
         AuthUI.getInstance()
                 .signOut(context)
-                .addOnSuccessListener(this, updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
+                .addOnSuccessListener(this, updateUIAfterRESTRequestsCompleted());
 
         launchAuthActivity();
     }
 
-    protected OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin) {
-        return aVoid -> {
-            switch (origin) {
-                case SIGN_OUT_TASK:
-                    finish();
-                    break;
-                default:
-                    break;
-            }
-        };
+    protected OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted() {
+        return aVoid -> finish();
     }
+
+    // ---------------------------------------------------------------------------------------------------
+    // --------------------------------------GETTERS AND SETTERS -----------------------------------------
+    // ---------------------------------------------------------------------------------------------------
 
     public BaseActivity getBaseActivity(){
         return this;

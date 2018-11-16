@@ -17,6 +17,7 @@
 
     <!-- MAINACTIVITY -->
     <string name="login_creation">Creation of login</string>
+    <string name="hi">Hi</string>
     <string name="error_login">Please give a login</string>
     <string name="login_already_on_firebase">The login provided is already taken. Please give another login.</string>
     <string name="friend_request_reception">You have received a friend request from </string>
@@ -32,6 +33,7 @@
     <string name="invitations_cancelled">invitations have been cancelled.</string>
     <string name="no_new_information">No new information since your last visit…</string>
     <string name="error_synchronization">Error. Impossible to finish synchronization.</string>
+    <string name="error_forbidden_characters">Login cannot be saved. Please do not use forbidden characters (\'.\', \'#\', \'$\', \'[\', or \']\').</string>
 
     <!-- INVITACTIVITY -->
     <string name="date">Date:</string>
@@ -65,9 +67,11 @@
     <string name="question_friend_request_1">Do you want </string>
     <string name="question_friend_request_2">to be your friend ?</string>
     <string name="suppr_button">SUPPR.</string>
+    <string name="friend_already_in_list">Friend already in your list</string>
     <string name="friend_added_later">Friend will be added when internet connexion will be available.</string>
     <string name="error_login_format">Error in login provided. Please check login.</string>
     <string name="friend_deleted_later">Friend will be deleted when internet connexion will be available.</string>
+    <string name="error_access_data">Error to access data.</string>
 
     <!-- TRACEACTIVITY -->
     <string name="add_segment_message">Please click on the map to create a new segment</string>
@@ -126,6 +130,7 @@
     <string name="accept">ACCEPT</string>
     <string name="change">CHANGE</string>
     <string name="delete">DELETE</string>
+    <string name="error_data_restoration">Error during data restoration. Please restart app.</string>
     <string name="add_to_my_routes">Add to my routes</string>
     <string name="delete_route">The route has been deleted</string>
     <string name="accept_invitation">The invitation has been accepted</string>

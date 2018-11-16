@@ -165,19 +165,5 @@ public class RouteHandler {
 
         return RouteSegment.getRouteSegmentFromCursor(cursor);
     }
-
-    private static List<RouteSegment> buildListRouteSegments(int idRoute, List<LatLng> listPoints) {
-
-        List<RouteSegment> listRouteSegments = new ArrayList<>();
-
-        if(listPoints.size()>2){ // if at least 1 segment
-            for(int i = 0; i < listPoints.size(); i++){
-                RouteSegment routeSegment = new RouteSegment(0, i, listPoints.get(i).latitude, listPoints.get(i).longitude, idRoute);
-                listRouteSegments.add(routeSegment);
-            }
-        }
-
-        return listRouteSegments;
-    }
 }
 

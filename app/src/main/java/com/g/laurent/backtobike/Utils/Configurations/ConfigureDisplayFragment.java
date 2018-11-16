@@ -40,7 +40,6 @@ public class ConfigureDisplayFragment {
     private Context context;
     private String typeDisplay;
     private String userId;
-    private GuestsAdapter adapter;
     private FirebaseUser user;
 
     public ConfigureDisplayFragment(Context context, View view, String typeDisplay, Route route) {
@@ -165,7 +164,7 @@ public class ConfigureDisplayFragment {
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
 
-        adapter = new GuestsAdapter(context, userId, bikeEvent.getOrganizerId(), listEventFriendsToShow);
+        GuestsAdapter adapter = new GuestsAdapter(context, userId, bikeEvent.getOrganizerId(), listEventFriendsToShow);
         friendsView.setAdapter(adapter);
 
         // Set layout manager to position the items

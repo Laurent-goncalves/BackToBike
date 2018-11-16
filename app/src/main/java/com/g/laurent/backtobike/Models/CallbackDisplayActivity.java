@@ -16,6 +16,4 @@ public interface CallbackDisplayActivity {
     ViewPager getPager();
 
     PageAdapter getAdapter();
-
-    void launchTraceActivity(Route route);
 }

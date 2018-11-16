@@ -6,7 +6,6 @@ import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class BikeEvent {
     private transient List<EventFriends> listEventFriends;
     private transient Route route;
 
-    public BikeEvent(String id, String organizerId, String date, String time, int idRoute, String comments, String status) {
+    public BikeEvent(@NonNull String id, String organizerId, String date, String time, int idRoute, String comments, String status) {
         this.id = id;
         this.organizerId = organizerId;
         this.date = date;
@@ -37,7 +36,7 @@ public class BikeEvent {
     }
 
     @Ignore
-    public BikeEvent(String id, String organizerId, String date, String time, int idRoute, String comments, String status, List<EventFriends> listEventFriends) {
+    public BikeEvent(@NonNull String id, String organizerId, String date, String time, int idRoute, String comments, String status, List<EventFriends> listEventFriends) {
         this.id = id;
         this.organizerId = organizerId;
         this.date = date;

@@ -1,19 +1,17 @@
 package com.g.laurent.backtobike.Controllers.Fragments;
 
 
-import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -22,14 +20,10 @@ import android.widget.Toast;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackMainActivity;
 import com.g.laurent.backtobike.Models.CallbackWeather;
-import com.g.laurent.backtobike.Models.EventFriends;
-import com.g.laurent.backtobike.Models.Route;
-import com.g.laurent.backtobike.Models.RouteSegment;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.BikeEventHandler;
-import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
-import com.g.laurent.backtobike.Utils.NotificationUtils;
+import com.g.laurent.backtobike.Utils.UtilsAnim;
 import com.g.laurent.backtobike.Utils.UtilsTime;
 import com.g.laurent.backtobike.Utils.WeatherApi.GetForecast;
 import com.g.laurent.backtobike.Utils.WeatherApi.WeatherForecast;
@@ -38,21 +32,16 @@ import com.g.laurent.backtobike.Views.EventViewHolder;
 import com.g.laurent.backtobike.Views.WeatherAdapter;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.iid.FirebaseInstanceId;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 
+import static com.g.laurent.backtobike.Controllers.Activities.BaseActivity.DISPLAY_MY_EVENTS;
+import static com.g.laurent.backtobike.Controllers.Activities.BaseActivity.DISPLAY_MY_INVITS;
+import static com.g.laurent.backtobike.Controllers.Activities.BaseActivity.DISPLAY_MY_ROUTES;
+import static com.g.laurent.backtobike.Controllers.Activities.BaseActivity.LOGIN_SHARED;
 import static com.g.laurent.backtobike.Utils.UtilsTime.getSeasonNumber;
 
 
@@ -61,7 +50,8 @@ public class MainFragment extends Fragment {
     @BindView(R.id.weather_recyclerview) RecyclerView weatherView;
     @BindView(R.id.bikeevents_recyclerview) RecyclerView bikeEventView;
     @BindView(R.id.image_season) ImageView seasonImage;
-    @BindView(R.id.title_center) ImageView centralTitle;
+    @BindView(R.id.center_area) LinearLayout centralArea;
+    @BindView(R.id.hi_login) TextView hiLogin;
     @BindView(R.id.panel) RelativeLayout panel;
     @BindView(R.id.middle_layout) RelativeLayout middleLayout;
     @BindView(R.id.image_panel) ImageView imagePanel;
@@ -73,10 +63,6 @@ public class MainFragment extends Fragment {
     @BindView(R.id.title_weather) TextView titleWeather;
     @BindView(R.id.layout_buttons_left) LinearLayout buttonsLeft;
     @BindView(R.id.layout_buttons_right) LinearLayout buttonsRight;
-    private final static String MENU_MAIN_PAGE = "menu_main_page";
-    private static final String DISPLAY_MY_ROUTES ="display_my_routes";
-    private static final String DISPLAY_MY_EVENTS ="display_my_events";
-    private static final String DISPLAY_MY_INVITS ="display_my_invits";
     private static final String BUNDLE_COUNTER_EVENTS = "bundle_counter_events";
     private static final String BUNDLE_COUNTER_INVITS = "bundle_counter_invits";
     private static final String BUNDLE_COUNTER_FRIENDS = "bundle_counter_friends";
@@ -107,60 +93,74 @@ public class MainFragment extends Fragment {
         imagePanel.setOnClickListener(onClickPanelListener);
         differencesPanel.setMovementMethod(new ScrollingMovementMethod());
 
-        centralTitle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                /*FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-
-                BikeEvent invitation = new BikeEvent("id2_28_11_2018_14:00", "id2", "28/11/2018", "14:00", 0, "Comments : take good shoes", "ongoing");
-                Route route = new Route(0,"Trip to Paris",false);
-                route.setListRouteSegment(getListRouteSegments());
-                invitation.setRoute(route);
-                invitation.setListEventFriends(getListEventFriends());
-
-                DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference()
-                        .child("users").child(userId).child("my_invitations").child("id2_28_11_2018_14:00");
-
-                firebaseUpdate.setInvitation(databaseReference, invitation);
-                firebaseUpdate.setRoute(databaseReference.child("route"), route);
-                firebaseUpdate.setRouteSegment(databaseReference.child("route"), getListRouteSegments());*/
-            }
-        });
-
         if(getArguments()!=null){
             currentLocation = new LatLng(getArguments().getDouble(BUNDLE_LATITUDE),getArguments().getDouble(BUNDLE_LONGITUDE));
         }
-
+        setLoginInCenterArea();
         configureMainFragment();
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                int heightLayout = bikeEventLayout.getHeight();
-                int heightPanel = panel.getHeight();
+        new Handler().postDelayed(() -> {
+            int heightLayout = bikeEventLayout.getHeight();
+            int heightPanel = panel.getHeight();
 
-                RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                lp.setMargins(0, heightLayout - 9 * heightPanel / 10, 0, 0);
-                lp.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-                panel.setLayoutParams(lp);
-            }
+            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            lp.setMargins(0, heightLayout - 9 * heightPanel / 10, 0, 0);
+            lp.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+            panel.setLayoutParams(lp);
         }, 500);
 
         return view;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.context=context;
+        if(context instanceof CallbackMainActivity){
+            callbackMainActivity = (CallbackMainActivity) context;
+        }
+    }
+
+
+    // ------------------------------------------------------------------------------------------------------------
+    // -------------------------------------- ON CLICK LISTENERS --------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------
+
     View.OnClickListener onClickPanelListener = new View.OnClickListener() {
         public void onClick(View v) {
             if(panelExpanded) {
-                slideUp(panel);
+                UtilsAnim.slideUp(panel, centralArea, buttonsLeft, buttonsRight);
                 panelExpanded=false;
             } else {
-                slideDown(panel);
+                UtilsAnim.slideDown(panel, panelExpanded, middleLayout, centralArea, buttonsLeft, buttonsRight);
                 panelExpanded = true;
             }
         }
     };
+
+    @OnClick(R.id.button_invitations)
+    public void clickOnInvitationButton(){
+        callbackMainActivity.launchDisplayActivity(DISPLAY_MY_INVITS, null);
+    }
+
+    @OnClick(R.id.button_new_friends)
+    public void clickOnFriendsButton(){
+        callbackMainActivity.launchFriendsActivity();
+    }
+
+    @OnClick(R.id.button_events)
+    public void clickOnEventsButton(){
+        callbackMainActivity.launchDisplayActivity(DISPLAY_MY_EVENTS, null);
+    }
+
+    @OnClick(R.id.button_my_routes)
+    public void clickOnSignOutButton(){
+        callbackMainActivity.launchDisplayActivity(DISPLAY_MY_ROUTES,null);
+    }
+
+    // ------------------------------------------------------------------------------------------------------------
+    // --------------------------------------- CONFIGURE VIEWS ----------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------
 
     private void configureCountersAndPanel(){
 
@@ -200,69 +200,6 @@ public class MainFragment extends Fragment {
             } else
                 differencesPanel.setText(differences);
         }
-    }
-
-    // slide the view from its current position to below itself
-    public void slideUp(View view){
-
-        AlphaAnimation anim = new AlphaAnimation(0f, 1.0f);
-        anim.setDuration(1000);
-
-        centralTitle.setVisibility(View.VISIBLE);
-        centralTitle.startAnimation(anim);
-        buttonsLeft.setVisibility(View.VISIBLE);
-        buttonsLeft.startAnimation(anim);
-        buttonsRight.setVisibility(View.VISIBLE);
-        buttonsRight.startAnimation(anim);
-
-        ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY", 0);
-        animation.setDuration(1000);
-        animation.start();
-    }
-
-    // slide the view from below itself to the current position
-    public void slideDown(View view){
-
-        AlphaAnimation anim = new AlphaAnimation(1.0f, 0f);
-        anim.setDuration(1000);
-
-        centralTitle.startAnimation(anim);
-        centralTitle.setVisibility(View.INVISIBLE);
-        buttonsLeft.startAnimation(anim);
-        buttonsLeft.setVisibility(View.INVISIBLE);
-        buttonsRight.startAnimation(anim);
-        buttonsRight.setVisibility(View.INVISIBLE);
-
-        float height;
-
-        if(9*view.getHeight()/10 > middleLayout.getHeight())
-            height = middleLayout.getHeight();
-        else
-            height = 9*view.getHeight()/10;
-
-        ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY",   !panelExpanded ? (height) : 0);
-        animation.setDuration(1000);
-        animation.start();
-    }
-
-    @OnClick(R.id.button_invitations)
-    public void clickOnInvitationButton(){
-        callbackMainActivity.launchDisplayActivity(DISPLAY_MY_INVITS, null);
-    }
-
-    @OnClick(R.id.button_new_friends)
-    public void clickOnFriendsButton(){
-        callbackMainActivity.launchFriendsActivity();
-    }
-
-    @OnClick(R.id.button_events)
-    public void clickOnEventsButton(){
-        callbackMainActivity.launchDisplayActivity(DISPLAY_MY_EVENTS, null);
-    }
-
-    @OnClick(R.id.button_my_routes)
-    public void clickOnSignOutButton(){
-        callbackMainActivity.launchDisplayActivity(DISPLAY_MY_ROUTES,null);
     }
 
     private void configureEventsRecyclerView(){
@@ -306,6 +243,13 @@ public class MainFragment extends Fragment {
         }
     }
 
+    private void setLoginInCenterArea(){
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
+        String login = sharedPref.getString(LOGIN_SHARED, null);
+        String loginToShow = context.getResources().getString(R.string.hi) + " " + login + "!";
+        hiLogin.setText(loginToShow);
+    }
+
     private void configureMainFragment(){
 
         setTitleWeather(currentLocation);
@@ -342,45 +286,4 @@ public class MainFragment extends Fragment {
             weatherView.setLayoutManager(layoutManager);
         });
     }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        this.context=context;
-
-        if(context instanceof CallbackMainActivity){
-            callbackMainActivity = (CallbackMainActivity) context;
-        }
-    }
-
-
-    private List<RouteSegment> getListRouteSegments(){
-
-        List<RouteSegment> listRouteSegments = new ArrayList<>();
-        RouteSegment ROUTE_SEG1_DEMO = new RouteSegment(0,1,48.819446, 2.344624,999);
-        RouteSegment ROUTE_SEG2_DEMO = new RouteSegment(0,2,48.885412, 2.336589,999);
-        RouteSegment ROUTE_SEG3_DEMO = new RouteSegment(0,3,48.874563, 2.312778,999);
-        RouteSegment ROUTE_SEG4_DEMO = new RouteSegment(0,4,48.858933, 2.321511,999);
-
-        listRouteSegments.add(ROUTE_SEG1_DEMO);
-        listRouteSegments.add(ROUTE_SEG2_DEMO);
-        listRouteSegments.add(ROUTE_SEG3_DEMO);
-        listRouteSegments.add(ROUTE_SEG4_DEMO);
-
-        return listRouteSegments;
-    }
-
-    private List<EventFriends> getListEventFriends(){
-
-        List<EventFriends> listEventFriends = new ArrayList<>();
-        EventFriends EVENT_FRIENDS_DEMO_1 = new EventFriends(0,"id1_01_01_2000_14:00","id2","id2","ongoing");
-        EventFriends EVENT_FRIENDS_DEMO_2 = new EventFriends(0,"id1_01_01_2000_14:00","id3","id3","ongoing");
-
-        listEventFriends.add(EVENT_FRIENDS_DEMO_1);
-        listEventFriends.add(EVENT_FRIENDS_DEMO_2);
-
-        return listEventFriends;
-    }
-
 }

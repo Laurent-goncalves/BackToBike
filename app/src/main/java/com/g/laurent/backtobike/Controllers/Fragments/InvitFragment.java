@@ -7,26 +7,19 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.TableLayout;
 import android.widget.TextView;
 import com.g.laurent.backtobike.Models.CallbackEventActivity;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.Configurations.ConfigureInvitFragment;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class InvitFragment extends Fragment {
 
     @BindView(R.id.date_view) TextView dateView;

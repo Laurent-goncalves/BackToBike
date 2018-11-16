@@ -101,15 +101,32 @@
             </LinearLayout>
 
             <!-- CENTRAL TITLE -->
-            <ImageView
-                android:id="@+id/title_center"
+            <LinearLayout
+                android:id="@+id/center_area"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:scaleType="centerCrop"
                 android:layout_centerInParent="true"
-                android:gravity="center_vertical"
-                android:layout_margin="10dp"
-                android:src="@drawable/white_title"/>
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerCrop"
+                    android:gravity="center_vertical"
+                    android:layout_margin="10dp"
+                    android:src="@drawable/white_title"/>
+
+                <TextView
+                    android:id="@+id/hi_login"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:textSize="14sp"/>
+
+            </LinearLayout>
+
 
             <!-- ICONS RIGHT -->
             <LinearLayout

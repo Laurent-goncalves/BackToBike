@@ -31,10 +31,10 @@ public class GuestViewHolder extends RecyclerView.ViewHolder{
         iconOrganizer.setVisibility(View.GONE);
 
         // set login
-        if(eventFriend.getLogin().length()<=15)
+        if(eventFriend.getLogin().length()<=13)
             nameView.setText(eventFriend.getLogin());
         else {
-            String name = eventFriend.getLogin().substring(0,15) + "...";
+            String name = eventFriend.getLogin().substring(0,13) + "...";
             nameView.setText(name);
         }
 

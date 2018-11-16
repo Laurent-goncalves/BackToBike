@@ -1,15 +1,11 @@
 package com.g.laurent.backtobike.Utils;
 
-import android.arch.persistence.room.Delete;
 import android.content.Context;
 import android.database.Cursor;
-import android.util.EventLog;
-
 import com.g.laurent.backtobike.Models.EventFriendsContentProvider;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.FriendContentProvider;
 import java.util.List;
-
 
 public class FriendsHandler {
 

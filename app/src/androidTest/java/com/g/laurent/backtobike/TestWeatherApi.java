@@ -49,7 +49,6 @@ public class TestWeatherApi {
         Assert.assertEquals(15, res);
     }
 
-
     @Test
     public void test_day_week() {
 

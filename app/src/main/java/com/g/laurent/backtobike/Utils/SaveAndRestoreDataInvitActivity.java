@@ -1,12 +1,9 @@
 package com.g.laurent.backtobike.Utils;
 
 import android.os.Bundle;
-
 import com.g.laurent.backtobike.Controllers.Activities.EventActivity;
 import com.g.laurent.backtobike.Models.Invitation;
-
 import java.util.ArrayList;
-
 
 public class SaveAndRestoreDataInvitActivity {
 
@@ -16,22 +13,8 @@ public class SaveAndRestoreDataInvitActivity {
     private final static String BUNDLE_TIME = "bundle_time";
     private final static String BUNDLE_COMMENTS = "bundle_comments";
 
-    // ---------------------------------- CREATE BUNDLE
-
-    public static Bundle createBundleInvitation(Invitation invitation){
-
-        Bundle bundle = new Bundle();
-
-        bundle.putString(BUNDLE_DATE, invitation.getDate());
-        bundle.putString(BUNDLE_TIME, invitation.getTime());
-        bundle.putInt(BUNDLE_ID_ROUTE, invitation.getIdRoute());
-        bundle.putStringArrayList(BUNDLE_LIST_FRIENDS_ID, invitation.getListIdFriends());
-        bundle.putString(BUNDLE_COMMENTS, invitation.getComments());
-
-        return bundle;
-    }
-
     // ----------------------------------- SAVE DATA
+
     public static void saveData(Bundle bundle, EventActivity eventActivity){
         if(bundle!=null && eventActivity !=null) {
 

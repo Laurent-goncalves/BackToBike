@@ -19,7 +19,7 @@ public class SynchronizeWithFirebase {
 
     private static final String SHAREDPREFERENCES_INIT = "database_init_sharedpreferences";
 
-    public static void buildDatabaseWithDatasFromFirebase(String userId, SharedPreferences sharedPref, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) throws InterruptedException {
+    public static void buildDatabaseWithDatasFromFirebase(String userId, SharedPreferences sharedPref, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) {
 
         // Recover friends from user on Firebase
         FirebaseRecover firebaseRecover = new FirebaseRecover(context);
@@ -120,7 +120,7 @@ public class SynchronizeWithFirebase {
         });
     }
 
-    public static void synchronizeInvitations(String userId, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) throws InterruptedException {
+    public static void synchronizeInvitations(String userId, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) {
 
         // Recover invitations on database
         List<BikeEvent> listBikeEventApp = BikeEventHandler.getAllInvitations(context, userId);
@@ -156,7 +156,7 @@ public class SynchronizeWithFirebase {
         });
     }
 
-    public static void synchronizeMyEvents(String userId, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) throws InterruptedException {
+    public static void synchronizeMyEvents(String userId, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) {
 
         // Recover events on database
         List<BikeEvent> listBikeEventApp = BikeEventHandler.getAllFutureBikeEvents(context, userId);
@@ -190,7 +190,7 @@ public class SynchronizeWithFirebase {
         });
     }
 
-    public static void synchronizeMyRoutes(String userId, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) throws InterruptedException {
+    public static void synchronizeMyRoutes(String userId, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) {
 
         // Recover routes on database
         List<Route> listRoutesApp = RouteHandler.getAllRoutesForSynchronization(context, userId);
@@ -216,66 +216,6 @@ public class SynchronizeWithFirebase {
             @Override
             public void onFailure(String error) {
                 callbackSynchronizeEnd.onFailure(error);
-            }
-        });
-    }
-
-    public static void synchronizeOneEvent(String userId, String idEvent, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) throws InterruptedException {
-
-        // Recover events on database
-        List<BikeEvent> listBikeEventApp = BikeEventHandler.getAllFutureBikeEvents(context, userId);
-
-        // Recover events from user on Firebase
-        FirebaseRecover firebaseRecover = new FirebaseRecover(context);
-
-        firebaseRecover.recoverSingleBikeEventsUser(userId, idEvent, new OnBikeEventDataGetListener() {
-            @Override
-            public void onSuccess(BikeEvent bikeEvent) {
-
-                if(UtilsApp.findIndexEventInList(bikeEvent.getId(), listBikeEventApp) != -1) // if event in database
-                    BikeEventHandler.updateBikeEvent(context, bikeEvent, userId); // update event
-
-                if(callbackSynchronizeEnd!=null)
-                    callbackSynchronizeEnd.onCompleted();
-            }
-
-            @Override
-            public void onSuccess(List<BikeEvent> listBikeEvent) {}
-
-            @Override
-            public void onFailure(String error) {
-                if(callbackSynchronizeEnd!=null)
-                    callbackSynchronizeEnd.onFailure(error);
-            }
-        });
-    }
-
-    public static void synchronizeOneInvitation(String userId, String idInvit, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) throws InterruptedException {
-
-        // Recover list invitation on database
-        List<BikeEvent> listInvitation = BikeEventHandler.getAllInvitations(context, userId);
-
-        // Recover invitation from user on Firebase
-        FirebaseRecover firebaseRecover = new FirebaseRecover(context);
-
-        firebaseRecover.recoverSingleInvitationUser(userId, idInvit, new OnBikeEventDataGetListener() {
-            @Override
-            public void onSuccess(BikeEvent bikeEvent) {
-
-                if(UtilsApp.findIndexEventInList(bikeEvent.getId(), listInvitation) != -1) // if invitation in database
-                    BikeEventHandler.updateBikeEvent(context, bikeEvent, userId); // update invitation
-
-                if(callbackSynchronizeEnd!=null)
-                    callbackSynchronizeEnd.onCompleted();
-            }
-
-            @Override
-            public void onSuccess(List<BikeEvent> listBikeEvent) {}
-
-            @Override
-            public void onFailure(String error) {
-                if(callbackSynchronizeEnd!=null)
-                    callbackSynchronizeEnd.onFailure(error);
             }
         });
     }

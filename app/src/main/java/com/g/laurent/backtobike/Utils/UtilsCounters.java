@@ -1,48 +1,23 @@
 package com.g.laurent.backtobike.Utils;
 
 import android.content.Context;
-
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.Difference;
-import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
-import com.g.laurent.backtobike.Models.Route;
-import com.g.laurent.backtobike.Models.RouteSegment;
 import com.g.laurent.backtobike.R;
 import com.google.firebase.database.DataSnapshot;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class UtilsCounters {
 
     private static final String NAME = "name";
-    private static final String MY_FRIENDS = "my_friends";
-    private static final String MY_EVENTS = "my_events";
-    private static final String MY_INVITATIONS = "my_invitations";
-    private static final String MY_ROUTES = "my_routes";
-    private static final String GUESTS = "guests";
-    private static final String ROUTE = "route";
     private static final String STATUS = "status";
     private static final String ONGOING = "ongoing";
-    private static final String VALID = "valid";
     private static final String HAS_ACCEPTED = "has_accepted";
     private static final String CANCELLED = "cancelled";
     private static final String ACCEPTED = "accepted";
     private static final String REJECTED = "rejected";
-    private static final String PHOTO_URL = "photoUrl";
-    private static final String LOGIN = "login";
-    private static final String ID_ROUTE = "id_route";
-    private static final String ID_EVENT = "id_event";
-    private static final String ID_FRIEND = "id_friend";
-    private static final String ID_ORGANIZER = "id_organizer";
-    private static final String ID = "id";
-    private static final String DATE = "date";
-    private static final String TIME = "time";
-    private static final String COMMENTS = "comments";
-    private static final String LAT = "lat";
-    private static final String LNG = "lng";
-    private static final String POINTS = "points";
 
 
     public static List<String> getListDifferencesForFriendRequests(Context context, DataSnapshot datas, List<Friend> oldListFriends){
@@ -105,7 +80,7 @@ public class UtilsCounters {
 
         if(datas.getChildrenCount()>0) {
             for (DataSnapshot data : datas.getChildren())
-                newListBikeEvent.add(FirebaseRecover.buildBikeEvent(data));
+                newListBikeEvent.add(UtilsFirebase.buildBikeEvent(data));
         }
 
         List<Difference> listDiff = new ArrayList<>();
@@ -201,23 +176,6 @@ public class UtilsCounters {
         return listDiff;
     }
 
-    public static List<Difference> getListDifferencesFromBikeEvent(String idEvent, List<Difference> listDifferences){
-
-        List<Difference> listDiff = new ArrayList<>();
-
-        if(listDifferences!=null){
-            if(listDifferences.size()>0){
-                for(Difference diff : listDifferences){
-                    if(diff.getIdEvent().equals(idEvent)){
-                        listDiff.add(diff);
-                    }
-                }
-            }
-        }
-
-        return listDiff;
-    }
-
     public static List<String> getListDifferencesForInvitations(Context context, DataSnapshot datas, List<BikeEvent> oldListInvitations){
 
         List<String> listDifferences = new ArrayList<>();
@@ -269,71 +227,6 @@ public class UtilsCounters {
         }
 
         return listDifferences;
-    }
-
-    private static Route buildListRoute(DataSnapshot dataSnapshot){
-
-        List<RouteSegment> listRouteSegments = new ArrayList<>();
-
-        for(DataSnapshot datas : dataSnapshot.child(POINTS).getChildren()){
-
-            int idRoute = 0;
-            if(datas.child(ID_ROUTE).getValue()!=null)
-                idRoute=Integer.parseInt(datas.child(ID_ROUTE).getValue().toString());
-
-            listRouteSegments.add(new RouteSegment(Integer.parseInt(datas.child(ID).getValue().toString()),
-                    Integer.parseInt(datas.getKey()),
-                    (Double) datas.child(LAT).getValue(),
-                    (Double) datas.child(LNG).getValue(),
-                    idRoute));
-        }
-
-        int idRoute = 0;
-
-        if(!dataSnapshot.getKey().equals(ROUTE))
-            idRoute = Integer.parseInt(dataSnapshot.getKey());
-
-        return new Route(idRoute,(String) dataSnapshot.child(NAME).getValue(),
-                (Boolean) dataSnapshot.child(VALID).getValue(),listRouteSegments);
-    }
-
-    private static BikeEvent buildBikeEvent(DataSnapshot datas){
-
-        String idRoute;
-        if(datas.child(ID_ROUTE).getValue()!=null)
-            idRoute = datas.child(ID_ROUTE).getValue().toString();
-        else
-            idRoute = "0";
-
-        BikeEvent bikeEvent = new BikeEvent(datas.getKey(),(String) datas.child(ID_ORGANIZER).getValue(),
-                (String) datas.child(DATE).getValue(),
-                (String) datas.child(TIME).getValue(),
-                Integer.parseInt(idRoute),
-                (String) datas.child(COMMENTS).getValue(),
-                (String) datas.child(STATUS).getValue(),
-                buildListEventFriends(datas.child(GUESTS), datas.getKey()));
-
-        if(datas.hasChild(ROUTE)){
-            Route route = buildListRoute(datas.child(ROUTE));
-            bikeEvent.setRoute(route);
-        }
-
-        return bikeEvent;
-    }
-
-    private static List<EventFriends> buildListEventFriends(DataSnapshot guests, String idEvent) {
-
-        List<EventFriends> listEventFriends = new ArrayList<>();
-
-        for(DataSnapshot datas : guests.getChildren()){
-            listEventFriends.add(new EventFriends(0,
-                    idEvent, (String) datas.child(ID_FRIEND).getValue(),
-                    (String) datas.child(LOGIN).getValue(),
-                    (String) datas.child(ACCEPTED).getValue()
-            ));
-        }
-
-        return listEventFriends;
     }
 
     public static String transformListDifferencesToString(List<Difference> listDifferences, List<String> listStringDifferences){

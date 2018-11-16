@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.widget.Toast;
-
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
@@ -16,8 +15,6 @@ import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 import com.google.firebase.auth.FirebaseAuth;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,12 +43,7 @@ public class SynchronizeWithDatabase {
 
             @Override
             public void onSuccess(List<Friend> listFriend) {
-                try {
-                    synchonizeFriendFirebase(context, user, listFriend, listFriendsDB,onCompletedSynchronization);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    Toast.makeText(context, context.getResources().getString(R.string.error_synchronization),Toast.LENGTH_LONG).show();
-                }
+                synchonizeFriendFirebase(context, user, listFriend, listFriendsDB,onCompletedSynchronization);
             }
 
             @Override
@@ -61,7 +53,7 @@ public class SynchronizeWithDatabase {
         });
     }
 
-    private static void synchonizeFriendFirebase(Context context, Friend user, List<Friend> listFriendsFB, List<Friend> listFriendsDB, OnCompletedSynchronization onCompletedSynchronization) throws InterruptedException {
+    private static void synchonizeFriendFirebase(Context context, Friend user, List<Friend> listFriendsFB, List<Friend> listFriendsDB, OnCompletedSynchronization onCompletedSynchronization) {
 
         FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
 
@@ -139,7 +131,7 @@ public class SynchronizeWithDatabase {
     // ------------------------------------- SYNCHRONIZE ROUTES ---------------------------------------------
     // ------------------------------------------------------------------------------------------------------
 
-    public static void synchronizeRoutes(Context context, String userId, OnCompletedSynchronization onCompletedSynchronization) throws InterruptedException {
+    public static void synchronizeRoutes(Context context, String userId, OnCompletedSynchronization onCompletedSynchronization) {
 
         List<Route> listRouteDB = RouteHandler.getAllRoutesForSynchronization(context,userId);
 
@@ -160,7 +152,7 @@ public class SynchronizeWithDatabase {
     // ------------------------------------- SYNCHRONIZE EVENTS ---------------------------------------------
     // ------------------------------------------------------------------------------------------------------
 
-    public static void synchronizeEvents(Context context, String userId, OnCompletedSynchronization onCompletedSynchronization) throws InterruptedException {
+    public static void synchronizeEvents(Context context, String userId, OnCompletedSynchronization onCompletedSynchronization) {
 
         List<BikeEvent> listEventDB = BikeEventHandler.getAllBikeEvents(context,userId);
 
@@ -171,11 +163,7 @@ public class SynchronizeWithDatabase {
 
             @Override
             public void onSuccess(List<BikeEvent> listBikeEventFB) {
-                try {
-                    synchonizeEventsFirebase(context, userId, listBikeEventFB, listEventDB,onCompletedSynchronization);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                synchonizeEventsFirebase(context, userId, listBikeEventFB, listEventDB,onCompletedSynchronization);
             }
 
             @Override
@@ -185,7 +173,7 @@ public class SynchronizeWithDatabase {
         });
     }
 
-    private static void synchonizeEventsFirebase(Context context, String userId, List<BikeEvent> listBikeEventFB, List<BikeEvent> listBikeEventDB, OnCompletedSynchronization onCompletedSynchronization) throws InterruptedException {
+    private static void synchonizeEventsFirebase(Context context, String userId, List<BikeEvent> listBikeEventFB, List<BikeEvent> listBikeEventDB, OnCompletedSynchronization onCompletedSynchronization) {
 
         SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
         String myLogin = sharedPref.getString(LOGIN_SHARED, null);
@@ -285,7 +273,7 @@ public class SynchronizeWithDatabase {
     // ------------------------------------- SYNCHRONIZE INVITS ---------------------------------------------
     // ------------------------------------------------------------------------------------------------------
 
-    public static void synchronizeInvits(Context context, String userId, OnCompletedSynchronization onCompletedSynchronization) throws InterruptedException {
+    public static void synchronizeInvits(Context context, String userId, OnCompletedSynchronization onCompletedSynchronization) {
 
         List<BikeEvent> listInvitDB = BikeEventHandler.getAllInvitations(context,userId);
 
@@ -319,85 +307,3 @@ public class SynchronizeWithDatabase {
         });
     }
 }
-
-
-
-
-/*private static void synchonizeFriendDatabase(Context context, Friend user, List<Friend> listFriendsFB){
-
-        List<Friend> listFriendsUpdatedDB = FriendsHandler.getListFriends(context,user.getId());
-
-        if(listFriendsFB!=null){
-            if(listFriendsFB.size()>0){
-                for(Friend friend : listFriendsFB){
-                    if (UtilsApp.findFriendIndexInListFriends(friend, listFriendsUpdatedDB) != -1) // if friend in database
-                        FriendsHandler.updateFriend(context, friend, user.getId()); // update friend
-                    else
-                        FriendsHandler.insertNewFriend(context, friend, user.getId()); // add new friend in database
-                }
-            }
-        }
-    }
-
-    private static void performSynchronizationFriendsOnFirebase(Context context, Friend user, List<Friend> listFriendsFB, List<Friend> listFriendsDB){
-
-        // SYNCHRONIZE FIREBASE
-        synchonizeFriendFirebase(context, user, listFriendsFB, listFriendsDB);
-
-        // SYNCHRONIZE DATABASE
-        FirebaseRecover firebaseRecover = new FirebaseRecover(context);
-        firebaseRecover.recoverFriendsUser(user.getId(), new OnFriendDataGetListener() {
-            @Override
-            public void onSuccess(Friend friend) {}
-
-            @Override
-            public void onSuccess(List<Friend> listFriend) {
-                // SYNCHRONIZE DATABASE
-                synchonizeFriendDatabase(context, user, listFriend);
-            }
-
-            @Override
-            public void onFailure(String error) {
-
-            }
-        });
-    }*/
-
-
-        /*FirebaseRecover firebaseRecover = new FirebaseRecover(context);
-        firebaseRecover.recoverBikeEventsUser(userId, new OnBikeEventDataGetListener() {
-            @Override
-            public void onSuccess(BikeEvent bikeEvent) {}
-
-            @Override
-            public void onSuccess(List<BikeEvent> listBikeEventUpdatedFB) {
-                try {
-                    synchonizeEventsDatabase(context, userId, listBikeEventUpdatedFB);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(String error) {
-                Toast.makeText(context, context.getResources().getString(R.string.error_synchronization),Toast.LENGTH_LONG).show();
-            }
-        });
-
-
-
-            private static void synchonizeEventsDatabase(Context context, String userId, List<BikeEvent> listBikeEventFB) throws InterruptedException {
-
-        List<BikeEvent> listBikeEventDB = BikeEventHandler.getAllFutureBikeEvents(context, userId);
-
-        if(listBikeEventFB!=null){
-            if(listBikeEventFB.size()>0){
-                for(BikeEvent bikeEvent : listBikeEventFB){
-                    if(UtilsApp.findIndexEventInList(bikeEvent.getId(), listBikeEventDB) != -1) // if event in database
-                        BikeEventHandler.updateBikeEvent(context, bikeEvent, userId); // update event
-                }
-            }
-        }
-    }
-
-        */

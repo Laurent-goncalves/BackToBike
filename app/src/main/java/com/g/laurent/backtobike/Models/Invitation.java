@@ -11,14 +11,6 @@ public class Invitation {
     public Invitation() {
     }
 
-    public Invitation(String date, String time, String comments, int idRoute, ArrayList<String> listIdFriends) {
-        this.date = date;
-        this.time = time;
-        this.comments = comments;
-        this.idRoute = idRoute;
-        this.listIdFriends = listIdFriends;
-    }
-
     public String getDate() {
         return date;
     }

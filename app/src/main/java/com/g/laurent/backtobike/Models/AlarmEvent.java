@@ -43,18 +43,21 @@ public class AlarmEvent extends BroadcastReceiver {
 
         // Define text notification
         String nameTrip = null;
+        String timeTrip = null;
         String textNotif;
 
         BikeEvent event = BikeEventHandler.getBikeEvent(context, idEvent, userId);
-        if(event!=null)
+        if(event!=null) {
             nameTrip = event.getRoute().getName();
+            timeTrip = event.getTime();
+        }
 
         if(typeAlarm.equals(ALARM_2_DAYS)){
-            textNotif = context.getResources().getString(R.string.notification_title) + " " + nameTrip + " " +
+            textNotif = context.getResources().getString(R.string.notification_title) + " \"" + nameTrip + "\" " +
                 context.getResources().getString(R.string.notification_title2days);
         } else {
-            textNotif = context.getResources().getString(R.string.notification_title) + " " + nameTrip + " " +
-                    context.getResources().getString(R.string.notification_title4hours);
+            textNotif = context.getResources().getString(R.string.notification_title) + " \"" + nameTrip + "\" " +
+                    context.getResources().getString(R.string.notification_title4hours) + " " + timeTrip;
         }
 
         // Start notification configuration

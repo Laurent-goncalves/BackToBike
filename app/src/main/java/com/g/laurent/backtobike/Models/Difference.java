@@ -14,10 +14,6 @@ public class Difference {
         return difference;
     }
 
-    public void setDifference(String difference) {
-        this.difference = difference;
-    }
-
     public String getIdEvent() {
         return idEvent;
     }

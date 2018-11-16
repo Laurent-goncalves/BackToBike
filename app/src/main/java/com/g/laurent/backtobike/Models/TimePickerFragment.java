@@ -7,9 +7,7 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.widget.TimePicker;
 import com.g.laurent.backtobike.Controllers.Fragments.InvitFragment;
-import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.g.laurent.backtobike.Utils.UtilsTime;
-
 import java.util.Calendar;
 
 

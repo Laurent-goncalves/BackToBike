@@ -1,26 +1,18 @@
 package com.g.laurent.backtobike.Models;
 
 import android.content.Context;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.firebase.ui.auth.AuthUI;
-import com.g.laurent.backtobike.Controllers.Activities.BaseActivity;
-import com.g.laurent.backtobike.Controllers.Activities.EventActivity;
 import com.g.laurent.backtobike.R;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 
 public class ToolbarManager implements NavigationView.OnNavigationItemSelectedListener {
@@ -161,7 +153,7 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
 
     private static void setCounter(int count, LinearLayout layoutCounter) {
 
-        TextView view = (TextView) layoutCounter.findViewById(R.id.count_invitation);
+        TextView view = layoutCounter.findViewById(R.id.count_invitation);
 
         if(count==0){
             view.setVisibility(View.INVISIBLE);

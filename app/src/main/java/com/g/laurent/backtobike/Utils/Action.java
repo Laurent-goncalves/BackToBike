@@ -5,28 +5,25 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.widget.Toast;
-
 import com.g.laurent.backtobike.Controllers.Activities.DisplayActivity;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.Models.Friend;
-import com.g.laurent.backtobike.Models.OnLoginChecked;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.g.laurent.backtobike.Controllers.Activities.BaseActivity.LOGIN_SHARED;
+
 
 public class Action {
 
-    private static final String CANCELLED = "cancelled";
     private static final String ACCEPTED = "accepted";
     private static final String REJECTED = "rejected";
     private static final String NEED_SYNCHRONIZATION = "need_synchronization";
-    private static final String LOGIN_SHARED ="login_shared";
     private final static String SHARED_LIST_LOGINS = "shared_list_logins";
 
     // ---------------------------------------------------------------------------------------------------------

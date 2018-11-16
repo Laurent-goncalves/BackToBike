@@ -1,6 +1,5 @@
 package com.g.laurent.backtobike.Utils.MapTools;
 
-
 import android.content.Context;
 import com.g.laurent.backtobike.R;
 import com.google.android.gms.maps.GoogleMap;
@@ -10,7 +9,6 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class SegmentsHandler {
 

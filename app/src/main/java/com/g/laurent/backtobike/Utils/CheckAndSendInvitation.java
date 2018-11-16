@@ -15,7 +15,6 @@ import com.g.laurent.backtobike.Utils.Configurations.ConfigureInvitFragment;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
 import java.util.ArrayList;
 import java.util.List;
 import butterknife.BindView;
@@ -37,6 +36,8 @@ public class CheckAndSendInvitation {
     public CheckAndSendInvitation(ConfigureInvitFragment config, View view, Context context) {
 
         ButterKnife.bind(this,view);
+
+        // Assign variables
         this.config = config;
         this.context = context;
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -85,9 +86,9 @@ public class CheckAndSendInvitation {
 
     private BikeEvent buildBikeEvent(){
 
+        // Assign variables
         String user_id = firebaseUser.getUid();
         Invitation invitation = config.getCallbackEventActivity().getInvitation();
-
         String date = invitation.getDate();
         String time = invitation.getTime();
         String idEvent = user_id + "_" + date + "_" + time;
@@ -95,8 +96,8 @@ public class CheckAndSendInvitation {
         String comments = invitation.getComments();
         int idRoute = invitation.getIdRoute();
 
+        // Create list of event friends
         ArrayList<String> listIdFriends = invitation.getListIdFriends();
-
         List<EventFriends> listEventFriends = new ArrayList<>();
 
         if(listIdFriends!=null){

@@ -68,6 +68,8 @@ public class TestActionClass extends AndroidTestCase {
         Route route = new Route(0,"trip to Lille",true);
         route.setListRouteSegment(getListRouteSegments());
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
+        //databaseReference.child("id1").child("login").child("111...///");
+
         databaseReference.child(auth.getUid()).child("my_routes").removeValue();
 
         // ------------------------------------------------ INSERT route
@@ -162,8 +164,8 @@ public class TestActionClass extends AndroidTestCase {
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
 
-        Friend friend = new Friend("id1","id1","Michel","photo_url",null,null);
-        Friend user = new Friend("id2","id2","Seb","photoUrl",true,null);
+        Friend friend = new Friend("id1","id1","Michel","photo_url","ongoing","ongoing");
+        Friend user = new Friend("id2","id2","Seb","photoUrl","accepted","ongoing");
 
         Action.addNewFriend(friend, user, "id2", getContext());
 
@@ -247,6 +249,8 @@ public class TestActionClass extends AndroidTestCase {
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
         databaseReference.child("id1").child("my_events").removeValue();
+        databaseReference.child("id2").child("my_invitations").removeValue();
+        databaseReference.child("id3").child("my_invitations").removeValue();
 
         setFriendsDatabase(getContext(), auth.getUid());
 
@@ -322,6 +326,8 @@ public class TestActionClass extends AndroidTestCase {
         eventTest = BikeEventHandler.getBikeEvent(getContext(), bikeEvent.getId(),"id1");
         Assert.assertNull(eventTest.getComments());
 
+        waiting_time(5000);
+
         // Check that bikeEvent and invitations has been deleted in Firebase
         firebaseRecover.recoverBikeEventsUser("id1", new OnBikeEventDataGetListener() {
 
@@ -330,7 +336,8 @@ public class TestActionClass extends AndroidTestCase {
 
             @Override
             public void onSuccess(List<BikeEvent> listBikeEvent) {
-                Assert.assertEquals(0,listBikeEvent.size());
+                Assert.assertEquals(1,listBikeEvent.size());
+                Assert.assertEquals("cancelled",listBikeEvent.get(0).getStatus());
             }
 
             @Override
@@ -343,7 +350,8 @@ public class TestActionClass extends AndroidTestCase {
 
             @Override
             public void onSuccess(List<BikeEvent> listInvitations) {
-                Assert.assertEquals(0,listInvitations.size());
+                Assert.assertEquals(1,listInvitations.size());
+                Assert.assertEquals("cancelled",listInvitations.get(0).getStatus());
             }
 
             @Override
@@ -356,14 +364,15 @@ public class TestActionClass extends AndroidTestCase {
 
             @Override
             public void onSuccess(List<BikeEvent> listInvitations) {
-                Assert.assertEquals(0,listInvitations.size());
+                Assert.assertEquals(1,listInvitations.size());
+                Assert.assertEquals("cancelled",listInvitations.get(0).getStatus());
             }
 
             @Override
             public void onFailure(String error) {}
         });
 
-        waiting_time(6000);
+        waiting_time(10000);
     }
 
     @Test
@@ -518,22 +527,18 @@ public class TestActionClass extends AndroidTestCase {
                 int index = findIndexRouteFromName("Trip to Paris",listRoutes);
                 Assert.assertTrue(index!=-1);
 
-                try {
-                    firebaseRecover.recoverBikeEventsUser("id2", new OnBikeEventDataGetListener() {
-                        @Override
-                        public void onSuccess(BikeEvent bikeEvent) {}
+                firebaseRecover.recoverBikeEventsUser("id2", new OnBikeEventDataGetListener() {
+                    @Override
+                    public void onSuccess(BikeEvent bikeEvent) {}
 
-                        @Override
-                        public void onSuccess(List<BikeEvent> bikeEvent) {
-                            Assert.assertNull(bikeEvent.get(0).getRoute());
-                        }
+                    @Override
+                    public void onSuccess(List<BikeEvent> bikeEvent) {
+                        Assert.assertNull(bikeEvent.get(0).getRoute());
+                    }
 
-                        @Override
-                        public void onFailure(String error) {}
-                    });
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                    @Override
+                    public void onFailure(String error) {}
+                });
                 waiting_time(10000);
             }
 
@@ -552,13 +557,15 @@ public class TestActionClass extends AndroidTestCase {
         databaseReference.child("id2").child("my_friends").removeValue();
         databaseReference.child("id3").child("my_friends").removeValue();
 
-        Friend friend1 = new Friend("id1","id1","Mat","photoUrl",true, null);
-        Friend friend3 = new Friend("id3","id3","Camille","photoUrl",null,null);
-        Friend user = new Friend("id2","id2","Seb","photoUrl",true,null);
+        Friend friend1 = new Friend("id1","id1","Mat","photoUrl","accepted", "ongoing");
+        Friend friend3 = new Friend("id3","id3","Camille","photoUrl","ongoing","ongoing");
+        Friend user = new Friend("id2","id2","Seb","photoUrl","accepted","ongoing");
 
         // Add id3 and id1 as friend
         Action.addNewFriend(friend3, user, user.getId(), getContext());
         Action.addNewFriend(friend1, user,  user.getId(), getContext());
+
+        waiting_time(5000);
 
         // id3 accepted id2 as friend
         Action.acceptFriend(user,"id3", getContext());
@@ -566,8 +573,9 @@ public class TestActionClass extends AndroidTestCase {
         // id1 rejected id2 as friend
         Action.rejectFriend(user,"id1", getContext());
 
-        FirebaseRecover firebaseRecover = new FirebaseRecover(databaseReference);
+        waiting_time(5000);
 
+        FirebaseRecover firebaseRecover = new FirebaseRecover(databaseReference);
         firebaseRecover.recoverFriendsUser("id1", new OnFriendDataGetListener() {
             @Override
             public void onSuccess(Friend friend) {
@@ -576,7 +584,8 @@ public class TestActionClass extends AndroidTestCase {
 
             @Override
             public void onSuccess(List<Friend> listFriend) {
-                Assert.assertNull(listFriend.get(0).getAccepted());
+                int index = UtilsApp.findFriendIndexInListFriends("id2", listFriend);
+                Assert.assertEquals(-1, index);
             }
 
             @Override
@@ -584,6 +593,8 @@ public class TestActionClass extends AndroidTestCase {
 
             }
         });
+
+        waiting_time(5000);
 
         firebaseRecover.recoverFriendsUser("id2", new OnFriendDataGetListener() {
             @Override
@@ -595,11 +606,11 @@ public class TestActionClass extends AndroidTestCase {
             public void onSuccess(List<Friend> listFriend) {
 
                 if(listFriend.get(0).getId().equals("id1")){
-                    Assert.assertFalse(listFriend.get(0).getHasAgreed());
-                    Assert.assertTrue(listFriend.get(1).getHasAgreed());
+                    Assert.assertEquals("rejected", listFriend.get(0).getHasAgreed());
+                    Assert.assertEquals("accepted", listFriend.get(1).getHasAgreed());
                 } else {
-                    Assert.assertTrue(listFriend.get(0).getHasAgreed());
-                    Assert.assertFalse(listFriend.get(1).getHasAgreed());
+                    Assert.assertEquals("accepted", listFriend.get(0).getHasAgreed());
+                    Assert.assertEquals("rejected", listFriend.get(1).getHasAgreed());
                 }
             }
 
@@ -609,6 +620,8 @@ public class TestActionClass extends AndroidTestCase {
             }
         });
 
+        waiting_time(5000);
+
         firebaseRecover.recoverFriendsUser("id3", new OnFriendDataGetListener() {
             @Override
             public void onSuccess(Friend friend) {
@@ -617,7 +630,7 @@ public class TestActionClass extends AndroidTestCase {
 
             @Override
             public void onSuccess(List<Friend> listFriend) {
-                Assert.assertTrue(listFriend.get(0).getAccepted());
+                Assert.assertTrue(listFriend.get(0).getAccepted().equals("accepted"));
             }
 
             @Override
@@ -626,7 +639,7 @@ public class TestActionClass extends AndroidTestCase {
             }
         });
 
-        waiting_time(10000);
+        waiting_time(5000);
     }
 
     // -------------------------------------------- UTILS ---------------------------------------------------------
@@ -724,9 +737,9 @@ public class TestActionClass extends AndroidTestCase {
 
     private void setFriendsDatabase(Context context, String userId){
 
-        Friend friend1 = new Friend("id1","id1","Mat","photoUrl",true, null);
-        Friend friend2 = new Friend("id2","id2","Seb","photoUrl",true,null);
-        Friend friend3 = new Friend("id3","id3","Camille","photoUrl",false,null);
+        Friend friend1 = new Friend("id1","id1","Mat","photoUrl","accepted", "ongoing");
+        Friend friend2 = new Friend("id2","id2","Seb","photoUrl","accepted","ongoing");
+        Friend friend3 = new Friend("id3","id3","Camille","photoUrl","rejected","ongoing");
 
         FriendsHandler.insertNewFriend(context,friend1, userId);
         FriendsHandler.insertNewFriend(context,friend2, userId);

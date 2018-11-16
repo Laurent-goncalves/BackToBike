@@ -62,7 +62,7 @@ public class NotificationUtils {
     public static void configureAndSendNotification(Context context, String idReceiver, String loginSender, String typeUpdate){
 
         FirebaseRecover firebaseRecover = new FirebaseRecover(context);
-        firebaseRecover.recoverUserTokenDevice(idReceiver, new OnUserDataGetListener() {
+        firebaseRecover.recoverUserTokenDevice(context, idReceiver, new OnUserDataGetListener() {
             @Override
             public void onSuccess(Boolean datasOK, String token) {
                 try {
@@ -89,7 +89,7 @@ public class NotificationUtils {
 
             @Override
             public void onFailure(String error) {
-
+                // TODO
             }
         });
     }
@@ -111,7 +111,7 @@ public class NotificationUtils {
     // ------------------------------------- NOTIFICATION SHOWING -----------------------------------------------
     // ----------------------------------------------------------------------------------------------------------
 
-    private static String buildMessageNotification(Context context, String content){
+    public static String buildMessageNotification(Context context, String content){
 
         String message = null;
         String loginSender = content.substring(0, content.indexOf("[]"));

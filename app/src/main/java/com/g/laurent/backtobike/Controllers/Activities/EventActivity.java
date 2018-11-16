@@ -42,6 +42,10 @@ public class EventActivity extends BaseActivity implements CallbackEventActivity
         SaveAndRestoreDataInvitActivity.saveData(outState, this);
     }
 
+    // --------------------------------------------------------------------------------------------------------
+    // --------------------------------------- CONFIGURE VIEWS ------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------
+
     public void configureAndShowInvitFragment(){
 
         // Remove button OK
@@ -104,11 +108,15 @@ public class EventActivity extends BaseActivity implements CallbackEventActivity
             });
         }
     }
+
+    // --------------------------------------------------------------------------------------------------------
+    // ------------------------------------- GETTERS AND SETTERS ----------------------------------------------
+    // --------------------------------------------------------------------------------------------------------
+
     public Invitation getInvitation() {
         return invitation;
     }
 
-    @Override
     public String getUserId() {
         return userId;
     }

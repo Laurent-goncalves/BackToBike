@@ -2,33 +2,29 @@ package com.g.laurent.backtobike.Controllers.Fragments;
 
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-
 import com.g.laurent.backtobike.Models.CallbackDisplayActivity;
-import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.Configurations.ConfigureDisplayFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.firebase.auth.FirebaseAuth;
+
+import static com.g.laurent.backtobike.Controllers.Activities.BaseActivity.DISPLAY_MY_EVENTS;
+import static com.g.laurent.backtobike.Controllers.Activities.BaseActivity.DISPLAY_MY_INVITS;
+import static com.g.laurent.backtobike.Controllers.Activities.BaseActivity.DISPLAY_MY_ROUTES;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class DisplayFragment extends Fragment {
 
-    private static final String DISPLAY_MY_ROUTES ="display_my_routes";
-    private static final String DISPLAY_MY_EVENTS ="display_my_events";
-    private static final String DISPLAY_MY_INVITS ="display_my_invits";
     private static final String BUNDLE_POSITION ="bundle_position";
     private static final String BUNDLE_TYPE_DISPLAY ="bundle_type_display";
-    private ConfigureDisplayFragment config;
     private CallbackDisplayActivity callbackDisplayActivity;
     private Context context;
     private int position;
@@ -53,7 +49,7 @@ public class DisplayFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_display, container, false);
         mapView = view.findViewById(R.id.map_layout).findViewById(R.id.map);
@@ -65,15 +61,15 @@ public class DisplayFragment extends Fragment {
             if(typeDisplay !=null){
                 switch(typeDisplay){
                     case DISPLAY_MY_ROUTES:
-                        config = new ConfigureDisplayFragment(context, view, typeDisplay, callbackDisplayActivity.getListRoutes().get(position));
+                        new ConfigureDisplayFragment(context, view, typeDisplay, callbackDisplayActivity.getListRoutes().get(position));
                         break;
 
                     case DISPLAY_MY_EVENTS:
-                        config = new ConfigureDisplayFragment(context, view, typeDisplay, FirebaseAuth.getInstance().getCurrentUser(), callbackDisplayActivity.getListEvents().get(position));
+                        new ConfigureDisplayFragment(context, view, typeDisplay, FirebaseAuth.getInstance().getCurrentUser(), callbackDisplayActivity.getListEvents().get(position));
                         break;
 
                     case DISPLAY_MY_INVITS:
-                        config = new ConfigureDisplayFragment(context, view, typeDisplay, FirebaseAuth.getInstance().getCurrentUser(), callbackDisplayActivity.getListInvitations().get(position));
+                        new ConfigureDisplayFragment(context, view, typeDisplay, FirebaseAuth.getInstance().getCurrentUser(), callbackDisplayActivity.getListInvitations().get(position));
                         break;
                 }
             }
@@ -101,7 +97,6 @@ public class DisplayFragment extends Fragment {
             mapView.onResume();
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -124,7 +119,7 @@ public class DisplayFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mapView != null)
             mapView.onSaveInstanceState(outState);

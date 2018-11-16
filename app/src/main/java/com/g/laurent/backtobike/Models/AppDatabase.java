@@ -31,19 +31,4 @@ public abstract class AppDatabase extends RoomDatabase {
         }
         return INSTANCE;
     }
-
-    // Prepopulate the database
-   /* private static RoomDatabase.Callback prepopulateDatabase(){
-        return new RoomDatabase.Callback() {
-            @Override
-            public void onCreate(@NonNull SupportSQLiteDatabase db) {
-                super.onCreate(db);
-                ContentValues contentValues = new ContentValues();
-
-
-                db.insert("Route", OnConflictStrategy.IGNORE, contentValues);
-
-            }
-        };
-    }*/
 }

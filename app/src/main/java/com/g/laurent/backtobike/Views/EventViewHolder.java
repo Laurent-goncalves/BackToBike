@@ -1,7 +1,6 @@
 package com.g.laurent.backtobike.Views;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -10,7 +9,6 @@ import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.UtilsTime;
-
 import static com.g.laurent.backtobike.Utils.UtilsTime.getSeasonNumber;
 
 

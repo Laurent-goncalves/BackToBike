@@ -7,7 +7,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.g.laurent.backtobike.Models.WeatherIcons;
 import com.g.laurent.backtobike.R;
-import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.g.laurent.backtobike.Utils.UtilsTime;
 import com.g.laurent.backtobike.Utils.WeatherApi.WeatherForecast;
 
@@ -42,9 +41,5 @@ public class WeatherViewHolder extends RecyclerView.ViewHolder{
 
     public static int getIntegerIdentifier(Context context, String name) {
         return context.getResources().getIdentifier(name, "integer", context.getPackageName());
-    }
-
-    public static int getColorIdentifier(Context context, String name) {
-        return context.getResources().getIdentifier(name, "color", context.getPackageName());
     }
 }

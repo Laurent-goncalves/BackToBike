@@ -31,6 +31,8 @@
              You can define the keys for the debug and release targets in src/debug/ and src/release/. 
         -->
 
+        <receiver android:process=":remote" android:name=".Models.AlarmEvent" android:enabled="true" />
+
         <service
             android:name=".Models.NetworkSchedulerService"
             android:exported="true"

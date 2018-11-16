@@ -101,19 +101,6 @@ public class RouteSegment {
         return values;
     }
 
-    public static ContentValues createContentValuesFromRouteSegmentUpdate(RouteSegment routeSegment) {
-
-        final ContentValues values = new ContentValues();
-
-        values.put("id",routeSegment.getId());
-        values.put("number",routeSegment.getNumber());
-        values.put("lat",routeSegment.getLat());
-        values.put("lng",routeSegment.getLng());
-        values.put("idRoute",routeSegment.getIdRoute());
-
-        return values;
-    }
-
     public static List<RouteSegment> getRouteSegmentFromCursor(Cursor cursor){
 
         final List<RouteSegment> listSegments = new ArrayList<>();

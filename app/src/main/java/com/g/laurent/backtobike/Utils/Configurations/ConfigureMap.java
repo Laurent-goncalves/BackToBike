@@ -1,23 +1,17 @@
 package com.g.laurent.backtobike.Utils.Configurations;
 
 import android.content.Context;
-import android.os.Handler;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
-import com.g.laurent.backtobike.Utils.Action;
 import com.g.laurent.backtobike.Utils.FirebaseUpdate;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -28,8 +22,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.List;
-
-import static com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps.routeNotInDatabase;
 
 
 public class ConfigureMap implements OnMapReadyCallback {
@@ -59,6 +51,8 @@ public class ConfigureMap implements OnMapReadyCallback {
         mapView.getMapAsync(this);
     }
 
+    // -------------------------------- 1 - wait map availability ------------------------------------
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
@@ -73,6 +67,8 @@ public class ConfigureMap implements OnMapReadyCallback {
         }
     }
 
+    // -------------------------------- 2 - add title to the map ------------------------------------
+
     private void setTitleMap(String title){
         if(title!=null && titleView.getVisibility() != View.GONE) {
             if (title.length() <= 50)
@@ -81,6 +77,8 @@ public class ConfigureMap implements OnMapReadyCallback {
                 titleView.setText(title.substring(0, 50));
         }
     }
+
+    // ------------------------ 3 - draw segments and markers on the map ----------------------------
 
     private void drawSegments(List<LatLng> listPoints) {
 
@@ -106,6 +104,8 @@ public class ConfigureMap implements OnMapReadyCallback {
                 .position(end).draggable(false));
     }
 
+    // ------------------------ 4 - calculate and show time and mileage ----------------------------
+
     private void displayEstimationTimeAndMileage(List<LatLng> listPoints){
 
         double mileage = UtilsGoogleMaps.getMileageRoute(listPoints);
@@ -119,6 +119,8 @@ public class ConfigureMap implements OnMapReadyCallback {
         }
     }
 
+    // ---------------------------------- 5 - zoom on area of trip ---------------------------------
+
     private void scaleMap(List<LatLng> listPoints){
         LatLngBounds.Builder bounds = new LatLngBounds.Builder();
 
@@ -127,6 +129,8 @@ public class ConfigureMap implements OnMapReadyCallback {
 
         googleMap.setOnMapLoadedCallback(() -> googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 50)));
     }
+
+    // --------------------------- 6 - configure button Add to my routes ---------------------------
 
     public void configureButtonAddToMyRoutes(Context context, String userId, BikeEvent bikeEvent) {
 

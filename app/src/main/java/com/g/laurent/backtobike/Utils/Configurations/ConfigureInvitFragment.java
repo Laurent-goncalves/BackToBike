@@ -1,21 +1,18 @@
 package com.g.laurent.backtobike.Utils.Configurations;
 
+import android.annotation.SuppressLint;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.TableLayout;
 import android.widget.TextView;
-
 import com.g.laurent.backtobike.Controllers.Fragments.InvitFragment;
 import com.g.laurent.backtobike.Models.CalendarDialog;
 import com.g.laurent.backtobike.Models.CallbackEventActivity;
@@ -29,10 +26,8 @@ import com.g.laurent.backtobike.Utils.EventFriendsHandler;
 import com.g.laurent.backtobike.Utils.FriendsHandler;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 import com.g.laurent.backtobike.Utils.UtilsApp;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -71,6 +66,10 @@ public class ConfigureInvitFragment {
         view.findViewById(R.id.map_layout).findViewById(R.id.title_route).setVisibility(View.GONE); // remove title route
         view.findViewById(R.id.map_layout).findViewById(R.id.button_add_my_routes).setVisibility(View.GONE); // remove button add to my routes
     }
+
+    // -----------------------------------------------------------------------------------------------------
+    // ----------------------------------------- CONFIGURE VIEWS -------------------------------------------
+    // -----------------------------------------------------------------------------------------------------
 
     public void configureViews(Invitation invitation){
         dateView.setText(invitation.getDate());
@@ -122,6 +121,10 @@ public class ConfigureInvitFragment {
             }
         }
     }
+
+    // -----------------------------------------------------------------------------------------------------
+    // ------------------------------------------- LISTENERS -----------------------------------------------
+    // -----------------------------------------------------------------------------------------------------
 
     @OnItemSelected(R.id.spinner_list_routes)
     public void onRouteSelected(){
@@ -201,10 +204,6 @@ public class ConfigureInvitFragment {
 
     public TextView getTimeView() {
         return timeView;
-    }
-
-    public EditText getCommentsView() {
-        return commentsView;
     }
 
     public void setTimeView(TextView timeView) {

@@ -3,7 +3,6 @@ package com.g.laurent.backtobike;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
-import com.g.laurent.backtobike.Utils.NotificationUtils;
 import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
 import com.g.laurent.backtobike.Utils.UtilsTime;
@@ -12,9 +11,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
-
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -26,7 +22,7 @@ public class ExampleUnitTest {
 
     @Test
     public void test_route_time() {
-        assertEquals(UtilsGoogleMaps.getTimeRoute(30000d), "1:52");
+        assertEquals(UtilsGoogleMaps.getTimeRoute(30000d), "01:52");
     }
 
     @Test
@@ -205,5 +201,22 @@ public class ExampleUnitTest {
         Assert.assertEquals("3 days", time);
     }
 
+    @Test
+    public void test_allowed_characters_Firebase(){
 
+        String login = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_/";
+        Assert.assertTrue(UtilsApp.areCharactersAllowed(login));
+
+        login = ";";
+        Assert.assertFalse(UtilsApp.areCharactersAllowed(login));
+
+        login = "?";
+        Assert.assertFalse(UtilsApp.areCharactersAllowed(login));
+
+        login = "ç";
+        Assert.assertFalse(UtilsApp.areCharactersAllowed(login));
+
+        login = ".";
+        Assert.assertFalse(UtilsApp.areCharactersAllowed(login));
+    }
 }

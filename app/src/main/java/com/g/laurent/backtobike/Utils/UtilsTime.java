@@ -2,11 +2,9 @@ package com.g.laurent.backtobike.Utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.WeatherIcons;
 import com.g.laurent.backtobike.Views.EventViewHolder;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,6 +13,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
 
 public class UtilsTime {
 
@@ -38,18 +37,6 @@ public class UtilsTime {
     public static String getTodayDate(){
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", new Locale("fr"));
         return dateFormat.format(new Date());
-    }
-
-    public static String transformToDateFormat(String dateWeather){
-
-        // input format : 2003-02-01
-        // output format : 01/02/2003
-
-        String day = dateWeather.substring(8,10);
-        String month = dateWeather.substring(5,7);
-        String year = dateWeather.substring(0,4);
-
-        return day + "/" + month + "/" + year;
     }
 
     public static Boolean isDateInsidePeriod(String dateTest, String dateInf, String dateSup){
@@ -125,6 +112,27 @@ public class UtilsTime {
         return listSorted;
     }
 
+    public static void deleteOverdueEvents(Context context, String userId){
+
+        List<BikeEvent> listBikeEvents = BikeEventHandler.getAllBikeEvents(context, userId);
+
+        if(listBikeEvents!=null){
+            if(listBikeEvents.size()>0){
+                for(BikeEvent event : listBikeEvents){
+                    if(UtilsTime.isBefore(event.getDate(), UtilsTime.getTodayDate())){
+
+                        // Delete event in database
+                        BikeEventHandler.deleteBikeEvent(context,event ,userId);
+
+                        // Delete event in Firebase
+                        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+                        firebaseUpdate.deleteEvent(userId, event);
+                    }
+                }
+            }
+        }
+    }
+
     public static boolean isBefore(BikeEvent bikeEvent1, BikeEvent bikeEvent2) {
 
         Calendar dateComp = Calendar.getInstance();
@@ -143,11 +151,11 @@ public class UtilsTime {
 
         if(isSameDay){ // compare time
 
-            int hour1 = getHour(bikeEvent1.getTime());
-            int hour2 = getHour(bikeEvent2.getTime());
+            int hour1 = Integer.parseInt(getHour(bikeEvent1.getTime()));
+            int hour2 = Integer.parseInt(getHour(bikeEvent2.getTime()));
 
-            int min1 = getMinutes(bikeEvent1.getTime());
-            int min2 = getMinutes(bikeEvent2.getTime());
+            int min1 = Integer.parseInt(getMinutes(bikeEvent1.getTime()));
+            int min2 = Integer.parseInt(getMinutes(bikeEvent2.getTime()));
 
             if(hour1 < hour2)
                 return true;
@@ -162,24 +170,24 @@ public class UtilsTime {
         }
     }
 
-    private static int getHour(String time){
-        int hour;
+    private static String getHour(String time){
+        String hour;
 
         if(time.length()==4){
-            hour = Integer.parseInt(time.substring(0,1));
+            hour = time.substring(0,1);
         } else {
-            hour = Integer.parseInt(time.substring(0,2));
+            hour = time.substring(0,2);
         }
         return hour;
     }
 
-    private static int getMinutes(String time){
-        int minute;
+    private static String getMinutes(String time){
+        String minute;
 
         if(time.length()==4){
-            minute = Integer.parseInt(time.substring(2,4));
+            minute = time.substring(2,4);
         } else {
-            minute = Integer.parseInt(time.substring(3,5));
+            minute = time.substring(3,5);
         }
         return minute;
     }
@@ -223,8 +231,8 @@ public class UtilsTime {
         calendar.set(Calendar.MONTH, Integer.parseInt(date.substring(3,5))-1);
         calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.substring(0,2)));
 
-        calendar.set(Calendar.HOUR_OF_DAY, getHour(time));
-        calendar.set(Calendar.MINUTE, getMinutes(time));
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(getHour(time)));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(getMinutes(time)));
 
         calendar.add(Calendar.HOUR_OF_DAY, -4);
 
@@ -284,11 +292,8 @@ public class UtilsTime {
         // Get day number
         int dayNum = getDayNumber(date);
 
-        // Get day name
-        String dayName = context.getResources().getString(EventViewHolder.DaysName.daysName[dayNum-1]);
-
         // Build date
-        return dayName;
+        return context.getResources().getString(EventViewHolder.DaysName.daysName[dayNum-1]);
     }
 
     private static String getShortDate(String dateWeather){

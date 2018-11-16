@@ -5,10 +5,8 @@ import android.graphics.Point;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
-import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.Projection;
@@ -171,7 +169,7 @@ public class UtilsGoogleMaps {
         if(route!=null) {
             if (route.size() >= 2) { // at least 2 points
 
-                for (int i = 0; i < route.size(); i++) {
+                for (int i = 0; i < route.size()-1; i++) {
 
                     Location lastPoint = new Location("last_location");
                     lastPoint.setLatitude(route.get(i).latitude);

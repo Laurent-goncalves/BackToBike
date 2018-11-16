@@ -5,11 +5,8 @@ import android.os.Bundle;
 import com.g.laurent.backtobike.Controllers.Activities.DisplayActivity;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackSynchronizeEnd;
-import com.g.laurent.backtobike.Models.Difference;
-import com.g.laurent.backtobike.Models.OnBikeEventDataGetListener;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
-
 import java.util.List;
 
 

@@ -1,7 +1,6 @@
 package com.g.laurent.backtobike.Models;
 
 import android.content.ContentProvider;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -11,7 +10,6 @@ import android.support.annotation.Nullable;
 
 public class BikeEventContentProvider extends ContentProvider {
 
-    private static final String ACCEPTED = "accepted";
     private static final String ONGOING ="ongoing";
     private static final String COMPLETED = "completed";
     private static final String ALL_EVENTS ="all_events";

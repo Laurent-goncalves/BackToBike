@@ -14,20 +14,14 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.g.laurent.backtobike.Controllers.Fragments.MainFragment;
 import com.g.laurent.backtobike.Models.AppDatabase;
-import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackCounters;
 import com.g.laurent.backtobike.Models.CallbackMainActivity;
 import com.g.laurent.backtobike.Models.CallbackSynchronizeEnd;
 import com.g.laurent.backtobike.Models.Difference;
-import com.g.laurent.backtobike.Models.EventFriends;
-import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.OnUserDataGetListener;
-import com.g.laurent.backtobike.Models.RouteSegment;
 import com.g.laurent.backtobike.R;
-import com.g.laurent.backtobike.Utils.BikeEventHandler;
 import com.g.laurent.backtobike.Utils.FirebaseRecover;
 import com.g.laurent.backtobike.Utils.FirebaseUpdate;
-import com.g.laurent.backtobike.Utils.FriendsHandler;
 import com.g.laurent.backtobike.Utils.MapTools.GetCurrentLocation;
 import com.g.laurent.backtobike.Utils.SynchronizeWithFirebase;
 import com.g.laurent.backtobike.Utils.UtilsApp;
@@ -36,15 +30,9 @@ import com.g.laurent.backtobike.Utils.UtilsTime;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.iid.FirebaseInstanceId;
-import org.json.JSONObject;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
+import static com.g.laurent.backtobike.Utils.UtilsApp.areCharactersAllowed;
+
 
 public class MainActivity extends BaseActivity implements CallbackMainActivity {
 
@@ -56,8 +44,6 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
     private static final String BUNDLE_LATITUDE = "bundle_latitude";
     private static final String BUNDLE_LONGITUDE = "bundle_longitude";
     private static final String BUNDLE_DIFFERENCES = "bundle_differences";
-
-    private MainFragment mainFragment;
     private FirebaseUser user;
     private ProgressBar progressBar;
 
@@ -76,28 +62,18 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
 
         savePreviousPage(MENU_MAIN_PAGE);
 
-        clearDatabase(userId, getApplicationContext());
+        //clearDatabase(userId, getApplicationContext());
 
-        deleteOverdueEvents();
+        // Delete overdue events on Firebase and Database
+        UtilsTime.deleteOverdueEvents(getApplicationContext(), userId);
 
         // Check if the database has already been initialized (during the first use of the app on the phone)
         checkInitializationDatabase();
     }
 
-    private void deleteOverdueEvents(){
-
-        List<BikeEvent> listBikeEvents = BikeEventHandler.getAllBikeEvents(getApplicationContext(), userId);
-
-        if(listBikeEvents!=null){
-            if(listBikeEvents.size()>0){
-                for(BikeEvent event : listBikeEvents){
-                    if(UtilsTime.isBefore(event.getDate(), UtilsTime.getTodayDate())){
-                        BikeEventHandler.deleteBikeEvent(getApplicationContext(),event ,userId);
-                    }
-                }
-            }
-        }
-    }
+    // --------------------------------------------------------------------------------------------------------
+    // -------------------------------------- LOGIN CHECKING --------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------
 
     private void checkInitializationDatabase(){
 
@@ -115,8 +91,6 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
                         checkIfUserHasLoginOnFirebase();
                     }
                 });
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             } finally {
                 checkIfUserHasLoginOnFirebase();
             }
@@ -128,7 +102,7 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
     private void checkIfUserHasLoginOnFirebase(){
 
         FirebaseRecover firebaseRecover = new FirebaseRecover(getApplicationContext());
-        firebaseRecover.recoverUserDatas(userId, new OnUserDataGetListener() {
+        firebaseRecover.recoverUserDatas(getApplicationContext(), userId, new OnUserDataGetListener() {
             @Override
             public void onSuccess(Boolean datasOK, String login) {
                 if(datasOK) { // if userId is on firebase and login has been provided
@@ -152,10 +126,95 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
         });
     }
 
+    private void showDialogToDefineLogin(){
+
+        // custom dialog
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_get_login);
+
+        EditText login = dialog.findViewById(R.id.edittext_login);
+
+        // Button SAVE
+        Button dialogButtonSave = dialog.findViewById(R.id.button_save);
+        dialogButtonSave.setOnClickListener(v -> {
+            if(login.getText().length()>0) {
+                if(areCharactersAllowed(login.getText().toString()))
+                    checkLogin(login.getText().toString(), dialog);
+                else
+                    Toast.makeText(getApplicationContext(), getApplicationContext().getResources().getString(R.string.error_forbidden_characters), Toast.LENGTH_LONG).show();
+            } else
+                Toast.makeText(getApplicationContext(),getApplicationContext().getResources().getString(R.string.error_login),Toast.LENGTH_LONG).show();
+        });
+
+        // Button CANCEL
+        Button dialogButtonCancel = dialog.findViewById(R.id.button_cancel);
+        dialogButtonCancel.setOnClickListener(v -> Toast.makeText(getApplicationContext(),getApplicationContext()
+                .getResources().getString(R.string.error_login),Toast.LENGTH_LONG).show());
+
+        dialog.show();
+    }
+
+    public void checkLogin(String login, Dialog dialog) {
+
+        FirebaseRecover firebaseRecover = new FirebaseRecover(getApplicationContext());
+
+        // Check if login is different than user's login, login is not among friends of the user and if the login exists on Firebase
+        firebaseRecover.isLoginOnFirebase(getApplicationContext(), login, userId, new OnUserDataGetListener() {
+            @Override
+            public void onSuccess(Boolean loginOnFirebase, String login) {
+                if(loginOnFirebase){
+                    Toast.makeText(getApplicationContext(),getApplicationContext()
+                            .getResources().getString(R.string.login_already_on_firebase),Toast.LENGTH_LONG).show();
+                } else {
+                    FirebaseUpdate firebaseUpdate = new FirebaseUpdate(getApplicationContext());
+                    firebaseUpdate.updateUserData(userId, user.getDisplayName(), user.getPhotoUrl().toString(),login);
+                    dialog.dismiss();
+
+                    // Save login in sharedpreferences
+                    sharedPref.edit().putString(LOGIN_SHARED,login).apply();
+
+                    // Get current location
+                    getCurrentLocationForWeather();
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Toast.makeText(getApplicationContext(),error,Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    // --------------------------------------------------------------------------------------------------------
+    // -------------------------------------- WEATHER METHODS -------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------
+
     public void getCurrentLocationForWeather(){
         GetCurrentLocation getCurrentLocation = new GetCurrentLocation();
         getCurrentLocation.getLocationPermission(this, sharedPref, currentLocation -> defineCountersAndConfigureToolbar(currentLocation, MENU_MAIN_PAGE));
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        super.onRequestPermissionsResult(requestCode,permissions,grantResults);
+
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getCurrentLocationForWeather();
+                } else {
+                    Toast.makeText(getApplicationContext(),getApplicationContext().getResources().getString(R.string.give_permission),Toast.LENGTH_LONG).show();
+                }
+                break;
+            }
+        }
+    }
+
+    // --------------------------------------------------------------------------------------------------------
+    // -------------------------------------- CONFIGURE VIEWS -------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------
 
     public void defineCountersAndConfigureToolbar(LatLng currentLocation, String typeDisplay){
 
@@ -180,58 +239,9 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
         });
     }
 
-    private void showDialogToDefineLogin(){
-
-        // custom dialog
-        final Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.dialog_get_login);
-
-        EditText login = dialog.findViewById(R.id.edittext_login);
-
-        // Button SAVE
-        Button dialogButtonSave = dialog.findViewById(R.id.button_save);
-        dialogButtonSave.setOnClickListener(v -> {
-            if(login.getText().length()>0)
-                checkLogin(login.getText().toString(), dialog);
-        });
-
-        // Button CANCEL
-        Button dialogButtonCancel = dialog.findViewById(R.id.button_cancel);
-        dialogButtonCancel.setOnClickListener(v -> Toast.makeText(getApplicationContext(),getApplicationContext()
-                .getResources().getString(R.string.error_login),Toast.LENGTH_LONG).show());
-
-        dialog.show();
-    }
-
-    public void checkLogin(String login, Dialog dialog) {
-
-        FirebaseRecover firebaseRecover = new FirebaseRecover(getApplicationContext());
-
-        // Check if login is different than user's login, login is not among friends of the user and if the login exists on Firebase
-        firebaseRecover.isLoginOnFirebase(login, userId, new OnUserDataGetListener() {
-            @Override
-            public void onSuccess(Boolean loginOnFirebase, String login) {
-                if(loginOnFirebase){
-                    Toast.makeText(getApplicationContext(),getApplicationContext()
-                            .getResources().getString(R.string.login_already_on_firebase),Toast.LENGTH_LONG).show();
-                } else {
-                    FirebaseUpdate firebaseUpdate = new FirebaseUpdate(getApplicationContext());
-                    firebaseUpdate.updateUserData(userId, user.getDisplayName(), user.getPhotoUrl().toString(),login);
-                    dialog.dismiss();
-                    defineCountersAndConfigureToolbar(MENU_MAIN_PAGE);
-                }
-            }
-
-            @Override
-            public void onFailure(String error) {
-                Toast.makeText(getApplicationContext(),error,Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
     private void configureMainFragment(String differences, int countEvent, int countFriends, int countInvits, LatLng currentLocation){
 
-        mainFragment = new MainFragment();
+        MainFragment mainFragment = new MainFragment();
 
         Bundle bundle = new Bundle();
         bundle.putInt(BUNDLE_COUNTER_EVENTS, countEvent);
@@ -251,6 +261,10 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
         progressBar.setVisibility(View.GONE); // close progressBar
     }
 
+    // --------------------------------------------------------------------------------------------------------
+    // ------------------------------------ GETTERS AND SETTERS -----------------------------------------------
+    // --------------------------------------------------------------------------------------------------------
+
     public MainActivity getMainActivity(){
         return this;
     }
@@ -259,23 +273,6 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
         return sharedPref;
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        super.onRequestPermissionsResult(requestCode,permissions,grantResults);
-
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    getCurrentLocationForWeather();
-                } else {
-                    Toast.makeText(getApplicationContext(),getApplicationContext().getResources().getString(R.string.give_permission),Toast.LENGTH_LONG).show();
-                }
-                break;
-            }
-        }
-    }
 
     private void clearDatabase(String userId, Context context){
 
@@ -285,60 +282,5 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
         AppDatabase.getInstance(context,userId).routesDao().deleteAllRoutes();
         AppDatabase.getInstance(context,userId).bikeEventDao().deleteAllBikeEvents();
 
-        /*setFriendsDatabase(getApplicationContext(),userId);
-
-        Route route = new Route(0,"Trip to Paris",true);
-        route.setListRouteSegment(getListRouteSegments());
-
-        // ----------------------------------------------------- INSERT ROUTE
-        int idRoute = Action.addNewRoute(route, userId,context);
-
-        BikeEvent bikeEvent = new BikeEvent("id1_01_01_2000_14:00", "id1", "01/01/2000", "14:00", idRoute, "Comments : take good shoes", "ongoing");
-        bikeEvent.setRoute(route);
-        bikeEvent.setListEventFriends(getListEventFriends());
-
-        // ----------------------------------------------------- INSERT BIKE EVENT
-        Action.addBikeEvent(bikeEvent,"id1", getApplicationContext());*/
-
-
-    }
-
-    private List<RouteSegment> getListRouteSegments(){
-
-        List<RouteSegment> listRouteSegments = new ArrayList<>();
-        RouteSegment ROUTE_SEG1_DEMO = new RouteSegment(0,1,48.819446, 2.344624,999);
-        RouteSegment ROUTE_SEG2_DEMO = new RouteSegment(0,2,48.885412, 2.336589,999);
-        RouteSegment ROUTE_SEG3_DEMO = new RouteSegment(0,3,48.874563, 2.312778,999);
-        RouteSegment ROUTE_SEG4_DEMO = new RouteSegment(0,4,48.858933, 2.321511,999);
-
-        listRouteSegments.add(ROUTE_SEG1_DEMO);
-        listRouteSegments.add(ROUTE_SEG2_DEMO);
-        listRouteSegments.add(ROUTE_SEG3_DEMO);
-        listRouteSegments.add(ROUTE_SEG4_DEMO);
-
-        return listRouteSegments;
-    }
-
-    private List<EventFriends> getListEventFriends(){
-
-        List<EventFriends> listEventFriends = new ArrayList<>();
-        EventFriends EVENT_FRIENDS_DEMO_1 = new EventFriends(0,"id1_01_01_2000_14:00","id2","id2","ongoing");
-        EventFriends EVENT_FRIENDS_DEMO_2 = new EventFriends(0,"id1_01_01_2000_14:00","id3","id3","ongoing");
-
-        listEventFriends.add(EVENT_FRIENDS_DEMO_1);
-        listEventFriends.add(EVENT_FRIENDS_DEMO_2);
-
-        return listEventFriends;
-    }
-
-    private void setFriendsDatabase(Context context, String userId){
-
-        Friend friend1 = new Friend("id1","id1","Mat","photoUrl","accepted", "accepted");
-        Friend friend2 = new Friend("id2","id2","Seb","photoUrl","accepted","accepted");
-        Friend friend3 = new Friend("id3","id3","Camille","photoUrl","accepted","accepted");
-
-        FriendsHandler.insertNewFriend(context,friend1, userId);
-        FriendsHandler.insertNewFriend(context,friend2, userId);
-        FriendsHandler.insertNewFriend(context,friend3, userId);
     }
 }

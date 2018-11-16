@@ -1,5 +1,6 @@
 package com.g.laurent.backtobike.Models;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -27,6 +28,7 @@ public class DisplayViewPager extends ViewPager {
         return super.canScroll(v, checkV, dx, x, y);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         if (getCurrentItem() == 0 && getChildCount() == 0) {

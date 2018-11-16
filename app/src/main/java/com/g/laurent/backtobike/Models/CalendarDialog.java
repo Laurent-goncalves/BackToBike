@@ -8,17 +8,14 @@ import android.view.ViewGroup;
 import android.widget.CalendarView;
 import com.g.laurent.backtobike.Controllers.Fragments.InvitFragment;
 import com.g.laurent.backtobike.R;
-import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.g.laurent.backtobike.Utils.UtilsTime;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
 public class CalendarDialog extends DialogFragment {
 
-    @BindView(R.id.calendar_view_dialog)
-    CalendarView calendarView;
+    @BindView(R.id.calendar_view_dialog) CalendarView calendarView;
 
     public CalendarDialog() {
     }

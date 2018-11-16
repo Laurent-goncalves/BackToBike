@@ -1,18 +1,16 @@
 package com.g.laurent.backtobike.Utils.WeatherApi;
 
 import android.content.Context;
-import android.widget.Toast;
-
 import com.g.laurent.backtobike.Models.CallbackWeather;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.google.android.gms.maps.model.LatLng;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
+
+
 
 public class GetForecast implements Disposable {
 
@@ -70,10 +68,6 @@ public class GetForecast implements Disposable {
                 }
             }
         }
-    }
-
-    public List<WeatherForecast> getListWeathers() {
-        return listWeathers;
     }
 
     @Override

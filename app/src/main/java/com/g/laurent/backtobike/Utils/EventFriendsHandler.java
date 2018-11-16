@@ -1,26 +1,25 @@
 package com.g.laurent.backtobike.Utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TableLayout;
 import android.widget.TextView;
 import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.Configurations.ConfigureInvitFragment;
 
-
+@SuppressLint("InflateParams")
 public class EventFriendsHandler {
 
 
     public static void addGuestView(Friend friend, Context context, LinearLayout guestsLayout, ConfigureInvitFragment config) {
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View guestView = inflater.inflate(R.layout.event_friend_item, null);
+         View guestView = inflater.inflate(R.layout.event_friend_item, null);
 
         // Name guest
         TextView guestName = guestView.findViewById(R.id.name_event_friend);
