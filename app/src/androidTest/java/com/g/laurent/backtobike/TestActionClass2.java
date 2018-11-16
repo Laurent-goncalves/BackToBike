@@ -59,7 +59,7 @@ public class TestActionClass2 extends AndroidTestCase {
         }
     }
 
-    @Test
+    /*@Test
     public void testFirebase_AcceptRoute() throws InterruptedException {
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
@@ -110,7 +110,7 @@ public class TestActionClass2 extends AndroidTestCase {
         });
 
         waiting_time(20000);
-    }
+    }*/
 
     @Test
     public void test_accept_reject_friend() {

@@ -81,7 +81,7 @@ public class TestZActivity extends AndroidTestCase {
         waiting_time(5000);
         mActivityTestRule.getActivity().launchTraceActivity(null);
         waiting_time(5000);
-        
+
         Assert.assertEquals(1, 1);
     }
 
