@@ -61,7 +61,10 @@ public class InvitFragment extends Fragment {
             context= getActivity().getApplicationContext();
 
         config = new ConfigureInvitFragment(view,this, mCallbackEventActivity);
-        config.configureViews(mCallbackEventActivity.getInvitation());
+
+        if(mCallbackEventActivity!=null)
+            config.configureViews(mCallbackEventActivity.getInvitation());
+        
         return view;
     }
 
