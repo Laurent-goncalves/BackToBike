@@ -66,7 +66,7 @@ public class CheckAndSendInvitation {
             config.getCallbackEventActivity().configureAlarmManager(bikeEvent);
 
             // Launch displayActivity
-            config.getCallbackEventActivity().launchDisplayActivity(DISPLAY_MY_EVENTS,firebaseUser.getUid());
+            config.getCallbackEventActivity().launchDisplayActivity(DISPLAY_MY_EVENTS, bikeEvent.getId());
         }
     }
 

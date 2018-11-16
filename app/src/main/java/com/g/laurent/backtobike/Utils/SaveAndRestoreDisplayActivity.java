@@ -38,7 +38,10 @@ public class SaveAndRestoreDisplayActivity {
             displayActivity.setTypeDisplay(typeDisplay);
             displayActivity.setIdSelected(id);
 
-            defineListToShow(typeDisplay, user_id, displayActivity);
+            if(user_id!=null)
+                defineListToShow(typeDisplay, user_id, displayActivity);
+            else
+                displayActivity.configureAndShowDisplayFragmentsInViewPager();
         }
     }
 

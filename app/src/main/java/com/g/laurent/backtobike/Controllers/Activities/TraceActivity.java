@@ -51,7 +51,9 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
         progressBar.setVisibility(View.VISIBLE); // open progressBar
 
         savePreviousPage(MENU_TRACE_ROUTE);
-        defineCountersAndConfigureToolbar(MENU_TRACE_ROUTE);
+
+        if(userId!=null)
+            defineCountersAndConfigureToolbar(MENU_TRACE_ROUTE);
 
         defineRouteToTrace(savedInstanceState, getIntent().getExtras());
 

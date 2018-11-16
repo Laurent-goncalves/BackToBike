@@ -48,6 +48,7 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
             SaveAndRestoreDisplayActivity.restoreData(extras, userId,this);
         } catch (InterruptedException e) {
             Toast.makeText(getApplicationContext(), getApplicationContext().getResources().getString(R.string.error_data_restoration) + "\n" + e.toString(),Toast.LENGTH_LONG).show();
+            configureAndShowDisplayFragmentsInViewPager();
         }
     }
 
@@ -121,7 +122,8 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
     public void configureViews(int position){
 
         // Define counters
-        defineCountersAndConfigureToolbar(typeDisplay);
+        if(userId!=null)
+            defineCountersAndConfigureToolbar(typeDisplay);
 
         // Configure views
         new ConfigureDisplayActivity(findViewById(R.id.displayactivity_xml), position, count, userId, typeDisplay,this);

@@ -11,6 +11,8 @@ import com.g.laurent.backtobike.Models.CallbackMainActivity;
 import com.g.laurent.backtobike.R;
 import java.util.List;
 
+import static com.g.laurent.backtobike.Controllers.Activities.BaseActivity.DISPLAY_MY_EVENTS;
+
 
 public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
@@ -37,7 +39,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
         holder.configureViews(listBikeEvent.get(holder.getAdapterPosition()), userId, context);
-        //holder.itemView.setOnClickListener(v -> callbackMainActivity.showEvent(listBikeEvent.get(holder.getAdapterPosition())));
+        holder.itemView.setOnClickListener(v -> callbackMainActivity.launchDisplayActivity(DISPLAY_MY_EVENTS, listBikeEvent.get(holder.getAdapterPosition()).getId()));
     }
 
     @Override

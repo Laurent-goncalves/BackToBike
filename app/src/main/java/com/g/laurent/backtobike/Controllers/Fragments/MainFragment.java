@@ -195,10 +195,12 @@ public class MainFragment extends Fragment {
             else
                 countEvents.setText(String.valueOf(counterEvents));
 
-            if(differences.equals("")) {
-                differencesPanel.setText(context.getResources().getString(R.string.no_new_information));
-            } else
-                differencesPanel.setText(differences);
+            if(differences!=null){
+                if(differences.equals("")) {
+                    differencesPanel.setText(context.getResources().getString(R.string.no_new_information));
+                } else
+                    differencesPanel.setText(differences);
+            }
         }
     }
 

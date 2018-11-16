@@ -68,7 +68,10 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
         UtilsTime.deleteOverdueEvents(getApplicationContext(), userId);
 
         // Check if the database has already been initialized (during the first use of the app on the phone)
-        checkInitializationDatabase();
+        if(userId!=null)
+            checkInitializationDatabase();
+        else
+            getCurrentLocationForWeather();
     }
 
     // --------------------------------------------------------------------------------------------------------
@@ -218,25 +221,30 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
 
     public void defineCountersAndConfigureToolbar(LatLng currentLocation, String typeDisplay){
 
-        FirebaseRecover firebaseRecover = new FirebaseRecover(getApplicationContext());
-        firebaseRecover.recoverDatasForCounters(userId, getApplicationContext(), new CallbackCounters() {
-            @Override
-            public void onCompleted(List<Difference> differenceList, List<String> listDifferencesFriendsAndInvits, int counterFriend, int counterEvents, int counterInvits) {
-                toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, counterFriend, counterEvents, counterInvits);
-                int count = counterFriend + counterEvents + counterInvits;
-                UtilsApp.setBadge(getApplicationContext(), count);
+        if(userId!=null && UtilsApp.isInternetAvailable(getApplicationContext())){
+            FirebaseRecover firebaseRecover = new FirebaseRecover(getApplicationContext());
+            firebaseRecover.recoverDatasForCounters(userId, getApplicationContext(), new CallbackCounters() {
+                @Override
+                public void onCompleted(List<Difference> differenceList, List<String> listDifferencesFriendsAndInvits, int counterFriend, int counterEvents, int counterInvits) {
+                    toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, counterFriend, counterEvents, counterInvits);
+                    int count = counterFriend + counterEvents + counterInvits;
+                    UtilsApp.setBadge(getApplicationContext(), count);
 
-                configureMainFragment(UtilsCounters.transformListDifferencesToString(differenceList, listDifferencesFriendsAndInvits),
-                        counterEvents, counterFriend, counterInvits, currentLocation);
-            }
+                    configureMainFragment(UtilsCounters.transformListDifferencesToString(differenceList, listDifferencesFriendsAndInvits),
+                            counterEvents, counterFriend, counterInvits, currentLocation);
+                }
 
-            @Override
-            public void onFailure(String error) {
-                toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, 0, 0,0);
-                UtilsApp.setBadge(getApplicationContext(), 0);
-                configureMainFragment(null,0,0,0, currentLocation);
-            }
-        });
+                @Override
+                public void onFailure(String error) {
+                    toolbarManager.configureToolbar(callbackBaseActivity, typeDisplay, 0, 0,0);
+                    UtilsApp.setBadge(getApplicationContext(), 0);
+                    configureMainFragment(null,0,0,0, currentLocation);
+                }
+            });
+        } else {
+            configureMainFragment(null,0,0,0, currentLocation);
+        }
+
     }
 
     private void configureMainFragment(String differences, int countEvent, int countFriends, int countInvits, LatLng currentLocation){

@@ -31,7 +31,9 @@ public class EventActivity extends BaseActivity implements CallbackEventActivity
         assignToolbarViews();
         savePreviousPage(MENU_CREATE_EVENT);
         SaveAndRestoreDataInvitActivity.restoreData(savedInstanceState,this);
-        defineCountersAndConfigureToolbar(MENU_CREATE_EVENT);
+
+        if(userId!=null)
+            defineCountersAndConfigureToolbar(MENU_CREATE_EVENT);
 
         configureAndShowInvitFragment();
     }
