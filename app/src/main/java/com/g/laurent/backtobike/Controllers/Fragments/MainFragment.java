@@ -221,14 +221,16 @@ public class MainFragment extends Fragment {
 
         EventAdapter eventAdapter = new EventAdapter(context, listBikeEvent, userId, callbackMainActivity);
 
-        if(callbackMainActivity.getMainActivity()!=null){
-            callbackMainActivity.getMainActivity().runOnUiThread(() -> {
-                // set adapter to recyclerView
-                bikeEventView.setAdapter(eventAdapter);
+        if(callbackMainActivity!=null){
+            if(callbackMainActivity.getMainActivity()!=null){
+                callbackMainActivity.getMainActivity().runOnUiThread(() -> {
+                    // set adapter to recyclerView
+                    bikeEventView.setAdapter(eventAdapter);
 
-                // Set layout manager to position the items
-                bikeEventView.setLayoutManager(layoutManager);
-            });
+                    // Set layout manager to position the items
+                    bikeEventView.setLayoutManager(layoutManager);
+                });
+            }
         }
     }
 
@@ -288,9 +290,19 @@ public class MainFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
 
         WeatherAdapter adapter = new WeatherAdapter(listWeatherForecast, context);
-        
-        if(callbackMainActivity.getMainActivity()!=null) {
-            callbackMainActivity.getMainActivity().runOnUiThread(() -> {
+
+        if(callbackMainActivity!=null){
+            if(callbackMainActivity.getMainActivity()!=null) {
+                callbackMainActivity.getMainActivity().runOnUiThread(() -> {
+                    // set adapter to recyclerView
+                    weatherView.setAdapter(adapter);
+
+                    // Set layout manager to position the items
+                    weatherView.setLayoutManager(layoutManager);
+                });
+            }
+        } else if(getActivity()!=null){
+            getActivity().runOnUiThread(() -> {
                 // set adapter to recyclerView
                 weatherView.setAdapter(adapter);
 
