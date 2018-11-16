@@ -2,6 +2,9 @@ package com.g.laurent.backtobike;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.test.filters.LargeTest;
+import android.support.test.filters.MediumTest;
+import android.support.test.runner.AndroidJUnit4;
 import android.test.AndroidTestCase;
 import com.g.laurent.backtobike.Models.AppDatabase;
 import com.g.laurent.backtobike.Models.BikeEvent;
@@ -24,12 +27,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import junit.framework.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-
+@RunWith(AndroidJUnit4.class)
+@LargeTest
 public class TestActionClass extends AndroidTestCase {
 
     private CountDownLatch authSignal = null;

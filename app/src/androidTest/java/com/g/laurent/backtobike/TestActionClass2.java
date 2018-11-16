@@ -1,6 +1,8 @@
 package com.g.laurent.backtobike;
 
 import android.content.Context;
+import android.support.test.filters.LargeTest;
+import android.support.test.runner.AndroidJUnit4;
 import android.test.AndroidTestCase;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
@@ -21,11 +23,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import junit.framework.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
 
 public class TestActionClass2 extends AndroidTestCase {
 
@@ -112,7 +115,6 @@ public class TestActionClass2 extends AndroidTestCase {
         waiting_time(20000);
     }*/
 
-    @Test
     public void test_accept_reject_friend() {
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
