@@ -114,7 +114,7 @@ public class TestActionClass2 extends AndroidTestCase {
 
         waiting_time(20000);
     }*/
-
+/*
     public void test_accept_reject_friend() {
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
@@ -204,7 +204,7 @@ public class TestActionClass2 extends AndroidTestCase {
         });
 
         waiting_time(5000);
-    }
+    }*/
 
     // -------------------------------------------- UTILS ---------------------------------------------------------
 
