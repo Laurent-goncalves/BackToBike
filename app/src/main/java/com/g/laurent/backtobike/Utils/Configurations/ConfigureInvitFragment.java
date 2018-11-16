@@ -58,6 +58,7 @@ public class ConfigureInvitFragment {
 
     public ConfigureInvitFragment(View view, InvitFragment invitFragment, CallbackEventActivity callbackEventActivity) {
         ButterKnife.bind(this, view);
+        listRoutes = new ArrayList<>();
         this.view = view;
         this.invitFragment=invitFragment;
         this.mCallbackEventActivity = callbackEventActivity;
@@ -81,7 +82,8 @@ public class ConfigureInvitFragment {
 
     private void configureSpinner(int idRoute){
 
-        listRoutes = RouteHandler.getAllRoutes(context, mCallbackEventActivity.getUserId());
+        if(mCallbackEventActivity!=null)
+            listRoutes = RouteHandler.getAllRoutes(context, mCallbackEventActivity.getUserId());
         listRoutes.add(0,new Route(-1, context.getResources().getString(R.string.select_a_route_spinner),false,null));
 
         // Creating adapter for spinner
@@ -112,7 +114,7 @@ public class ConfigureInvitFragment {
 
     private void configureGuestsViews(ArrayList<String> listIdFriends){
 
-        if(listIdFriends!=null){
+        if(listIdFriends!=null && mCallbackEventActivity!=null){
             if(listIdFriends.size()>0){
                 for(String idFriend : listIdFriends){
                     Friend friend = FriendsHandler.getFriend(context, idFriend, mCallbackEventActivity.getUserId());
@@ -130,7 +132,7 @@ public class ConfigureInvitFragment {
     public void onRouteSelected(){
         int position = listRoutesView.getSelectedItemPosition();
 
-        if(position!=0){
+        if(position!=0 && mCallbackEventActivity!=null){
             mCallbackEventActivity.getInvitation().setIdRoute(listRoutes.get(position).getId());
             configMap.configureMapLayout(listRoutes.get(position));
         }
@@ -138,7 +140,8 @@ public class ConfigureInvitFragment {
 
     @OnTextChanged(R.id.comments_edit_text)
     public void onCommentsChanged(){
-        mCallbackEventActivity.getInvitation().setComments(commentsView.getText().toString());
+        if(mCallbackEventActivity!=null)
+            mCallbackEventActivity.getInvitation().setComments(commentsView.getText().toString());
     }
 
     @OnClick(R.id.button_send)
@@ -148,12 +151,14 @@ public class ConfigureInvitFragment {
 
     @OnClick(R.id.button_cancel)
     public void cancel(){
-        mCallbackEventActivity.launchDisplayActivity(DISPLAY_MY_EVENTS, null);
+        if(mCallbackEventActivity!=null)
+            mCallbackEventActivity.launchDisplayActivity(DISPLAY_MY_EVENTS, null);
     }
 
     @OnClick(R.id.button_add_guests)
     public void addGuests(){
-        mCallbackEventActivity.configureAndShowFriendFragment();
+        if(mCallbackEventActivity!=null)
+            mCallbackEventActivity.configureAndShowFriendFragment();
     }
 
     @OnClick(R.id.date_picker_layout)
