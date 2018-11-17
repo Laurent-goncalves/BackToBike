@@ -46,7 +46,7 @@ public class TestZActivity extends AndroidTestCase {
         } else {
             authSignal.countDown();
         }
-        authSignal.await(60, TimeUnit.SECONDS);
+        authSignal.await(30, TimeUnit.SECONDS);
     }
 
     @Override
@@ -78,11 +78,6 @@ public class TestZActivity extends AndroidTestCase {
         mActivityTestRule.getActivity().launchDisplayActivity(BaseActivity.DISPLAY_MY_EVENTS, null);
         waiting_time(5000);
         mActivityTestRule.getActivity().launchDisplayActivity(BaseActivity.DISPLAY_MY_INVITS, null);
-        waiting_time(5000);
-        mActivityTestRule.getActivity().launchTraceActivity(null);
-        waiting_time(5000);
-
-        Assert.assertEquals(1, 1);
     }
 
     private void waiting_time(int time){
