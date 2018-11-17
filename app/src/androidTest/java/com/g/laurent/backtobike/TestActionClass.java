@@ -74,21 +74,21 @@ public class TestActionClass extends AndroidTestCase {
     public void test_my_routes() throws InterruptedException {
 
         Context context = getInstrumentation().getTargetContext();
-        String userId = FirebaseAuth.getInstance().getUid();
+
         Route route = new Route(0,"trip to Lille",true);
         route.setListRouteSegment(getListRouteSegments());
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
         //databaseReference.child("id1").child("login").child("111...///");
 
-        databaseReference.child(userId).child("my_routes").removeValue();
+        databaseReference.child("id1").child("my_routes").removeValue();
 
         // ------------------------------------------------ INSERT route
 
         // insert route in Database and Firebase
-        int idRoute = Action.addNewRoute(route,userId,context);
+        int idRoute = Action.addNewRoute(route,"id1",context);
 
         // Check that route is well added to Database
-        Route routeTest = getRouteFromDatabase(idRoute, userId);
+        Route routeTest = getRouteFromDatabase(idRoute, "id1");
 
         Assert.assertEquals("trip to Lille", routeTest.getName());
         Assert.assertEquals(4, routeTest.getListRouteSegment().size());
@@ -99,7 +99,7 @@ public class TestActionClass extends AndroidTestCase {
         CountDownLatch readSignal = new CountDownLatch(5);
         readSignal.countDown();
 
-        firebaseRecover.recoverRoutesUser(userId, new OnRouteDataGetListener() {
+        firebaseRecover.recoverRoutesUser("id1", new OnRouteDataGetListener() {
             @Override
             public void onSuccess(List<Route> listRoutesFirebase) {
                 Assert.assertEquals(1, listRoutesFirebase.size());
@@ -117,10 +117,10 @@ public class TestActionClass extends AndroidTestCase {
         route.setName("Trip to Marseille");
 
         // update route in database
-        Action.updateRoute(route, userId, context);
+        Action.updateRoute(route, "id1", context);
 
         // Check that route is well updated in Database
-        routeTest = getRouteFromDatabase(idRoute,userId);
+        routeTest = getRouteFromDatabase(idRoute,"id1");
         Assert.assertEquals("Trip to Marseille", routeTest.getName());
 
         // Check that route is well updated in Firebase
@@ -128,7 +128,7 @@ public class TestActionClass extends AndroidTestCase {
         readSignal = new CountDownLatch(5);
         readSignal.countDown();
 
-        firebaseRecover.recoverRoutesUser(userId, new OnRouteDataGetListener() {
+        firebaseRecover.recoverRoutesUser("id1", new OnRouteDataGetListener() {
             @Override
             public void onSuccess(List<Route> listRoutesFirebase) {
                 Assert.assertEquals("Trip to Marseille", listRoutesFirebase.get(0).getName());
@@ -142,10 +142,10 @@ public class TestActionClass extends AndroidTestCase {
         readSignal.await(10, TimeUnit.SECONDS);
 
         // ----------------------------------------------------- DELETE route
-        Action.deleteRoute(route,userId, context);
+        Action.deleteRoute(route,"id1", context);
 
         // Check that route is well "deleted" in Database
-        routeTest = getRouteFromDatabase(idRoute, userId);
+        routeTest = getRouteFromDatabase(idRoute, "id1");
         Assert.assertFalse(routeTest.getValid());
 
         // Check that route is well "deleted" in Firebase
@@ -153,7 +153,7 @@ public class TestActionClass extends AndroidTestCase {
         readSignal = new CountDownLatch(5);
         readSignal.countDown();
 
-        firebaseRecover.recoverRoutesUser(userId, new OnRouteDataGetListener() {
+        firebaseRecover.recoverRoutesUser("id1", new OnRouteDataGetListener() {
             @Override
             public void onSuccess(List<Route> listRoutesFirebase) {
                 Assert.assertFalse(listRoutesFirebase.get(0).getValid());
@@ -176,6 +176,8 @@ public class TestActionClass extends AndroidTestCase {
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
 
+        databaseReference.child("id2").child("my_friends").removeValue();
+
         Friend friend = new Friend("id1","id1","Michel","photo_url","ongoing","ongoing");
         Friend user = new Friend("id2","id2","Seb","photoUrl","accepted","ongoing");
 
@@ -186,6 +188,8 @@ public class TestActionClass extends AndroidTestCase {
 
         Assert.assertEquals("Michel", friendTest.getName());
         Assert.assertEquals("id1", friendTest.getLogin());
+
+        waiting_time(5000);
 
         // Check that the friend is well added to Firebase
         FirebaseRecover firebaseRecover = new FirebaseRecover(databaseReference);
@@ -259,7 +263,6 @@ public class TestActionClass extends AndroidTestCase {
     @Test
     public void test_my_events() throws InterruptedException {
 
-        String userId = FirebaseAuth.getInstance().getUid();
         Context context = getInstrumentation().getTargetContext();
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
@@ -267,7 +270,7 @@ public class TestActionClass extends AndroidTestCase {
         databaseReference.child("id2").child("my_invitations").removeValue();
         databaseReference.child("id3").child("my_invitations").removeValue();
 
-        setFriendsDatabase(context, userId);
+        setFriendsDatabase(context, "id1");
 
         BikeEvent bikeEvent = new BikeEvent("id1_01_01_2000_14:00", "id1", "01/01/2000", "14:00", 999, "Comments : take good shoes", "accepted");
         Route route = new Route();
@@ -393,13 +396,12 @@ public class TestActionClass extends AndroidTestCase {
     @Test
     public void test_accept_reject_invitation() throws InterruptedException {
 
-        String userId = FirebaseAuth.getInstance().getUid();
         Context context = getInstrumentation().getTargetContext();
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
-        databaseReference.child(userId).child("my_events").removeValue();
+        databaseReference.child("id1").child("my_events").removeValue();
 
-        setFriendsDatabase(context, userId);
+        setFriendsDatabase(context, "id1");
 
         BikeEvent bikeEvent = new BikeEvent("id1_01_01_2000_14:00", "id1", "01/01/2000", "14:00", 999, "Comments : take good shoes", "accepted");
         Route route = new Route(999,"Trip to Paris",true);
