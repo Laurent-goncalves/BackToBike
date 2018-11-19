@@ -26,7 +26,6 @@ public class UtilsFirebase {
     private static final String GUESTS = "guests";
     private static final String ROUTE = "route";
     private static final String STATUS = "status";
-    private static final String VALID = "valid";
     private static final String HAS_ACCEPTED = "has_accepted";
     private static final String ACCEPTED = "accepted";
     private static final String PHOTO_URL = "photoUrl";

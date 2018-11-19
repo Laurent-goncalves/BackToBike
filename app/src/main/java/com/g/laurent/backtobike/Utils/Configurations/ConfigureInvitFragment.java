@@ -1,5 +1,6 @@
 package com.g.laurent.backtobike.Utils.Configurations;
 
+import android.annotation.SuppressLint;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -35,7 +36,7 @@ import butterknife.OnTextChanged;
 
 import static com.g.laurent.backtobike.Utils.MapTools.RouteHandler.MY_ROUTE_TYPE;
 
-
+@SuppressLint("CommitTransaction")
 public class ConfigureInvitFragment {
 
     @BindView(R.id.date_view) TextView dateView;

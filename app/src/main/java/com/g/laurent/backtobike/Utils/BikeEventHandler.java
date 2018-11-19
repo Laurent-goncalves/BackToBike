@@ -9,7 +9,6 @@ import com.g.laurent.backtobike.Models.EventFriendsContentProvider;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
-import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
 import java.util.ArrayList;
 import java.util.List;
 

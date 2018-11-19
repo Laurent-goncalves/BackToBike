@@ -9,9 +9,6 @@ import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.Action;
-import com.g.laurent.backtobike.Utils.FirebaseUpdate;
-import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
-import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,8 +20,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.List;
-
-import static com.g.laurent.backtobike.Utils.MapTools.RouteHandler.MY_ROUTE_TYPE;
 
 
 public class ConfigureMap implements OnMapReadyCallback {

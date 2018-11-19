@@ -251,17 +251,6 @@ public class FirebaseUpdate {
         }
     }
 
-    public void acceptRoute(String user_id, Route route, BikeEvent bikeEvent){
-
-        String idInvitation = UtilsApp.getIdEvent(bikeEvent);
-
-        // Update my_routes
-        updateMyRoutes(user_id, route, route.getListRouteSegment());
-
-        // In "invitations", delete the route
-        databaseReferenceUsers.child(user_id).child(MY_EVENTS).child(idInvitation).child(ROUTE).removeValue();
-    }
-
     public void cancelMyBikeEvent(Context context, String user_id, List<EventFriends> listEventFriends, BikeEvent bikeEvent){
 
         // Delete BikeEvent from my_events

@@ -77,7 +77,8 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
     @Override
     public void onResume() {
         super.onResume();
-        UtilsTime.deleteOverdueEvents(getApplicationContext(), userId);
+        if(userId!=null)
+            UtilsTime.deleteOverdueEvents(getApplicationContext(), userId);
         defineCountersAndConfigureToolbar(MENU_MAIN_PAGE);
     }
 

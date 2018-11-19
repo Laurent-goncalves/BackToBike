@@ -193,9 +193,6 @@ public class SynchronizeWithFirebase {
 
     public static void synchronizeMyRoutes(String userId, Context context, CallbackSynchronizeEnd callbackSynchronizeEnd) {
 
-        // Recover routes on database
-        List<Route> listRoutesApp = RouteHandler.getAllRoutesForSynchronization(context, userId);
-
         // Recover routes from user on Firebase
         FirebaseRecover firebaseRecover = new FirebaseRecover(context);
 

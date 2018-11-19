@@ -176,24 +176,6 @@ public class UtilsApp {
         return index;
     }
 
-    public static int findRouteInList(Route route, List<Route> listRoutes){
-
-        int index = -1;
-
-        if(listRoutes!=null && route !=null){
-            if(listRoutes.size()>0){
-                for(int i = 0; i < listRoutes.size(); i++){
-                    if(UtilsApp.areRoutesEquals(listRoutes.get(i), route)){
-                        index = i;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return index;
-    }
-
     public static int findFriendIndexInListEventFriends(String idFriend, List<EventFriends> listEventFriends){
 
         int index = -1;

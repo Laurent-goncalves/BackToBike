@@ -27,7 +27,7 @@ public class SaveAndRestoreDisplayActivity {
     }
 
     // ----------------------------------- RESTORE DATA
-    public static void restoreData(Bundle saveInstantState, String user_id, DisplayActivity displayActivity) throws InterruptedException {
+    public static void restoreData(Bundle saveInstantState, String user_id, DisplayActivity displayActivity) {
 
         if(saveInstantState!=null && displayActivity!=null){
 
@@ -45,7 +45,7 @@ public class SaveAndRestoreDisplayActivity {
         }
     }
 
-    private static void defineListToShow(String typeDisplay, String user_id, DisplayActivity displayActivity) throws InterruptedException {
+    private static void defineListToShow(String typeDisplay, String user_id, DisplayActivity displayActivity) {
 
         Context context = displayActivity.getApplicationContext();
 

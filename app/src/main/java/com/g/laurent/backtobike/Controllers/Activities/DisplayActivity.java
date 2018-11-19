@@ -45,12 +45,7 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         assignToolbarViews();
 
         // Recover datas
-        try {
-            SaveAndRestoreDisplayActivity.restoreData(extras, userId,this);
-        } catch (InterruptedException e) {
-            Toast.makeText(getApplicationContext(), getApplicationContext().getResources().getString(R.string.error_data_restoration) + "\n" + e.toString(),Toast.LENGTH_LONG).show();
-            configureAndShowDisplayFragmentsInViewPager();
-        }
+        SaveAndRestoreDisplayActivity.restoreData(extras, userId,this);
     }
 
     @Override

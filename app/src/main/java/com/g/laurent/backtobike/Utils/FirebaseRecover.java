@@ -153,23 +153,6 @@ public class FirebaseRecover {
         });
     }
 
-    public void recoverSingleBikeEventsUser(String user_id, String idEvent, OnBikeEventDataGetListener onBikeEventDataGetListener)  {
-
-        DatabaseReference databaseReferenceEvents = databaseReferenceUsers.child(user_id).child(MY_EVENTS).child(idEvent);
-        databaseReferenceEvents.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                BikeEvent bikeEvent = buildBikeEvent(dataSnapshot);
-                onBikeEventDataGetListener.onSuccess(bikeEvent);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                onBikeEventDataGetListener.onFailure(databaseError.toString());
-            }
-        });
-    }
-
     public void checkIfBikeEventExists(String typeChild, String user_id, String child, OnChildChecking onChildChecking){
 
         DatabaseReference databaseReference = null;
@@ -374,25 +357,6 @@ public class FirebaseRecover {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 callbackCounters.onFailure(databaseError.toString());
-            }
-        });
-    }
-
-    public void recoverSingleInvitationUser(String user_id, String idInvit, OnBikeEventDataGetListener onBikeEventDataGetListener) {
-
-        DatabaseReference databaseReferenceEvents = databaseReferenceUsers.child(user_id).child(MY_INVITATIONS).child(idInvit);
-
-        databaseReferenceEvents.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                BikeEvent bikeEvent = buildBikeEvent(dataSnapshot);
-                onBikeEventDataGetListener.onSuccess(bikeEvent);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                onBikeEventDataGetListener.onFailure(databaseError.toString());
             }
         });
     }
