@@ -22,6 +22,7 @@ import com.g.laurent.backtobike.Utils.MapTools.GetCurrentLocation;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
 import com.g.laurent.backtobike.Utils.UtilsApp;
+import com.g.laurent.backtobike.Utils.UtilsTime;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -69,7 +70,9 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
     @Override
     public void onResume() {
         super.onResume();
-        defineCountersAndConfigureToolbar(MENU_TRACE_ROUTE);
+        if(userId!=null) {
+            defineCountersAndConfigureToolbar(MENU_TRACE_ROUTE);
+        }
     }
 
     @Override

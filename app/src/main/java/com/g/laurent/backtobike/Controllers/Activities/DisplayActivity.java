@@ -57,8 +57,10 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
     @Override
     public void onResume() {
         super.onResume();
-        defineCountersAndConfigureToolbar(typeDisplay);
-        synchronizeWithFirebaseAndRefreshFragment();
+        if(userId!=null) {
+            defineCountersAndConfigureToolbar(typeDisplay);
+            synchronizeWithFirebaseAndRefreshFragment();
+        }
     }
 
     @Override

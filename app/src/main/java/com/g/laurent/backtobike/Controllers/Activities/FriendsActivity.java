@@ -69,7 +69,8 @@ public class FriendsActivity extends BaseActivity implements CallbackFriendActiv
     @Override
     public void onResume() {
         super.onResume();
-        defineCountersAndConfigureToolbar(MENU_MY_FRIENDS);
+        if(userId!=null)
+            defineCountersAndConfigureToolbar(MENU_MY_FRIENDS);
     }
 
     @Override

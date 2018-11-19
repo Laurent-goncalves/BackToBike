@@ -48,7 +48,8 @@ public class EventActivity extends BaseActivity implements CallbackEventActivity
     @Override
     public void onResume() {
         super.onResume();
-        defineCountersAndConfigureToolbar(MENU_CREATE_EVENT);
+        if(userId!=null)
+            defineCountersAndConfigureToolbar(MENU_CREATE_EVENT);
     }
 
     // --------------------------------------------------------------------------------------------------------
