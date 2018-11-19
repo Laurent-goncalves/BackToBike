@@ -14,8 +14,11 @@ public interface RoutesDao {
     @Query("SELECT * FROM Route WHERE id = :id")
     Cursor getRoute(long id);
 
-    @Query("SELECT * FROM Route WHERE valid = 1")
-    Cursor getAllRoutesValid();
+    @Query("SELECT * FROM Route WHERE idEvent = :idEvent")
+    Cursor getRouteEvent(String idEvent);
+
+    @Query("SELECT * FROM Route WHERE typeRoute = :typeRoute")
+    Cursor getMyRoutes(String typeRoute);
 
     @Query("SELECT * FROM Route")
     Cursor getAllRoutes();

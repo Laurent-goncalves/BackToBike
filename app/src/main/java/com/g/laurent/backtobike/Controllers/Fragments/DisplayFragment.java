@@ -96,35 +96,45 @@ public class DisplayFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (mapView != null)
-            mapView.onResume();
+        if (mapView != null){
+            if(mapView.getVisibility() == View.VISIBLE)
+                mapView.onResume();
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mapView != null)
-            mapView.onDestroy();
+        if (mapView != null){
+            if(mapView.getVisibility() == View.VISIBLE)
+                mapView.onDestroy();
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        if (mapView != null)
-            mapView.onStart();
+        if (mapView != null){
+            if(mapView.getVisibility() == View.VISIBLE)
+                mapView.onStart();
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (mapView != null)
-            mapView.onStop();
+        if (mapView != null){
+            if(mapView.getVisibility() == View.VISIBLE)
+                mapView.onStop();
+        }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mapView != null)
-            mapView.onSaveInstanceState(outState);
+        if (mapView != null){
+            if(mapView.getVisibility() == View.VISIBLE)
+                mapView.onSaveInstanceState(outState);
+        }
     }
 }

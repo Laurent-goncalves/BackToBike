@@ -141,7 +141,7 @@ public class UtilsGoogleMaps {
 
         Boolean answer = true;
 
-        List<Route> listRouteDatabase = RouteHandler.getAllRoutes(context, userId);
+        List<Route> listRouteDatabase = RouteHandler.getMyRoutes(context, userId);
 
         if(listRouteDatabase!=null){
             if(listRouteDatabase.size()>0){

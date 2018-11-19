@@ -59,7 +59,7 @@ public class ConfigureDisplayActivity {
 
         switch (typeDisplay) {
             case DISPLAY_MY_ROUTES:
-                listRoutes = RouteHandler.getAllRoutes(context, userId);
+                listRoutes = RouteHandler.getMyRoutes(context, userId);
                 break;
             case DISPLAY_MY_EVENTS:
                 listEvents = BikeEventHandler.getAllFutureBikeEvents(context, userId);
@@ -236,7 +236,7 @@ public class ConfigureDisplayActivity {
                 break;
 
             case DISPLAY_MY_EVENTS:
-                // CANCEL EVENT
+                // CANCEL or REJECT EVENT
                 buttonLeft.setOnClickListener(v -> {
 
                     Boolean isEventFromOrganizer = listEvents.get(position).getOrganizerId().equals(userId);

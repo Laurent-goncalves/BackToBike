@@ -2,6 +2,7 @@ package com.g.laurent.backtobike.Controllers.Activities;
 
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.widget.Toast;
 import com.g.laurent.backtobike.Models.BikeEvent;
@@ -58,61 +59,70 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         SaveAndRestoreDisplayActivity.saveData(outState,this);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        defineCountersAndConfigureToolbar(typeDisplay);
+        synchronizeWithFirebaseAndRefreshFragment();
+    }
+
+    @Override
+    protected void refreshActivity(){
+        defineCountersAndConfigureToolbar(typeDisplay);
+        synchronizeWithFirebaseAndRefreshFragment();
+    }
+
     public void synchronizeWithFirebaseAndRefreshFragment(){
 
         if(typeDisplay!=null && UtilsApp.isInternetAvailable(getApplicationContext())){
 
-            if(typeDisplay.equals(DISPLAY_MY_ROUTES)) {
+            switch(typeDisplay){
 
-                SynchronizeWithFirebase.synchronizeMyRoutes(userId, getApplicationContext(), new CallbackSynchronizeEnd() {
-                    @Override
-                    public void onCompleted() {
-                        listRoutes = RouteHandler.getAllRoutes(getApplicationContext(), userId);
-                        configureAndShowDisplayFragmentsInViewPager();
-                    }
+                case DISPLAY_MY_ROUTES:
+                    SynchronizeWithFirebase.synchronizeMyRoutes(userId, getApplicationContext(), new CallbackSynchronizeEnd() {
+                        @Override
+                        public void onCompleted() {
+                            listRoutes = RouteHandler.getMyRoutes(getApplicationContext(), userId);
+                            configureAndShowDisplayFragmentsInViewPager();
+                        }
 
-                    @Override
-                    public void onFailure(String error) {
-                        configureAndShowDisplayFragmentsInViewPager();
-                    }
-                });
+                        @Override
+                        public void onFailure(String error) {
+                            configureAndShowDisplayFragmentsInViewPager();
+                        }
+                    });
+                    break;
+                case DISPLAY_MY_EVENTS:
+                    SynchronizeWithFirebase.synchronizeMyEvents(userId, getApplicationContext(), new CallbackSynchronizeEnd() {
+                        @Override
+                        public void onCompleted() {
+                            listEvents = BikeEventHandler.getAllFutureBikeEvents(getApplicationContext(),userId);
+                            configureAndShowDisplayFragmentsInViewPager();
+                        }
 
-            } else {
-                if( listEvents.size()>0){
-                    if (typeDisplay.equals(DISPLAY_MY_EVENTS)) {
-                        SynchronizeWithFirebase.synchronizeMyEvents(userId, getApplicationContext(), new CallbackSynchronizeEnd() {
-                            @Override
-                            public void onCompleted() {
-                                listEvents = BikeEventHandler.getAllFutureBikeEvents(getApplicationContext(),userId);
-                                configureAndShowDisplayFragmentsInViewPager();
-                            }
+                        @Override
+                        public void onFailure(String error) {
+                            configureAndShowDisplayFragmentsInViewPager();
+                        }
+                    });
+                    break;
+                case DISPLAY_MY_INVITS:
+                    SynchronizeWithFirebase.synchronizeInvitations(userId, getApplicationContext(), new CallbackSynchronizeEnd() {
+                        @Override
+                        public void onCompleted() {
+                            listInvitations = BikeEventHandler.getAllInvitations(getApplicationContext(),userId);
+                            configureAndShowDisplayFragmentsInViewPager();
+                        }
 
-                            @Override
-                            public void onFailure(String error) {
-                                configureAndShowDisplayFragmentsInViewPager();
-                            }
-                        });
-                    } else {
-                        SynchronizeWithFirebase.synchronizeInvitations(userId, getApplicationContext(), new CallbackSynchronizeEnd() {
-                            @Override
-                            public void onCompleted() {
-                                listInvitations = BikeEventHandler.getAllInvitations(getApplicationContext(),userId);
-                                configureAndShowDisplayFragmentsInViewPager();
-                            }
-
-                            @Override
-                            public void onFailure(String error) {
-                                configureAndShowDisplayFragmentsInViewPager();
-                            }
-                        });
-                    }
-                } else
-                    configureAndShowDisplayFragmentsInViewPager();
-
+                        @Override
+                        public void onFailure(String error) {
+                            configureAndShowDisplayFragmentsInViewPager();
+                        }
+                    });
+                    break;
             }
         } else
             configureAndShowDisplayFragmentsInViewPager();
-
     }
 
     // --------------------------------------------------------------------------------------------------------
@@ -124,6 +134,11 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         // Define counters
         if(userId!=null)
             defineCountersAndConfigureToolbar(typeDisplay);
+
+        // show message
+        if(count == 0) {
+            new Handler().postDelayed(() -> showToastDisplayActivity(typeDisplay), 1000);
+        }
 
         // Configure views
         new ConfigureDisplayActivity(findViewById(R.id.displayactivity_xml), position, count, userId, typeDisplay,this);
@@ -139,7 +154,7 @@ public class DisplayActivity extends BaseActivity implements CallbackDisplayActi
         // Update viewpager
         switch (typeDisplay) {
             case DISPLAY_MY_ROUTES:
-                listRoutes = RouteHandler.getAllRoutes(getApplicationContext(), userId);
+                listRoutes = RouteHandler.getMyRoutes(getApplicationContext(), userId);
                 count = listRoutes.size();
                 break;
             case DISPLAY_MY_EVENTS:

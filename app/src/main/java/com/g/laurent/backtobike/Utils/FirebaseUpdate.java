@@ -99,6 +99,11 @@ public class FirebaseUpdate {
         UtilsFirebase.setRouteSegment(databaseReferenceRoute, listRouteSegment);
     }
 
+    public void deleteRoute(String user_id, String idRoute){
+        DatabaseReference databaseReferenceRoute = databaseReferenceUsers.child(user_id).child(MY_ROUTES).child(idRoute);
+        databaseReferenceRoute.removeValue();
+    }
+
     public void updateMyBikeEvent(String user_id, BikeEvent bikeEvent){
 
         // set route data
@@ -180,7 +185,7 @@ public class FirebaseUpdate {
         String idEvent = UtilsApp.getIdEvent(bikeEvent);
 
         // Delete event
-        databaseReferenceUsers.child(userId).child(MY_EVENTS).child(idEvent).child(STATUS).child(REJECTED);
+        databaseReferenceUsers.child(userId).child(MY_EVENTS).child(idEvent).removeValue();
 
         // update datas from organizer and other eventFriends
         updateAcceptanceEventFriend(context, userId, bikeEvent, false);

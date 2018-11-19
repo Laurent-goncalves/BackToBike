@@ -10,7 +10,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.TextViewCompat;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
+import android.widget.TextView;
+
 import com.g.laurent.backtobike.Controllers.Activities.DisplayActivity;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
@@ -35,6 +39,11 @@ public class UtilsApp {
 
     public static boolean areCharactersAllowed(String login){
         return Base64.isArrayByteBase64(login.getBytes());
+    }
+
+    public static void resizeTextView(TextView commentView){
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(commentView, 14, 17, 1,
+                TypedValue.COMPLEX_UNIT_DIP);
     }
 
     // ------------------------------------------------------------------------------------------------------------
@@ -243,7 +252,7 @@ public class UtilsApp {
         return listRoutesNames;
     }
 
-    public static List<EventFriends> positionOrganizerAtStartList(List<EventFriends> listEventFriends, BikeEvent event, EventFriends user, String idOrganizer){
+    public static List<EventFriends> positionOrganizerAtStartList(Context context, List<EventFriends> listEventFriends, BikeEvent event, EventFriends user, String idOrganizer){
 
         List<EventFriends> newlistEventFriends = new ArrayList<>(listEventFriends);
 
@@ -253,6 +262,11 @@ public class UtilsApp {
 
         if(user.getIdFriend().equals(idOrganizer)){
             newlistEventFriends.add(0, user);
+        } else {
+            Friend friend = FriendsHandler.getFriend(context, idOrganizer, String.valueOf(user.getId()));
+            EventFriends eventOrganizer = new EventFriends(0, event.getId(), friend.getId(), friend.getLogin(), ACCEPTED);
+            if(friend!=null)
+                newlistEventFriends.add(0, eventOrganizer);
         }
 
         int indexOrg = -1;
@@ -310,16 +324,16 @@ public class UtilsApp {
         Boolean answer = false;
 
         if(route1.getName().equals(route2.getName())){
-            if(route1.getValid().equals(route2.getValid())){
-                if(route1.getListRouteSegment().size()==route2.getListRouteSegment().size()){
+            if(route1.getTypeRoute().equals(route2.getTypeRoute())){
+                if(route1.getListRouteSegment().size()==route2.getListRouteSegment().size()) {
                     // Compare routesegments
-                    for(int i = 1; i < route1.getListRouteSegment().size()+1; i++){
+                    for (int i = 1; i < route1.getListRouteSegment().size() + 1; i++) {
 
-                        int index1 = findIndexSegmentNumber(i,route1.getListRouteSegment());
-                        int index2 = findIndexSegmentNumber(i,route2.getListRouteSegment());
+                        int index1 = findIndexSegmentNumber(i, route1.getListRouteSegment());
+                        int index2 = findIndexSegmentNumber(i, route2.getListRouteSegment());
 
-                        if(index1==index2 && index1!=-1){
-                            if(route1.getListRouteSegment().get(index1).getLat().equals(route2.getListRouteSegment().get(index2).getLat()) &&
+                        if (index1 == index2 && index1 != -1) {
+                            if (route1.getListRouteSegment().get(index1).getLat().equals(route2.getListRouteSegment().get(index2).getLat()) &&
                                     route1.getListRouteSegment().get(index1).getLng().equals(route2.getListRouteSegment().get(index2).getLng()))
                                 answer = true;
                             else {

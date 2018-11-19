@@ -34,6 +34,23 @@ public class UtilsTime {
         return (int)( (d2.getTime() - d1.getTime()) / (1000*60*60*24));
     }
 
+    public static Boolean isEventDateAfterNow(String date, String time){
+        if(isBefore(getTodayDate(), date))
+            return true;
+        else if(isAfter(getTodayDate(), date))
+            return false;
+        else {
+            Calendar today = Calendar.getInstance();
+            if(Integer.parseInt(getHour(time)) > today.get(Calendar.HOUR_OF_DAY))
+                return true;
+            else if(Integer.parseInt(getHour(time)) < today.get(Calendar.HOUR_OF_DAY))
+                return false;
+            else {
+                return Integer.parseInt(getMinutes(time)) > today.get(Calendar.MINUTE);
+            }
+        }
+    }
+
     public static String getTodayDate(){
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", new Locale("fr"));
         return dateFormat.format(new Date());
@@ -207,6 +224,24 @@ public class UtilsTime {
         return dateComp.get(Calendar.YEAR) < dateRef.get(Calendar.YEAR) || dateComp.get(Calendar.YEAR) == dateRef.get(Calendar.YEAR)
                     && (dateComp.get(Calendar.MONTH) < dateRef.get(Calendar.MONTH) || dateComp.get(Calendar.MONTH) == dateRef.get(Calendar.MONTH)
                     && dateComp.get(Calendar.DAY_OF_MONTH) < dateRef.get(Calendar.DAY_OF_MONTH));
+
+    }
+
+    public static boolean isAfter(String date1, String date2) {
+
+        Calendar dateComp = Calendar.getInstance();
+        dateComp.set(Calendar.YEAR, Integer.parseInt(date1.substring(6,10)));
+        dateComp.set(Calendar.MONTH, Integer.parseInt(date1.substring(3,5)));
+        dateComp.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date1.substring(0,2)));
+
+        Calendar dateRef = Calendar.getInstance();
+        dateRef.set(Calendar.YEAR, Integer.parseInt(date2.substring(6,10)));
+        dateRef.set(Calendar.MONTH, Integer.parseInt(date2.substring(3,5)));
+        dateRef.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date2.substring(0,2)));
+
+        return dateComp.get(Calendar.YEAR) > dateRef.get(Calendar.YEAR) || dateComp.get(Calendar.YEAR) == dateRef.get(Calendar.YEAR)
+                && (dateComp.get(Calendar.MONTH) > dateRef.get(Calendar.MONTH) || dateComp.get(Calendar.MONTH) == dateRef.get(Calendar.MONTH)
+                && dateComp.get(Calendar.DAY_OF_MONTH) > dateRef.get(Calendar.DAY_OF_MONTH));
 
     }
 

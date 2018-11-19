@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.g.laurent.backtobike.Controllers.Activities.BaseActivity.LOGIN_SHARED;
+import static com.g.laurent.backtobike.Utils.MapTools.RouteHandler.MY_ROUTE_TYPE;
 
 
 public class Action {
@@ -152,7 +153,7 @@ public class Action {
         SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
         // Insert route in database
-        int idRoute = RouteHandler.insertNewRoute(context, route, userId);
+        int idRoute = RouteHandler.insertInMyRoute(context, route, userId);
         route.setId(idRoute);
 
         // Insert route in Firebase
@@ -186,15 +187,13 @@ public class Action {
 
         SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
-        route.setValid(false);
-
         // Set route as status false in database
-        RouteHandler.updateRoute(context, route, userId);
+        RouteHandler.deleteRoute(context, route, userId);
 
         // Set route as status false in Firebase
-        if(UtilsApp.isInternetAvailable(context)) {
+        if(UtilsApp.isInternetAvailable(context) && route.getTypeRoute().equals(MY_ROUTE_TYPE)) {
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-            firebaseUpdate.updateMyRoutes(userId, route, route.getListRouteSegment());
+            firebaseUpdate.deleteRoute(userId, String.valueOf(route.getId()));
         } else {
             sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
         }
@@ -341,18 +340,23 @@ public class Action {
         }
     }
 
-    public static void addInvitRouteToMyRoutes(BikeEvent invitation, String userId, Context context){
+    public static void addEventRouteToMyRoutes(BikeEvent event, String userId, Context context){
 
         SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
-        // Add route in database
-        int idRoute = RouteHandler.insertNewRoute(context, invitation.getRoute(), userId);
-        invitation.getRoute().setId(idRoute);
+        // Get route event from DB
+        Route route = RouteHandler.getRouteEvent(context, event.getId(), userId);
+
+        // Change route idEvent in database
+        route.setTypeRoute(MY_ROUTE_TYPE);
+        route.setIdEvent(null);
+        int idRoute = RouteHandler.insertInMyRoute(context, route, userId);
+        route = RouteHandler.getRoute(context, idRoute, userId);
 
         // Add route in Firebase
         if(UtilsApp.isInternetAvailable(context)) {
             FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-            firebaseUpdate.acceptRoute(userId, invitation.getRoute(), invitation);
+            firebaseUpdate.updateMyRoutes(userId, route, route.getListRouteSegment());
         } else {
             sharedPref.edit().putBoolean(NEED_SYNCHRONIZATION, true).apply();
         }

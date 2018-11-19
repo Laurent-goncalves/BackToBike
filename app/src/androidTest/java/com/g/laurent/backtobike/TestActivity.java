@@ -13,9 +13,6 @@ import com.g.laurent.backtobike.Controllers.Activities.MainActivity;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import junit.framework.Assert;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class TestZActivity extends AndroidTestCase {
+public class TestActivity extends AndroidTestCase {
 
     private CountDownLatch authSignal = null;
     private FirebaseAuth auth;

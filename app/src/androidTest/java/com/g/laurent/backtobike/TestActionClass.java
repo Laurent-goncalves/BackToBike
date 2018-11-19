@@ -3,7 +3,6 @@ package com.g.laurent.backtobike;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.test.filters.LargeTest;
-import android.support.test.filters.MediumTest;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.AndroidTestCase;
 import com.g.laurent.backtobike.Models.AppDatabase;
@@ -28,13 +27,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static com.g.laurent.backtobike.Utils.MapTools.RouteHandler.MY_ROUTE_TYPE;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -75,7 +73,7 @@ public class TestActionClass extends AndroidTestCase {
 
         Context context = getInstrumentation().getTargetContext();
 
-        Route route = new Route(0,"trip to Lille",true);
+        Route route = new Route(0,"trip to Lille",null, MY_ROUTE_TYPE);
         route.setListRouteSegment(getListRouteSegments());
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
         //databaseReference.child("id1").child("login").child("111...///");
@@ -146,17 +144,16 @@ public class TestActionClass extends AndroidTestCase {
 
         // Check that route is well "deleted" in Database
         routeTest = getRouteFromDatabase(idRoute, "id1");
-        Assert.assertFalse(routeTest.getValid());
+        Assert.assertNull(routeTest.getName());
 
         // Check that route is well "deleted" in Firebase
-
         readSignal = new CountDownLatch(5);
         readSignal.countDown();
 
         firebaseRecover.recoverRoutesUser("id1", new OnRouteDataGetListener() {
             @Override
             public void onSuccess(List<Route> listRoutesFirebase) {
-                Assert.assertFalse(listRoutesFirebase.get(0).getValid());
+                Assert.assertEquals(0, listRoutesFirebase.size());
             }
 
             @Override
@@ -261,7 +258,7 @@ public class TestActionClass extends AndroidTestCase {
     }
 
     @Test
-    public void test_my_events() throws InterruptedException {
+    public void test_my_events() {
 
         Context context = getInstrumentation().getTargetContext();
 
@@ -394,7 +391,7 @@ public class TestActionClass extends AndroidTestCase {
     }
 
     @Test
-    public void test_accept_reject_invitation() throws InterruptedException {
+    public void test_accept_reject_invitation() {
 
         Context context = getInstrumentation().getTargetContext();
 
@@ -404,7 +401,7 @@ public class TestActionClass extends AndroidTestCase {
         setFriendsDatabase(context, "id1");
 
         BikeEvent bikeEvent = new BikeEvent("id1_01_01_2000_14:00", "id1", "01/01/2000", "14:00", 999, "Comments : take good shoes", "accepted");
-        Route route = new Route(999,"Trip to Paris",true);
+        Route route = new Route(999,"Trip to Paris",null, MY_ROUTE_TYPE);
         route.setListRouteSegment(getListRouteSegments());
         bikeEvent.setRoute(route);
 
@@ -517,7 +514,99 @@ public class TestActionClass extends AndroidTestCase {
         waiting_time(3000);
     }
 
+    @Test
+    public void test_accept_reject_friend() {
 
+        Context context = getInstrumentation().getTargetContext();
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
+        databaseReference.child("id2").child("my_friends").removeValue();
+        databaseReference.child("id3").child("my_friends").removeValue();
+
+        Friend friend1 = new Friend("id1","id1","Mat","photoUrl","accepted", "ongoing");
+        Friend friend3 = new Friend("id3","id3","Camille","photoUrl","ongoing","ongoing");
+        Friend user = new Friend("id2","id2","Seb","photoUrl","accepted","ongoing");
+
+        // Add id3 and id1 as friend
+        Action.addNewFriend(friend3, user, user.getId(), context);
+        Action.addNewFriend(friend1, user,  user.getId(), context);
+
+        waiting_time(5000);
+
+        // id3 accepted id2 as friend
+        Action.acceptFriend(user,"id3", context);
+
+        // id1 rejected id2 as friend
+        Action.rejectFriend(user,"id1", context);
+
+        waiting_time(5000);
+
+        FirebaseRecover firebaseRecover = new FirebaseRecover(databaseReference);
+        firebaseRecover.recoverFriendsUser("id1", new OnFriendDataGetListener() {
+            @Override
+            public void onSuccess(Friend friend) {
+
+            }
+
+            @Override
+            public void onSuccess(List<Friend> listFriend) {
+                int index = UtilsApp.findFriendIndexInListFriends("id2", listFriend);
+                Assert.assertEquals(-1, index);
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+
+        waiting_time(5000);
+
+        firebaseRecover.recoverFriendsUser("id2", new OnFriendDataGetListener() {
+            @Override
+            public void onSuccess(Friend friend) {
+
+            }
+
+            @Override
+            public void onSuccess(List<Friend> listFriend) {
+
+                if(listFriend.get(0).getId().equals("id1")){
+                    Assert.assertEquals("rejected", listFriend.get(0).getHasAgreed());
+                    Assert.assertEquals("accepted", listFriend.get(1).getHasAgreed());
+                } else {
+                    Assert.assertEquals("accepted", listFriend.get(0).getHasAgreed());
+                    Assert.assertEquals("rejected", listFriend.get(1).getHasAgreed());
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+
+        waiting_time(5000);
+
+        firebaseRecover.recoverFriendsUser("id3", new OnFriendDataGetListener() {
+            @Override
+            public void onSuccess(Friend friend) {
+
+            }
+
+            @Override
+            public void onSuccess(List<Friend> listFriend) {
+                Assert.assertTrue(listFriend.get(0).getAccepted().equals("accepted"));
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
+
+        waiting_time(5000);
+    }
 
     // -------------------------------------------- UTILS ---------------------------------------------------------
 
@@ -538,7 +627,7 @@ public class TestActionClass extends AndroidTestCase {
     private BikeEvent getBikeEventDEMO(){
 
         BikeEvent bikeEvent = new BikeEvent("id1_01_01_2000_14:00", "id1", "01/01/2000", "14:00", 999, "Comments : take good shoes", "accepted");
-        Route route = new Route(999,"Trip to Paris",true);
+        Route route = new Route(999,"Trip to Paris",null, MY_ROUTE_TYPE);
         route.setListRouteSegment(getListRouteSegments());
         bikeEvent.setRoute(route);
 
@@ -678,95 +767,4 @@ public class TestActionClass extends AndroidTestCase {
         });
 
         waiting_time(20000);
-    }*/
-/*
-    public void test_accept_reject_friend() {
-
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
-        databaseReference.child("id2").child("my_friends").removeValue();
-        databaseReference.child("id3").child("my_friends").removeValue();
-
-        Friend friend1 = new Friend("id1","id1","Mat","photoUrl","accepted", "ongoing");
-        Friend friend3 = new Friend("id3","id3","Camille","photoUrl","ongoing","ongoing");
-        Friend user = new Friend("id2","id2","Seb","photoUrl","accepted","ongoing");
-
-        // Add id3 and id1 as friend
-        Action.addNewFriend(friend3, user, user.getId(), getContext());
-        Action.addNewFriend(friend1, user,  user.getId(), getContext());
-
-        waiting_time(5000);
-
-        // id3 accepted id2 as friend
-        Action.acceptFriend(user,"id3", getContext());
-
-        // id1 rejected id2 as friend
-        Action.rejectFriend(user,"id1", getContext());
-
-        waiting_time(5000);
-
-        FirebaseRecover firebaseRecover = new FirebaseRecover(databaseReference);
-        firebaseRecover.recoverFriendsUser("id1", new OnFriendDataGetListener() {
-            @Override
-            public void onSuccess(Friend friend) {
-
-            }
-
-            @Override
-            public void onSuccess(List<Friend> listFriend) {
-                int index = UtilsApp.findFriendIndexInListFriends("id2", listFriend);
-                Assert.assertEquals(-1, index);
-            }
-
-            @Override
-            public void onFailure(String error) {
-
-            }
-        });
-
-        waiting_time(5000);
-
-        firebaseRecover.recoverFriendsUser("id2", new OnFriendDataGetListener() {
-            @Override
-            public void onSuccess(Friend friend) {
-
-            }
-
-            @Override
-            public void onSuccess(List<Friend> listFriend) {
-
-                if(listFriend.get(0).getId().equals("id1")){
-                    Assert.assertEquals("rejected", listFriend.get(0).getHasAgreed());
-                    Assert.assertEquals("accepted", listFriend.get(1).getHasAgreed());
-                } else {
-                    Assert.assertEquals("accepted", listFriend.get(0).getHasAgreed());
-                    Assert.assertEquals("rejected", listFriend.get(1).getHasAgreed());
-                }
-            }
-
-            @Override
-            public void onFailure(String error) {
-
-            }
-        });
-
-        waiting_time(5000);
-
-        firebaseRecover.recoverFriendsUser("id3", new OnFriendDataGetListener() {
-            @Override
-            public void onSuccess(Friend friend) {
-
-            }
-
-            @Override
-            public void onSuccess(List<Friend> listFriend) {
-                Assert.assertTrue(listFriend.get(0).getAccepted().equals("accepted"));
-            }
-
-            @Override
-            public void onFailure(String error) {
-
-            }
-        });
-
-        waiting_time(5000);
     }*/

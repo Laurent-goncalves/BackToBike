@@ -31,15 +31,12 @@ public class BikeEventHandler {
 
         // Insert new route if invitation
         if(!userId.equals(bikeEvent.getOrganizerId())){
-            if(UtilsGoogleMaps.routeNotInDatabase(context, userId, bikeEvent.getRoute())){
-                route.setValid(false);
-                int idRoute = RouteHandler.insertNewRoute(context, route, userId);
-                bikeEvent.setIdRoute(idRoute);
-                route.setId(idRoute);
-                FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-                firebaseUpdate.setIdRouteForInvitation(bikeEvent.getIdRoute(), bikeEvent.getId(), userId);
-                firebaseUpdate.updateMyRoutes(userId, route, route.getListRouteSegment());
-            }
+            int idRoute = RouteHandler.insertRouteEvent(context, route, bikeEvent.getId(), userId);
+            bikeEvent.setIdRoute(idRoute);
+            route.setId(idRoute);
+
+            FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
+            firebaseUpdate.setIdRouteForInvitation(bikeEvent.getIdRoute(), bikeEvent.getId(), userId);
         }
 
         bikeEvent.setRoute(route);
@@ -97,10 +94,6 @@ public class BikeEventHandler {
 
     public static void deleteBikeEvent(Context context, BikeEvent bikeEvent, String userId){
 
-        // Delete route if route was not accepted
-        if(!bikeEvent.getOrganizerId().equals(userId) && !bikeEvent.getRoute().getValid())
-            RouteHandler.deleteRoute(context,bikeEvent.getRoute(), userId);
-
         // Delete event friends related to this idEvent
         EventFriendsContentProvider eventFriendsContentProvider = new EventFriendsContentProvider();
         eventFriendsContentProvider.setUtils(context,null,bikeEvent.getId(), userId);
@@ -110,6 +103,9 @@ public class BikeEventHandler {
         BikeEventContentProvider bikeEventContentProvider = new BikeEventContentProvider();
         bikeEventContentProvider.setUtils(context, TYPE_SINGLE_EVENT, bikeEvent.getId(), userId);
         bikeEventContentProvider.delete(null,null,null);
+
+        // Delete route event
+        RouteHandler.deleteRoute(context, bikeEvent.getRoute(), userId);
     }
 
     // --------------------------------------------------------------------------------------------------------------

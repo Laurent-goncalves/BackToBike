@@ -27,6 +27,7 @@ public class EventActivity extends BaseActivity implements CallbackEventActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
         invitation = new Invitation();
+        invitation.setIdRoute(-1);
         userId = FirebaseAuth.getInstance().getUid();
         assignToolbarViews();
         savePreviousPage(MENU_CREATE_EVENT);
@@ -42,6 +43,12 @@ public class EventActivity extends BaseActivity implements CallbackEventActivity
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         SaveAndRestoreDataInvitActivity.saveData(outState, this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        defineCountersAndConfigureToolbar(MENU_CREATE_EVENT);
     }
 
     // --------------------------------------------------------------------------------------------------------

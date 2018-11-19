@@ -5,7 +5,6 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
 import android.database.Cursor;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,20 +14,23 @@ public class Route {
     @PrimaryKey(autoGenerate = true)
     private int id;
     private String name;
-    private Boolean valid;
+    private String idEvent;
+    private String typeRoute;
     private transient List<RouteSegment> listRouteSegment;
 
-    public Route(int id, String name, Boolean valid) {
+    public Route(int id, String name, String idEvent, String typeRoute) {
         this.id = id;
         this.name = name;
-        this.valid = valid;
+        this.idEvent=idEvent;
+        this.typeRoute=typeRoute;
     }
 
     @Ignore
-    public Route(int id, String name, Boolean valid, List<RouteSegment> listRouteSegment) {
+    public Route(int id, String name, String idEvent, String typeRoute, List<RouteSegment> listRouteSegment) {
         this.id = id;
         this.name = name;
-        this.valid = valid;
+        this.idEvent=idEvent;
+        this.typeRoute=typeRoute;
         this.listRouteSegment=listRouteSegment;
     }
 
@@ -52,12 +54,20 @@ public class Route {
         this.name = name;
     }
 
-    public Boolean getValid() {
-        return valid;
+    public String getIdEvent() {
+        return idEvent;
     }
 
-    public void setValid(Boolean valid) {
-        this.valid = valid;
+    public void setIdEvent(String idEvent) {
+        this.idEvent = idEvent;
+    }
+
+    public String getTypeRoute() {
+        return typeRoute;
+    }
+
+    public void setTypeRoute(String typeRoute) {
+        this.typeRoute = typeRoute;
     }
 
     public List<RouteSegment> getListRouteSegment() {
@@ -75,7 +85,8 @@ public class Route {
 
         if (values.containsKey("id")) route.setId(values.getAsInteger("id"));
         if (values.containsKey("name")) route.setName(values.getAsString("name"));
-        if (values.containsKey("valid")) route.setValid(values.getAsBoolean("valid"));
+        if (values.containsKey("idEvent")) route.setIdEvent(values.getAsString("idEvent"));
+        if (values.containsKey("typeRoute")) route.setTypeRoute(values.getAsString("typeRoute"));
 
         return route;
     }
@@ -85,7 +96,8 @@ public class Route {
         final ContentValues values = new ContentValues();
 
         values.put("name",route.getName());
-        values.put("valid",route.getValid());
+        values.put("idEvent",route.getIdEvent());
+        values.put("typeRoute",route.getTypeRoute());
 
         return values;
     }
@@ -96,7 +108,8 @@ public class Route {
 
         values.put("id",route.getId());
         values.put("name",route.getName());
-        values.put("valid",route.getValid());
+        values.put("idEvent",route.getIdEvent());
+        values.put("typeRoute",route.getTypeRoute());
 
         return values;
     }
@@ -109,7 +122,8 @@ public class Route {
             while (cursor.moveToNext()) {
                 route.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
                 route.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
-                route.setValid(cursor.getInt(cursor.getColumnIndexOrThrow("valid")) > 0);
+                route.setIdEvent(cursor.getString(cursor.getColumnIndexOrThrow("idEvent")));
+                route.setTypeRoute(cursor.getString(cursor.getColumnIndexOrThrow("typeRoute")));
             }
             cursor.close();
         }
@@ -126,7 +140,8 @@ public class Route {
                 final Route route = new Route();
                 route.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
                 route.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
-                route.setValid(cursor.getInt(cursor.getColumnIndexOrThrow("valid")) > 0);
+                route.setIdEvent(cursor.getString(cursor.getColumnIndexOrThrow("idEvent")));
+                route.setTypeRoute(cursor.getString(cursor.getColumnIndexOrThrow("typeRoute")));
                 listRoutes.add(route);
             }
             cursor.close();
@@ -144,7 +159,8 @@ public class Route {
                 final Route route = new Route();
                 route.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
                 route.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
-                route.setValid(cursor.getInt(cursor.getColumnIndexOrThrow("valid")) > 0);
+                route.setIdEvent(cursor.getString(cursor.getColumnIndexOrThrow("idEvent")));
+                route.setTypeRoute(cursor.getString(cursor.getColumnIndexOrThrow("typeRoute")));
                 listRoutes.add(route);
             }
             cursor.close();

@@ -4,28 +4,56 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-
 import com.g.laurent.backtobike.Models.AppDatabase;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
 import com.g.laurent.backtobike.Models.RouteSegmentContentProvider;
 import com.g.laurent.backtobike.Models.RoutesContentProvider;
-import com.google.android.gms.maps.model.LatLng;
-import java.util.ArrayList;
 import java.util.List;
 
 
 public class RouteHandler {
 
+    public static final String MY_ROUTE_TYPE = "my_route_type";
+    public static final String EVENT_ROUTE_TYPE = "event_route_type";
+
     // --------------------------------------------------------------------------------------------------------------
     // --------------------------------------------- INSERT ---------------------------------------------------------
     // --------------------------------------------------------------------------------------------------------------
 
-    public static int insertNewRoute(Context context, Route route, String userId){
+    public static int insertInMyRoute(Context context, Route route, String userId){
 
         // Insert route in database
         RoutesContentProvider routesContentProvider = new RoutesContentProvider();
-        routesContentProvider.setUtils(context, userId);
+        routesContentProvider.setUtils(context, userId, null, MY_ROUTE_TYPE);
+        route.setTypeRoute(MY_ROUTE_TYPE);
+
+        Uri uriRouteInsert = routesContentProvider.insert(RoutesContentProvider.URI_ITEM, Route.createContentValuesFromRouteInsert(route));
+
+        // Recover idRoute just created
+        int idRoute = (int) ContentUris.parseId(uriRouteInsert);
+
+        // Add route segments to database
+        RouteSegmentContentProvider routeSegmentContentProvider = new RouteSegmentContentProvider();
+        routeSegmentContentProvider.setUtils(context, userId);
+        if(route.getListRouteSegment()!=null){
+            if(route.getListRouteSegment().size()>0){
+                for(RouteSegment segment : route.getListRouteSegment()){
+                    segment.setIdRoute(idRoute);
+                    routeSegmentContentProvider.insert(RouteSegmentContentProvider.URI_ITEM, RouteSegment.createContentValuesFromRouteSegmentInsert(segment));
+                }
+            }
+        }
+
+        return idRoute;
+    }
+
+    public static int insertRouteEvent(Context context, Route route, String idEvent, String userId){
+
+        // Insert route in database
+        RoutesContentProvider routesContentProvider = new RoutesContentProvider();
+        routesContentProvider.setUtils(context, userId, idEvent, EVENT_ROUTE_TYPE);
+        route.setTypeRoute(EVENT_ROUTE_TYPE);
 
         Uri uriRouteInsert = routesContentProvider.insert(RoutesContentProvider.URI_ITEM, Route.createContentValuesFromRouteInsert(route));
 
@@ -55,7 +83,7 @@ public class RouteHandler {
 
         // Update route in database
         RoutesContentProvider routesContentProvider = new RoutesContentProvider();
-        routesContentProvider.setUtils(context, userId);
+        routesContentProvider.setUtils(context, userId, null, null);
 
         Uri uriUpdate = ContentUris.withAppendedId(RoutesContentProvider.URI_ITEM, route.getId());
         routesContentProvider.update(uriUpdate,Route.createContentValuesFromRouteUpdate(route),null,null);
@@ -84,27 +112,30 @@ public class RouteHandler {
 
     public static void deleteRoute(Context context, Route route, String userId){
 
-        // Delete routes segments related to this idRoute
-        RouteSegmentContentProvider routeSegmentContentProvider = new RouteSegmentContentProvider();
-        routeSegmentContentProvider.setUtils(context, userId);
+        if(route.getTypeRoute()!=null){
 
-        Uri uriDelete = ContentUris.withAppendedId(RouteSegmentContentProvider.URI_ITEM, route.getId());
-        routeSegmentContentProvider.delete(uriDelete,null,null);
+            // Delete routes segments related to this idRoute
+            RouteSegmentContentProvider routeSegmentContentProvider = new RouteSegmentContentProvider();
+            routeSegmentContentProvider.setUtils(context, userId);
 
-        // Delete routes segments related to this idRoute
-        RoutesContentProvider routesContentProvider = new RoutesContentProvider();
-        routesContentProvider.setUtils(context, userId);
-        routesContentProvider.delete(uriDelete,null,null);
+            Uri uriDelete = ContentUris.withAppendedId(RouteSegmentContentProvider.URI_ITEM, route.getId());
+            routeSegmentContentProvider.delete(uriDelete,null,null);
+
+            // Delete routes segments related to this idRoute
+            RoutesContentProvider routesContentProvider = new RoutesContentProvider();
+            routesContentProvider.setUtils(context, userId, null,MY_ROUTE_TYPE);
+            routesContentProvider.delete(uriDelete,null,null);
+        }
     }
 
     // --------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------- GET ----------------------------------------------------------
     // --------------------------------------------------------------------------------------------------------------
 
-    public static Route getRoute(Context context,int idRoute, String userId){
+    public static Route getRoute(Context context, int idRoute, String userId){
 
         RoutesContentProvider routesContentProvider = new RoutesContentProvider();
-        routesContentProvider.setUtils(context, userId);
+        routesContentProvider.setUtils(context, userId, null,MY_ROUTE_TYPE);
 
         Uri uriQuery = ContentUris.withAppendedId(RoutesContentProvider.URI_ITEM, idRoute);
         final Cursor cursor = routesContentProvider.query(uriQuery, null, null, null, null);
@@ -115,12 +146,25 @@ public class RouteHandler {
         return route;
     }
 
-    public static List<Route> getAllRoutes(Context context, String userId){
+    public static Route getRouteEvent(Context context, String idEvent, String userId){
 
         RoutesContentProvider routesContentProvider = new RoutesContentProvider();
-        routesContentProvider.setUtils(context, userId);
+        routesContentProvider.setUtils(context, userId, idEvent,EVENT_ROUTE_TYPE);
 
-        final Cursor cursor = AppDatabase.getInstance(context, userId).routesDao().getAllRoutesValid();
+        final Cursor cursor = routesContentProvider.query(null, null, null, null, null);
+
+        Route route = Route.getRouteFromCursor(cursor);
+        route.setListRouteSegment(getRouteSegments(context, route.getId(), userId));
+
+        return route;
+    }
+
+    public static List<Route> getMyRoutes(Context context, String userId){
+
+        RoutesContentProvider routesContentProvider = new RoutesContentProvider();
+        routesContentProvider.setUtils(context, userId, null,MY_ROUTE_TYPE);
+
+        final Cursor cursor = AppDatabase.getInstance(context, userId).routesDao().getMyRoutes(MY_ROUTE_TYPE);
 
         List<Route> listRoutes = Route.getListRoutesValidFromCursor(cursor);
 
@@ -136,9 +180,6 @@ public class RouteHandler {
     }
 
     public static List<Route> getAllRoutesForSynchronization(Context context, String userId){
-
-        RoutesContentProvider routesContentProvider = new RoutesContentProvider();
-        routesContentProvider.setUtils(context, userId);
 
         final Cursor cursor = AppDatabase.getInstance(context, userId).routesDao().getAllRoutes();
 

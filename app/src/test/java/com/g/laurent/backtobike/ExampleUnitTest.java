@@ -11,6 +11,9 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import static com.g.laurent.backtobike.Utils.MapTools.RouteHandler.EVENT_ROUTE_TYPE;
+import static com.g.laurent.backtobike.Utils.MapTools.RouteHandler.MY_ROUTE_TYPE;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -105,10 +108,10 @@ public class ExampleUnitTest {
     @Test
     public void test_comparison_route() {
 
-        Route route1 = new Route(0,"Trip to Las Vegas",true);
-        Route route2 = new Route(0,"Trip to Las Vegas",false);
-        Route route3 = new Route(0,"Trip to Las Vegas 2",true);
-        Route route4 = new Route(0,"Trip to Las Vegas",true);
+        Route route1 = new Route(0,"Trip to Las Vegas",null,MY_ROUTE_TYPE);
+        Route route2 = new Route(0,"Trip to Las Vegas",null,EVENT_ROUTE_TYPE);
+        Route route3 = new Route(0,"Trip to Las Vegas 2",null,MY_ROUTE_TYPE);
+        Route route4 = new Route(0,"Trip to Las Vegas",null,MY_ROUTE_TYPE);
 
         List<RouteSegment> listRouteSegments1 = new ArrayList<>();
 
@@ -170,6 +173,18 @@ public class ExampleUnitTest {
         calendar = UtilsTime.getCalendarAlarmdayevent(date, time);
         Assert.assertEquals(22, calendar.get(Calendar.HOUR_OF_DAY));
         Assert.assertEquals(30, calendar.get(Calendar.DAY_OF_MONTH));
+    }
+
+    @Test
+    public void test_dateAfterNow(){
+
+        String date = UtilsTime.getTodayDate();
+        String time = "23:59";
+
+        Assert.assertTrue(UtilsTime.isEventDateAfterNow(date, time));
+
+        time = "0:20";
+        Assert.assertFalse(UtilsTime.isEventDateAfterNow(date, time));
     }
 
     @Test

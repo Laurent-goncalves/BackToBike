@@ -13,6 +13,9 @@ import com.google.firebase.database.DatabaseReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.g.laurent.backtobike.Utils.MapTools.RouteHandler.EVENT_ROUTE_TYPE;
+import static com.g.laurent.backtobike.Utils.MapTools.RouteHandler.MY_ROUTE_TYPE;
+
 
 public class UtilsFirebase {
 
@@ -29,6 +32,7 @@ public class UtilsFirebase {
     private static final String PHOTO_URL = "photoUrl";
     private static final String LOGIN = "login";
     private static final String ID_ROUTE = "id_route";
+    private static final String ID_EVENT = "id_event";
     private static final String ID_FRIEND = "id_friend";
     private static final String ID_ORGANIZER = "id_organizer";
     private static final String ID = "id";
@@ -66,8 +70,7 @@ public class UtilsFirebase {
         if(!dataSnapshot.getKey().equals(ROUTE))
             idRoute = Integer.parseInt(dataSnapshot.getKey());
 
-        return new Route(idRoute,(String) dataSnapshot.child(NAME).getValue(),
-                (Boolean) dataSnapshot.child(VALID).getValue(),listRouteSegments);
+        return new Route(idRoute,(String) dataSnapshot.child(NAME).getValue(), (String) dataSnapshot.child(ID_EVENT).getValue(), MY_ROUTE_TYPE, listRouteSegments);
     }
 
     public static BikeEvent buildBikeEvent(DataSnapshot datas){
@@ -88,6 +91,8 @@ public class UtilsFirebase {
 
         if(datas.hasChild(ROUTE)){
             Route route = buildListRoute(datas.child(ROUTE));
+            route.setTypeRoute(EVENT_ROUTE_TYPE);
+            route.setIdEvent(bikeEvent.getId());
             bikeEvent.setRoute(route);
         }
 
@@ -305,7 +310,7 @@ public class UtilsFirebase {
 
     public static void setRoute(DatabaseReference databaseReference, Route route){
         databaseReference.child(NAME).setValue(route.getName());
-        databaseReference.child(VALID).setValue(route.getValid());
+        databaseReference.child(ID_EVENT).setValue(route.getIdEvent());
     }
 
     public static void setRouteSegment(DatabaseReference databaseReference, List<RouteSegment> routeSegmentList){

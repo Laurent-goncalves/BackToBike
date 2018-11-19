@@ -9,6 +9,9 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import static com.g.laurent.backtobike.Utils.MapTools.RouteHandler.EVENT_ROUTE_TYPE;
+import static com.g.laurent.backtobike.Utils.MapTools.RouteHandler.MY_ROUTE_TYPE;
+
 public class RoutesContentProvider extends ContentProvider {
 
     public static final String AUTHORITY = "com.g.laurent.backtobike.Models";
@@ -16,10 +19,14 @@ public class RoutesContentProvider extends ContentProvider {
     public static final Uri URI_ITEM = Uri.parse("content://" + AUTHORITY + "/" + TABLE_NAME);
     private Context context;
     private String userId;
+    private String routeType;
+    private String idEvent;
 
-    public void setUtils(Context context, String userId){
+    public void setUtils(Context context, String userId, String idEvent, String routeType){
         this.context=context;
         this.userId=userId;
+        this.idEvent=idEvent;
+        this.routeType = routeType;
     }
 
     @Override
@@ -31,8 +38,13 @@ public class RoutesContentProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         if (context != null){
-            long idRoute = ContentUris.parseId(uri);
-            return AppDatabase.getInstance(context, userId).routesDao().getRoute(idRoute);
+
+            if(routeType.equals(MY_ROUTE_TYPE)){
+                long idRoute = ContentUris.parseId(uri);
+                return AppDatabase.getInstance(context, userId).routesDao().getRoute(idRoute);
+            } else if(routeType.equals(EVENT_ROUTE_TYPE)){
+                return AppDatabase.getInstance(context, userId).routesDao().getRouteEvent(idEvent);
+            }
         }
         throw new IllegalArgumentException("Failed to query row for uri " +  uri);
     }

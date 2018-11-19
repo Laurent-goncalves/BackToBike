@@ -74,6 +74,18 @@ public class MainActivity extends BaseActivity implements CallbackMainActivity {
             getCurrentLocationForWeather();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        UtilsTime.deleteOverdueEvents(getApplicationContext(), userId);
+        defineCountersAndConfigureToolbar(MENU_MAIN_PAGE);
+    }
+
+    @Override
+    protected void refreshActivity(){
+        defineCountersAndConfigureToolbar(MENU_MAIN_PAGE);
+    }
+
     // --------------------------------------------------------------------------------------------------------
     // -------------------------------------- LOGIN CHECKING --------------------------------------------------
     // --------------------------------------------------------------------------------------------------------

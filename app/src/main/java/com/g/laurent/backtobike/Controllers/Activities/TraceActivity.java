@@ -21,6 +21,7 @@ import com.g.laurent.backtobike.Utils.Configurations.ConfigureTraceActivity;
 import com.g.laurent.backtobike.Utils.MapTools.GetCurrentLocation;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
+import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -29,6 +30,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.firebase.auth.FirebaseAuth;
 import java.util.List;
+
+import static com.g.laurent.backtobike.Utils.MapTools.RouteHandler.MY_ROUTE_TYPE;
 
 
 public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
@@ -63,6 +66,17 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        defineCountersAndConfigureToolbar(MENU_TRACE_ROUTE);
+    }
+
+    @Override
+    protected void refreshActivity(){
+        defineCountersAndConfigureToolbar(MENU_TRACE_ROUTE);
+    }
+
     private void defineRouteToTrace(Bundle savedInstanceState, Bundle extras){
 
         if(extras!=null || savedInstanceState!=null){
@@ -79,11 +93,13 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
                 List<RouteSegment> listRouteSegments = RouteHandler.getRouteSegments(getApplicationContext(),idRoute,userId);
                 route = RouteHandler.getRoute(getApplicationContext(),idRoute,userId);
                 route.setListRouteSegment(listRouteSegments);
+                route.setTypeRoute(MY_ROUTE_TYPE);
             }
 
         } else {
             route = new Route();
-            route.setId(0);
+            route.setId(-1);
+            route.setTypeRoute(MY_ROUTE_TYPE);
         }
     }
 
@@ -165,35 +181,38 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
 
         // Button SAVE
         Button dialogButtonSave = dialog.findViewById(R.id.button_save);
+        dialogButtonSave.setText(getApplicationContext().getResources().getString(R.string.save));
         dialogButtonSave.setOnClickListener(v -> {
 
             if(routeName!=null){
                 if(routeName.length()>0){
+                    if(UtilsApp.areCharactersAllowed(routeName.getText().toString())){
+                        // Create list of route segments
+                        List<RouteSegment> listRouteSegments = UtilsGoogleMaps.transformListPointsToListRouteSegments(listPoints);
+                        // Create route
+                        Route routeToSave = new Route(route.getId(), routeName.getText().toString(), null, MY_ROUTE_TYPE, listRouteSegments);
 
-                    // Create list of route segments
-                    List<RouteSegment> listRouteSegments = UtilsGoogleMaps.transformListPointsToListRouteSegments(listPoints);
-                    // Create route
-                    Route routeToSave = new Route(route.getId(),routeName.getText().toString(),true, listRouteSegments);
+                        if(route.getName()!=null){ // IF ROUTE UPDATE
+                            // Update route in Firebase and database
+                            Action.updateRoute(routeToSave, userId, getApplicationContext());
+                            // Launch displayActivity with the updated route
+                            launchDisplayActivity(DISPLAY_MY_ROUTES, String.valueOf(routeToSave.getId()));
+                            // Display message to user
+                            showSnackBar(this, getApplicationContext().getResources().getString(R.string.route_update_saved));
 
-                    if(route.getName()!=null){ // IF ROUTE UPDATE
-                        // Update route in Firebase and database
-                        Action.updateRoute(routeToSave,userId,getApplicationContext());
-                        // Launch displayActivity with the updated route
-                        launchDisplayActivity(DISPLAY_MY_ROUTES, String.valueOf(routeToSave.getId()));
-                        // Display message to user
-                        showSnackBar(this, getApplicationContext().getResources().getString(R.string.route_update_saved));
+                        } else { // IF NEW ROUTE
+                            // Add route to Firebase and database
+                            int idRoute = Action.addNewRoute(routeToSave, userId, getApplicationContext());
+                            // Launch displayActivity with this new route
+                            launchDisplayActivity(DISPLAY_MY_ROUTES, String.valueOf(idRoute));
+                            // Display message to user
+                            showSnackBar(this, getApplicationContext().getResources().getString(R.string.new_route_saved));
+                        }
 
-                    } else { // IF NEW ROUTE
-                        // Add route to Firebase and database
-                        int idRoute = Action.addNewRoute(routeToSave, userId, getApplicationContext());
-                        // Launch displayActivity with this new route
-                        launchDisplayActivity(DISPLAY_MY_ROUTES, String.valueOf(idRoute));
-                        // Display message to user
-                        showSnackBar(this, getApplicationContext().getResources().getString(R.string.new_route_saved));
-                    }
-
-                    dialog.dismiss();
-
+                        dialog.dismiss();
+                    } else
+                        Toast.makeText(getApplicationContext(),getApplicationContext().getResources()
+                                .getString(R.string.error_forbidden_characters3),Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getApplicationContext(),getApplicationContext().getResources()
                             .getString(R.string.error_add_name_route),Toast.LENGTH_LONG).show();

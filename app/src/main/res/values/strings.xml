@@ -52,6 +52,7 @@
     <string name="friends_refused">friends have refused the trip!</string>
     <string name="ok">OK</string>
     <string name="warning_title">Warning!</string>
+    <string name="error_forbidden_characters2">Comments cannot be saved. Please do not use forbidden characters (\'.\', \'#\', \'$\', \'[\', or \']\').</string>
 
     <!-- FRIENDSACTIVITY -->
     <string name="image_friend">image friend</string>
@@ -87,6 +88,11 @@
     <string name="error_route_not_finished">Route is not finished. Please complete it before saving.</string>
     <string name="new_route_saved">The new route has been saved!</string>
     <string name="route_update_saved">Modifications have been saved!</string>
+    <string name="no_date">Please provide a date for the trip</string>
+    <string name="no_time">Please provide a time for the trip</string>
+    <string name="no_route">Please select a route for the trip</string>
+    <string name="date_before_now">The schedule indicated is before now. Provide a later date.</string>
+    <string name="error_forbidden_characters3">Route title cannot be saved. Please do not use forbidden characters (\'.\', \'#\', \'$\', \'[\', or \']\').</string>
 
     <!-- ALARM -->
     <string name="alarm_notif_title">Next bike trip</string>
@@ -143,6 +149,10 @@
     <string name="confirm_reject_event">Are you sure to confirm your absence to this trip ?</string>
     <string name="confirm_reject_invit">Are you sure that you want to reject this invitation ?</string>
     <string name="confirm_delete_route">Are you sure that you want to delete this route ?</string>
+    <string name="route_not_available">The route is not available.</string>
+    <string name="count0_my_events">You have no events planned. Click on the cross of toolbar to create a new one.</string>
+    <string name="count0_my_route">You have no route. Click on the cross of toolbar to create a new one.</string>
+    <string name="count0_my_invits">You have received no invitation.</string>
 
     <!-- MENUS NAVIGATION DRAWER AND TOOLBAR-->
     <string name="my_friends_menu">My friends</string>

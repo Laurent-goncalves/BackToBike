@@ -110,9 +110,12 @@ public class ConfigureDisplayFragment {
         }
     }
 
-    // -------------------------------- 3 - Configure guests
+    // -------------------------------- 3 - Configure comments for bikeEvent and invitation
 
     private void configureCommentView(){
+
+        commentView.setMovementMethod(new ScrollingMovementMethod());
+
         switch(typeDisplay){
             case DISPLAY_MY_ROUTES:
                 commentView.setVisibility(View.GONE);
@@ -121,6 +124,7 @@ public class ConfigureDisplayFragment {
             case DISPLAY_MY_EVENTS:
                 commentView.setVisibility(View.VISIBLE);
                 commentView.setText(bikeEvent.getComments());
+                UtilsApp.resizeTextView(commentView);
                 commentView.setMovementMethod(new ScrollingMovementMethod());
                 break;
 
@@ -128,12 +132,13 @@ public class ConfigureDisplayFragment {
                 commentView.setVisibility(View.VISIBLE);
                 // configure recyclerView
                 commentView.setText(bikeEvent.getComments());
+                UtilsApp.resizeTextView(commentView);
                 commentView.setMovementMethod(new ScrollingMovementMethod());
                 break;
         }
     }
 
-    // -------------------------------- 4 - Configure comments for bikeEvent and invitation
+    // -------------------------------- 4 - Configure guests
     private void configureGuests(){
 
         switch(typeDisplay){
@@ -158,7 +163,7 @@ public class ConfigureDisplayFragment {
     private void configureGuestsRecyclerView(Context context, String userId, List<EventFriends> listEventFriends){
 
         // Configure list event friends
-        List<EventFriends> listEventFriendsToShow = UtilsApp.positionOrganizerAtStartList(listEventFriends, bikeEvent, getUserAsEventFriend(listEventFriends), bikeEvent.getOrganizerId());
+        List<EventFriends> listEventFriendsToShow = UtilsApp.positionOrganizerAtStartList(context, listEventFriends, bikeEvent, getUserAsEventFriend(listEventFriends), bikeEvent.getOrganizerId());
 
         // Set the recyclerView in horizontal direction
         LinearLayoutManager layoutManager

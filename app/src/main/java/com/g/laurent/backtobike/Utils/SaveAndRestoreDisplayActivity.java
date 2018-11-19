@@ -133,7 +133,7 @@ public class SaveAndRestoreDisplayActivity {
         Context context = displayActivity.getApplicationContext();
 
         // Get listRoutes
-        List<Route> listRoutes = RouteHandler.getAllRoutes(context, user_id);
+        List<Route> listRoutes = RouteHandler.getMyRoutes(context, user_id);
         displayActivity.setListRoutes(listRoutes);
 
         // Set count list Events

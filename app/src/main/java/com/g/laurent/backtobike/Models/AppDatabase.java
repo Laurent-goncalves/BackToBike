@@ -6,7 +6,7 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
 
-@Database(entities = {Route.class, RouteSegment.class, Friend.class, BikeEvent.class, EventFriends.class}, version = 20, exportSchema = false)
+@Database(entities = {Route.class, RouteSegment.class, Friend.class, BikeEvent.class, EventFriends.class}, version = 21, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase INSTANCE;

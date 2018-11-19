@@ -3,6 +3,7 @@ package com.g.laurent.backtobike.Utils;
 import android.content.Context;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.g.laurent.backtobike.Models.BikeEvent;
@@ -29,6 +30,7 @@ public class CheckAndSendInvitation {
     @BindView(R.id.date_view) TextView dateView;
     @BindView(R.id.time_view) TextView timeView;
     @BindView(R.id.comments_edit_text) EditText commentsView;
+    @BindView(R.id.spinner_list_routes) Spinner listRoutesView;
     private ConfigureInvitFragment config;
     private FirebaseUser firebaseUser;
     private Context context;
@@ -75,11 +77,28 @@ public class CheckAndSendInvitation {
         Boolean answer = false;
 
         // an invitation can be sent if there is at least a date and a time
-        if(dateView.getText()!=null && timeView.getText()!=null){
-            if(dateView.getText().length()>0 && timeView.getText().length()>0){
-                answer = true;
-            }
-        }
+        if(dateView.getText()!=null){
+            if(timeView.getText()!=null){
+                if(dateView.getText().length()>0){
+                    if(timeView.getText().length()>0){
+                        if(UtilsTime.isEventDateAfterNow(dateView.getText().toString(), timeView.getText().toString())){
+                            if(listRoutesView.getSelectedItemPosition()!=0){
+                                if(UtilsApp.areCharactersAllowed(commentsView.getText().toString()))
+                                    answer = true;
+                                else
+                                    Toast.makeText(context, context.getResources().getString(R.string.error_forbidden_characters2), Toast.LENGTH_LONG).show();
+                            } else
+                                Toast.makeText(context, context.getResources().getString(R.string.no_route), Toast.LENGTH_LONG).show();
+                        } else
+                            Toast.makeText(context, context.getResources().getString(R.string.date_before_now), Toast.LENGTH_LONG).show();
+                    } else
+                        Toast.makeText(context, context.getResources().getString(R.string.no_time), Toast.LENGTH_LONG).show();
+                }  else
+                    Toast.makeText(context, context.getResources().getString(R.string.no_date), Toast.LENGTH_LONG).show();
+            } else
+                Toast.makeText(context, context.getResources().getString(R.string.no_time), Toast.LENGTH_LONG).show();
+        } else
+            Toast.makeText(context, context.getResources().getString(R.string.no_date), Toast.LENGTH_LONG).show();
 
         return answer;
     }

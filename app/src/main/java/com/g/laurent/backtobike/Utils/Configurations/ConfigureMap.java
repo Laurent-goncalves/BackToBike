@@ -8,6 +8,7 @@ import android.widget.Toast;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.R;
+import com.g.laurent.backtobike.Utils.Action;
 import com.g.laurent.backtobike.Utils.FirebaseUpdate;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 import com.g.laurent.backtobike.Utils.UtilsApp;
@@ -22,6 +23,8 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.List;
+
+import static com.g.laurent.backtobike.Utils.MapTools.RouteHandler.MY_ROUTE_TYPE;
 
 
 public class ConfigureMap implements OnMapReadyCallback {
@@ -46,9 +49,17 @@ public class ConfigureMap implements OnMapReadyCallback {
 
     public void configureMapLayout(Route route){
         this.route=route;
-        mapView.onCreate(null);
-        mapView.onResume();
-        mapView.getMapAsync(this);
+        if(route.getTypeRoute()!=null) {
+            mapView.onCreate(null);
+            mapView.onResume();
+            mapView.getMapAsync(this);
+        } else {
+            titleView.setText(context.getResources().getString(R.string.route_not_available));
+            titleView.setTextColor(context.getResources().getColor(R.color.colorReject));
+            mapView.setVisibility(View.GONE);
+            mileageView.setVisibility(View.GONE);
+            timeView.setVisibility(View.GONE);
+        }
     }
 
     // -------------------------------- 1 - wait map availability ------------------------------------
@@ -135,18 +146,15 @@ public class ConfigureMap implements OnMapReadyCallback {
     public void configureButtonAddToMyRoutes(Context context, String userId, BikeEvent bikeEvent) {
 
         if(bikeEvent.getRoute()!=null) {
-            if (!bikeEvent.getRoute().getValid()) {
-                buttonAddRoute.setVisibility(View.VISIBLE);
-                buttonAddRoute.setOnClickListener(v -> {
-                    if(UtilsApp.isInternetAvailable(context)) {
-                        bikeEvent.getRoute().setValid(true);
-                        RouteHandler.updateRoute(context, bikeEvent.getRoute(), userId);
-                        FirebaseUpdate firebaseUpdate = new FirebaseUpdate(context);
-                        firebaseUpdate.acceptRoute(userId, bikeEvent.getRoute(), bikeEvent);
+            if(bikeEvent.getRoute().getTypeRoute()!=null){
+                if(UtilsGoogleMaps.routeNotInDatabase(context, userId, bikeEvent.getRoute())) {
+                    buttonAddRoute.setVisibility(View.VISIBLE);
+                    buttonAddRoute.setOnClickListener(v -> {
+                        Action.addEventRouteToMyRoutes(bikeEvent, userId, context);
                         buttonAddRoute.setVisibility(View.INVISIBLE);
                         Toast.makeText(context, context.getResources().getString(R.string.route_added_to_my_routes), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                    });
+                }
             }
         }
     }

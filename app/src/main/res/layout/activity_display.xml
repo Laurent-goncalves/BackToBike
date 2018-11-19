@@ -85,7 +85,7 @@
                     <com.g.laurent.backtobike.Models.DisplayViewPager
                         android:id="@+id/activity_display_viewpager"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"/>
+                        android:layout_height="wrap_content"/>
 
                 <!-- ARROW LEFT -->
                 <ImageButton

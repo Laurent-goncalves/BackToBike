@@ -5,9 +5,11 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -19,6 +21,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.g.laurent.backtobike.Models.AlarmEvent;
 import com.g.laurent.backtobike.Models.BikeEvent;
@@ -215,6 +219,27 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
         navigationView = findViewById(R.id.activity_nav_view);
     }
 
+    protected void showToastDisplayActivity(String typeDisplay){
+
+        String text = null;
+
+        switch(typeDisplay){
+            case DISPLAY_MY_EVENTS:
+                text = getApplicationContext().getResources().getString(R.string.count0_my_events);
+                break;
+            case DISPLAY_MY_ROUTES:
+                text = getApplicationContext().getResources().getString(R.string.count0_my_route);
+                break;
+            case DISPLAY_MY_INVITS:
+                text = getApplicationContext().getResources().getString(R.string.count0_my_invits);
+                break;
+        }
+
+        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
+    }
+
     // -------------------------------------------------------------------------------------------------------
     // ----------------------------------- LAUNCH ACTIVITIES -------------------------------------------------
     // -------------------------------------------------------------------------------------------------------
@@ -318,6 +343,29 @@ public class BaseActivity extends AppCompatActivity implements CallbackBaseActiv
             alarmMgr.cancel(alarmIntentDayEvent);
         }
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getApplicationContext().registerReceiver(messageReceiver, new IntentFilter("unique_name"));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        getApplicationContext().unregisterReceiver(messageReceiver);
+    }
+
+    protected BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            // Refresh activity after receiving notification
+            refreshActivity();
+        }
+    };
+
+    protected void refreshActivity(){}
 
     // -------------------------------------------------------------------------------------------------------
     // ------------------------------------ SIGN OUT FIREBASE ------------------------------------------------

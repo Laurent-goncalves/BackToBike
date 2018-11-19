@@ -11,6 +11,7 @@ import com.g.laurent.backtobike.Models.OnFriendDataGetListener;
 import com.g.laurent.backtobike.Models.OnRouteDataGetListener;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
+import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
 
 import java.util.List;
 
@@ -69,7 +70,7 @@ public class SynchronizeWithFirebase {
                 if(listRoutes!=null){
                     if(listRoutes.size()>0){
                         for(Route route : listRoutes){
-                            RouteHandler.insertNewRoute(context, route, userId); // add new route in database
+                            RouteHandler.insertInMyRoute(context, route, userId); // add new route in database
                         }
                     }
                 }
@@ -205,8 +206,8 @@ public class SynchronizeWithFirebase {
                 if(listRoutesFirebase!=null){
                     if(listRoutesFirebase.size()>0){
                         for(Route route : listRoutesFirebase){
-                            if (UtilsApp.findRouteInList(route, listRoutesApp) == -1) // if route NOT in database
-                                RouteHandler.insertNewRoute(context, route, userId); // add new route in database
+                            if (UtilsGoogleMaps.routeNotInDatabase(context, userId, route)) // if route NOT in database
+                                RouteHandler.insertInMyRoute(context, route, userId); // add new route in database
                         }
                     }
                 }

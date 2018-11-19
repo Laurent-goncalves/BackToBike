@@ -1,6 +1,5 @@
 package com.g.laurent.backtobike.Utils.Configurations;
 
-import android.annotation.SuppressLint;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -33,6 +32,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemSelected;
 import butterknife.OnTextChanged;
+
+import static com.g.laurent.backtobike.Utils.MapTools.RouteHandler.MY_ROUTE_TYPE;
 
 
 public class ConfigureInvitFragment {
@@ -83,8 +84,8 @@ public class ConfigureInvitFragment {
     private void configureSpinner(int idRoute){
 
         if(mCallbackEventActivity!=null)
-            listRoutes = RouteHandler.getAllRoutes(context, mCallbackEventActivity.getUserId());
-        listRoutes.add(0,new Route(-1, context.getResources().getString(R.string.select_a_route_spinner),false,null));
+            listRoutes = RouteHandler.getMyRoutes(context, mCallbackEventActivity.getUserId());
+        listRoutes.add(0,new Route(-1, context.getResources().getString(R.string.select_a_route_spinner), null, MY_ROUTE_TYPE));
 
         // Creating adapter for spinner
         ArrayAdapter<String> routeAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item,
