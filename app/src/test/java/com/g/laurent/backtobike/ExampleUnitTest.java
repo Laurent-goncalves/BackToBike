@@ -175,7 +175,7 @@ public class ExampleUnitTest {
         Assert.assertEquals(30, calendar.get(Calendar.DAY_OF_MONTH));
     }
 
-    @Test
+    /*@Test
     public void test_dateAfterNow(){
 
         String date = UtilsTime.getTodayDate();
@@ -185,7 +185,7 @@ public class ExampleUnitTest {
 
         time = "0:20";
         Assert.assertFalse(UtilsTime.isEventDateAfterNow(date, time));
-    }
+    }*/
 
     @Test
     public void test_id_pending_intent(){
