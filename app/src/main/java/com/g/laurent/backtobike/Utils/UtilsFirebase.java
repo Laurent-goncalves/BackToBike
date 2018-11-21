@@ -49,13 +49,22 @@ public class UtilsFirebase {
 
     public static Route buildListRoute(DataSnapshot dataSnapshot){
 
+        Route route = new Route();
+
+        // build route
+        int idRoute = 0;
+
+        if(!dataSnapshot.getKey().equals(ROUTE))
+            idRoute = Integer.parseInt(dataSnapshot.getKey());
+
+        route.setId(idRoute);
+        route.setName((String) dataSnapshot.child(NAME).getValue());
+        route.setIdEvent((String) dataSnapshot.child(ID_EVENT).getValue());
+        route.setTypeRoute(MY_ROUTE_TYPE);
+
+        // build route segments
         List<RouteSegment> listRouteSegments = new ArrayList<>();
-
         for(DataSnapshot datas : dataSnapshot.child(POINTS).getChildren()){
-
-            int idRoute = 0;
-            if(datas.child(ID_ROUTE).getValue()!=null)
-                idRoute=Integer.parseInt(datas.child(ID_ROUTE).getValue().toString());
 
             listRouteSegments.add(new RouteSegment(Integer.parseInt(datas.child(ID).getValue().toString()),
                     Integer.parseInt(datas.getKey()),
@@ -64,12 +73,9 @@ public class UtilsFirebase {
                     idRoute));
         }
 
-        int idRoute = 0;
+        route.setListRouteSegment(listRouteSegments);
 
-        if(!dataSnapshot.getKey().equals(ROUTE))
-            idRoute = Integer.parseInt(dataSnapshot.getKey());
-
-        return new Route(idRoute,(String) dataSnapshot.child(NAME).getValue(), (String) dataSnapshot.child(ID_EVENT).getValue(), MY_ROUTE_TYPE, listRouteSegments);
+        return route;
     }
 
     public static BikeEvent buildBikeEvent(DataSnapshot datas){
@@ -323,7 +329,6 @@ public class UtilsFirebase {
                     databaseReferenceRoute.child(number).child(ID).setValue(segment.getId());
                     databaseReferenceRoute.child(number).child(LAT).setValue(segment.getLat());
                     databaseReferenceRoute.child(number).child(LNG).setValue(segment.getLng());
-                    databaseReferenceRoute.child(number).child(ID_ROUTE).setValue(segment.getIdRoute());
                 }
             }
         }

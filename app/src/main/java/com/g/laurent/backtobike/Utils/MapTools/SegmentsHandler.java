@@ -51,6 +51,9 @@ public class SegmentsHandler {
             if(routeAlt.size()==0 || (routeAlt.size()==1 && graphicsHandler.getMarkersHandler().getEndPoint()==null))
                 routeAlt = null;
 
+            if(route.size()==1)
+                route = new ArrayList<>();
+
             graphicsHandler.setRoute(route);
             graphicsHandler.setRouteAlt(routeAlt);
 

@@ -17,6 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.g.laurent.backtobike.Models.AppDatabase;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.CallbackMainActivity;
 import com.g.laurent.backtobike.Models.CallbackWeather;
@@ -92,6 +94,8 @@ public class MainFragment extends Fragment {
         differencesPanel.setOnClickListener(onClickPanelListener);
         imagePanel.setOnClickListener(onClickPanelListener);
         differencesPanel.setMovementMethod(new ScrollingMovementMethod());
+
+        centralArea.setOnClickListener(v -> clearDatabase(userId, context));
 
         if(getArguments()!=null){
             currentLocation = new LatLng(getArguments().getDouble(BUNDLE_LATITUDE),getArguments().getDouble(BUNDLE_LONGITUDE));
@@ -310,5 +314,15 @@ public class MainFragment extends Fragment {
                 weatherView.setLayoutManager(layoutManager);
             });
         }
+    }
+
+    private void clearDatabase(String userId, Context context){
+
+        AppDatabase.getInstance(context,userId).eventFriendsDao().deleteAllEventFriends();
+        //AppDatabase.getInstance(context,userId).friendsDao().deleteAllFriends();
+        //AppDatabase.getInstance(context,userId).routeSegmentDao().deleteRouteSegment();
+        //AppDatabase.getInstance(context,userId).routesDao().deleteAllRoutes();
+        AppDatabase.getInstance(context,userId).bikeEventDao().deleteAllBikeEvents();
+
     }
 }

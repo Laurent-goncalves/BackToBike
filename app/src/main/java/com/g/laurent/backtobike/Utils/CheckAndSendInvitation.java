@@ -83,10 +83,7 @@ public class CheckAndSendInvitation {
                     if(timeView.getText().length()>0){
                         if(UtilsTime.isEventDateAfterNow(dateView.getText().toString(), timeView.getText().toString())){
                             if(listRoutesView.getSelectedItemPosition()!=0){
-                                if(UtilsApp.areCharactersAllowed(commentsView.getText().toString()))
-                                    answer = true;
-                                else
-                                    Toast.makeText(context, context.getResources().getString(R.string.error_forbidden_characters2), Toast.LENGTH_LONG).show();
+                                answer = true;
                             } else
                                 Toast.makeText(context, context.getResources().getString(R.string.no_route), Toast.LENGTH_LONG).show();
                         } else
@@ -113,7 +110,8 @@ public class CheckAndSendInvitation {
         String idEvent = user_id + "_" + date + "_" + time;
         idEvent = idEvent.replace("/","_");
         String comments = invitation.getComments();
-        int idRoute = invitation.getIdRoute();
+        Route myRoute = RouteHandler.getRoute(context, invitation.getIdRoute(), user_id);
+        int idRoute = RouteHandler.insertRouteEvent(context, myRoute, idEvent, user_id);
 
         // Create list of event friends
         ArrayList<String> listIdFriends = invitation.getListIdFriends();

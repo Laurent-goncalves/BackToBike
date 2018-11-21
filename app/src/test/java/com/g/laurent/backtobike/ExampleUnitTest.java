@@ -3,6 +3,7 @@ package com.g.laurent.backtobike;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
+import com.g.laurent.backtobike.Utils.FirebaseUpdate;
 import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
 import com.g.laurent.backtobike.Utils.UtilsTime;
@@ -216,22 +217,4 @@ public class ExampleUnitTest {
         Assert.assertEquals("3 days", time);
     }
 
-    @Test
-    public void test_allowed_characters_Firebase(){
-
-        String login = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_/";
-        Assert.assertTrue(UtilsApp.areCharactersAllowed(login));
-
-        login = ";";
-        Assert.assertFalse(UtilsApp.areCharactersAllowed(login));
-
-        login = "?";
-        Assert.assertFalse(UtilsApp.areCharactersAllowed(login));
-
-        login = "ç";
-        Assert.assertFalse(UtilsApp.areCharactersAllowed(login));
-
-        login = ".";
-        Assert.assertFalse(UtilsApp.areCharactersAllowed(login));
-    }
 }

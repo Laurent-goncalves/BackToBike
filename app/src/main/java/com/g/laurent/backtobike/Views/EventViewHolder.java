@@ -9,6 +9,9 @@ import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.UtilsTime;
+
+import java.util.List;
+
 import static com.g.laurent.backtobike.Utils.UtilsTime.getSeasonNumber;
 
 
@@ -45,7 +48,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         routeView.setText(bikeEvent.getRoute().getName());
 
         // Configure friend counter
-        setCounterFriend(friendCounter, iconFriends, bikeEvent);
+        setCounterFriend(userId, friendCounter, iconFriends, bikeEvent);
 
         // Set cancel text if applicable
         if(bikeEvent.getStatus().equals(CANCELLED))
@@ -69,32 +72,63 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    private void setCounterFriend(TextView friendCounter, ImageView iconFriend, BikeEvent bikeEvent){
-        if(bikeEvent.getListEventFriends()!=null){
-            if(bikeEvent.getListEventFriends().size()>0){
+    private void setCounterFriend(String userId, TextView friendCounter, ImageView iconFriend, BikeEvent bikeEvent){
 
-                int count = 0;
-                for(EventFriends friend : bikeEvent.getListEventFriends()){
-                    if(friend.getAccepted().equals(ACCEPTED))
-                        count++;
-                }
+        int count;
 
-                String text;
-                if(count > 9)
-                    text = "(+9)";
-                else
-                    text = "(" + count + ")";
+        if(userId.equals(bikeEvent.getOrganizerId())){ // is user is the organizer
 
-                friendCounter.setText(text);
+            int counterGuestsAccepted = countEventFriendAccepted(bikeEvent.getListEventFriends());
+            int counterGuests = bikeEvent.getListEventFriends().size();
 
-            } else {
+            if(counterGuests>0) { // if at least one guest
+
+                count = 1 + counterGuestsAccepted;
+
+                // Update counter
+                updateCounterFriends(count, friendCounter);
+            } else { // if no guests invited, remove views
                 friendCounter.setVisibility(View.GONE);
                 iconFriend.setVisibility(View.GONE);
             }
         } else {
-            friendCounter.setVisibility(View.GONE);
-            iconFriend.setVisibility(View.GONE);
+            count = 1; // organizer
+
+            if(bikeEvent.getStatus().equals(ACCEPTED))
+                count = 2; // if user has accepted -> +1
+
+            count += countEventFriendAccepted(bikeEvent.getListEventFriends());
+
+            // Update counter
+            updateCounterFriends(count, friendCounter);
         }
+    }
+
+    private int countEventFriendAccepted(List<EventFriends> listEventFriends){
+
+        int count = 0;
+
+        if(listEventFriends!=null){
+            if(listEventFriends.size()>0){
+
+                for(EventFriends friend : listEventFriends){
+                    if(friend.getAccepted().equals(ACCEPTED))
+                        count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    private void updateCounterFriends(int count, TextView friendCounter){
+        String text;
+        if(count > 9)
+            text = "(+9)";
+        else
+            text = "(" + count + ")";
+
+        friendCounter.setText(text);
     }
 
     public interface DaysName {

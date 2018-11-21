@@ -10,6 +10,7 @@ import com.g.laurent.backtobike.Models.CallbackEventActivity;
 import com.g.laurent.backtobike.Models.Invitation;
 import com.g.laurent.backtobike.R;
 import com.g.laurent.backtobike.Utils.SaveAndRestoreDataInvitActivity;
+import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.google.firebase.auth.FirebaseAuth;
 
 
@@ -48,7 +49,7 @@ public class EventActivity extends BaseActivity implements CallbackEventActivity
     @Override
     public void onResume() {
         super.onResume();
-        if(userId!=null)
+        if(userId!=null && UtilsApp.isInternetAvailable(getApplicationContext()))
             defineCountersAndConfigureToolbar(MENU_CREATE_EVENT);
     }
 

@@ -106,6 +106,9 @@ public class MarkersHandler {
         // Remove first point of route
         route.remove(0);
 
+        if(route.size()==1)
+            route = new ArrayList<>();
+
         graphicsHandler.setRoute(route);
     }
 
@@ -122,6 +125,25 @@ public class MarkersHandler {
             route.remove(route.size()-1);
         else {
             routeAlt.remove(routeAlt.size() - 1);
+            if(routeAlt.size()==0 || (routeAlt.size()==1 && endPoint==null))
+                routeAlt = null;
+        }
+
+        graphicsHandler.setRoute(route);
+        graphicsHandler.setRouteAlt(routeAlt);
+    }
+
+    public void removeNode(Marker point) {
+
+        route = graphicsHandler.getRoute();
+        routeAlt = graphicsHandler.getRouteAlt();
+
+        if(UtilsGoogleMaps.isMarkerAtEndOfRoute(point, route)){
+            route.remove(route.size()-1);
+            if(route.size()==1)
+                route = new ArrayList<>();
+        } else if(UtilsGoogleMaps.isMarkerAtBegOfRouteAlt(point, routeAlt)){
+            routeAlt.remove(0);
             if(routeAlt.size()==0 || (routeAlt.size()==1 && endPoint==null))
                 routeAlt = null;
         }
@@ -215,15 +237,15 @@ public class MarkersHandler {
         int limitSup;
         if(route.size()>=3){
 
-            if(endPoint!=null)
-                limitSup = route.size()-2;
+            if(endPoint!=null && routeAlt==null)
+                limitSup = route.size()-2; // if end point
             else
-                limitSup = route.size()-1;
+                limitSup = route.size()-1; // if no end point
 
             if(startPoint!=null)
-                limitInf = 1;
+                limitInf = 1; // if start point
             else
-                limitInf = 0;
+                limitInf = 0; // if no start point
 
             for(int i = limitInf; i <= limitSup; i++){
                 addDragMarker(route.get(i), routeFinished, "ROUTE-" + i);
@@ -233,7 +255,7 @@ public class MarkersHandler {
         if(routeAlt!=null){
             if(routeAlt.size()>=2) {
 
-                limitInf = 1;
+                limitInf = 0;
 
                 if(endPoint!=null)
                     limitSup = routeAlt.size()-2;

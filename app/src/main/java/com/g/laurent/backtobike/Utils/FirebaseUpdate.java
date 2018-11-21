@@ -254,11 +254,9 @@ public class FirebaseUpdate {
     public void cancelMyBikeEvent(Context context, String user_id, List<EventFriends> listEventFriends, BikeEvent bikeEvent){
 
         // Delete BikeEvent from my_events
-        databaseReferenceUsers.child(user_id).child(MY_EVENTS).child(String.valueOf(bikeEvent.getId())).child(STATUS).setValue(CANCELLED);
+        deleteEvent(user_id, bikeEvent);
 
-        String idInvitation = UtilsApp.getIdEvent(bikeEvent);
-
-        // Delete invitation for all guests
+        // Cancel invitation for all guests
         if(listEventFriends!=null){
             if(listEventFriends.size()>0){
                 for(EventFriends eventFriends : listEventFriends){
@@ -269,7 +267,7 @@ public class FirebaseUpdate {
                         firebaseRecover.checkIfBikeEventExists(MY_INVITATIONS, eventFriends.getIdFriend(), bikeEvent.getId(), hasChild -> {
                             if(hasChild) {
                                 databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_INVITATIONS)
-                                        .child(idInvitation).child(STATUS).setValue(CANCELLED);
+                                        .child(bikeEvent.getId()).child(STATUS).setValue(CANCELLED);
                             }
                         });
                     }
@@ -278,7 +276,7 @@ public class FirebaseUpdate {
                         firebaseRecover.checkIfBikeEventExists(MY_EVENTS, eventFriends.getIdFriend(), bikeEvent.getId(), hasChild -> {
                             if(hasChild) {
                                 databaseReferenceUsers.child(eventFriends.getIdFriend()).child(MY_EVENTS)
-                                        .child(idInvitation).child(STATUS).setValue(CANCELLED);
+                                        .child(bikeEvent.getId()).child(STATUS).setValue(CANCELLED);
                             }
                         });
                     }

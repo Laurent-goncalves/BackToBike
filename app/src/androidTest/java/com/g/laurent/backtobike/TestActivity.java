@@ -10,9 +10,14 @@ import android.test.AndroidTestCase;
 
 import com.g.laurent.backtobike.Controllers.Activities.BaseActivity;
 import com.g.laurent.backtobike.Controllers.Activities.MainActivity;
+import com.g.laurent.backtobike.Utils.FirebaseUpdate;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -158,6 +158,26 @@ public class UtilsGoogleMaps {
             return true;
     }
 
+    public static Boolean isMarkerAtEndOfRoute(Marker marker, List<LatLng> route){
+        if(route!=null){
+            if(route.size()>0){
+                return marker.getPosition().equals(route.get(route.size()-1));
+            } else
+                return false;
+        } else
+            return false;
+    }
+
+    public static Boolean isMarkerAtBegOfRouteAlt(Marker marker, List<LatLng> routeAlt){
+        if(routeAlt!=null){
+            if(routeAlt.size()>0){
+                return marker.getPosition().equals(routeAlt.get(0));
+            } else
+                return false;
+        } else
+            return false;
+    }
+
     // ----------------------------------------------------------------------------------------------------------
     // ------------------------------- CALCULATION TIME & MILEAGE -----------------------------------------------
     // ----------------------------------------------------------------------------------------------------------

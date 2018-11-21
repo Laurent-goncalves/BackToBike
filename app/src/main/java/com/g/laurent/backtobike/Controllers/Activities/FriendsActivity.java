@@ -69,7 +69,7 @@ public class FriendsActivity extends BaseActivity implements CallbackFriendActiv
     @Override
     public void onResume() {
         super.onResume();
-        if(userId!=null)
+        if(userId!=null && UtilsApp.isInternetAvailable(getApplicationContext()))
             defineCountersAndConfigureToolbar(MENU_MY_FRIENDS);
     }
 

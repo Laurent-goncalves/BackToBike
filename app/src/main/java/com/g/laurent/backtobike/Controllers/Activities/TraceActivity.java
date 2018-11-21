@@ -22,7 +22,6 @@ import com.g.laurent.backtobike.Utils.MapTools.GetCurrentLocation;
 import com.g.laurent.backtobike.Utils.MapTools.RouteHandler;
 import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
 import com.g.laurent.backtobike.Utils.UtilsApp;
-import com.g.laurent.backtobike.Utils.UtilsTime;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -31,7 +30,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.firebase.auth.FirebaseAuth;
 import java.util.List;
-
 import static com.g.laurent.backtobike.Utils.MapTools.RouteHandler.MY_ROUTE_TYPE;
 
 
@@ -70,7 +68,7 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
     @Override
     public void onResume() {
         super.onResume();
-        if(userId!=null) {
+        if(userId!=null && UtilsApp.isInternetAvailable(getApplicationContext())) {
             defineCountersAndConfigureToolbar(MENU_TRACE_ROUTE);
         }
     }
@@ -189,37 +187,33 @@ public class TraceActivity extends BaseActivity implements OnMapReadyCallback {
 
             if(routeName!=null){
                 if(routeName.length()>0){
-                    if(UtilsApp.areCharactersAllowed(routeName.getText().toString())){
-                        // Create list of route segments
-                        List<RouteSegment> listRouteSegments = UtilsGoogleMaps.transformListPointsToListRouteSegments(listPoints);
-                        // Create route
-                        Route routeToSave = new Route(route.getId(), routeName.getText().toString(), null, MY_ROUTE_TYPE, listRouteSegments);
 
-                        if(route.getName()!=null){ // IF ROUTE UPDATE
-                            // Update route in Firebase and database
-                            Action.updateRoute(routeToSave, userId, getApplicationContext());
-                            // Launch displayActivity with the updated route
-                            launchDisplayActivity(DISPLAY_MY_ROUTES, String.valueOf(routeToSave.getId()));
-                            // Display message to user
-                            showSnackBar(this, getApplicationContext().getResources().getString(R.string.route_update_saved));
+                    // Create list of route segments
+                    List<RouteSegment> listRouteSegments = UtilsGoogleMaps.transformListPointsToListRouteSegments(listPoints);
+                    // Create route
+                    Route routeToSave = new Route(route.getId(), routeName.getText().toString(), null, MY_ROUTE_TYPE, listRouteSegments);
 
-                        } else { // IF NEW ROUTE
-                            // Add route to Firebase and database
-                            int idRoute = Action.addNewRoute(routeToSave, userId, getApplicationContext());
-                            // Launch displayActivity with this new route
-                            launchDisplayActivity(DISPLAY_MY_ROUTES, String.valueOf(idRoute));
-                            // Display message to user
-                            showSnackBar(this, getApplicationContext().getResources().getString(R.string.new_route_saved));
-                        }
+                    if(route.getName()!=null){ // IF ROUTE UPDATE
+                        // Update route in Firebase and database
+                        Action.updateRoute(routeToSave, userId, getApplicationContext());
+                        // Launch displayActivity with the updated route
+                        launchDisplayActivity(DISPLAY_MY_ROUTES, String.valueOf(routeToSave.getId()));
+                        // Display message to user
+                        showSnackBar(this, getApplicationContext().getResources().getString(R.string.route_update_saved));
 
-                        dialog.dismiss();
-                    } else
-                        Toast.makeText(getApplicationContext(),getApplicationContext().getResources()
-                                .getString(R.string.error_forbidden_characters3),Toast.LENGTH_LONG).show();
-                } else {
+                    } else { // IF NEW ROUTE
+                        // Add route to Firebase and database
+                        int idRoute = Action.addNewRoute(routeToSave, userId, getApplicationContext());
+                        // Launch displayActivity with this new route
+                        launchDisplayActivity(DISPLAY_MY_ROUTES, String.valueOf(idRoute));
+                        // Display message to user
+                        showSnackBar(this, getApplicationContext().getResources().getString(R.string.new_route_saved));
+                    }
+
+                    dialog.dismiss();
+                } else
                     Toast.makeText(getApplicationContext(),getApplicationContext().getResources()
-                            .getString(R.string.error_add_name_route),Toast.LENGTH_LONG).show();
-                }
+                            .getString(R.string.error_forbidden_characters3),Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(getApplicationContext(),getApplicationContext().getResources()
                         .getString(R.string.error_add_name_route),Toast.LENGTH_LONG).show();

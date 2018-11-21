@@ -112,6 +112,10 @@ public class ConfigureTraceActivity {
                         graphicsHandler.getMarkersHandler().removeEndPoint();
                         handleDrawMap();
                         graphicsHandler.updateButtonsState(TAG_DELETE);
+                    } else if(UtilsGoogleMaps.isMarkerAtEndOfRoute(marker, graphicsHandler.getRoute()) || UtilsGoogleMaps.isMarkerAtBegOfRouteAlt(marker, graphicsHandler.getRouteAlt())){
+                        graphicsHandler.getMarkersHandler().removeNode(marker);
+                        handleDrawMap();
+                        graphicsHandler.updateButtonsState(TAG_DELETE);
                     }
                 }
             } else if(buttonAddSegment.isSelected() && graphicsHandler.getRouteAlt()!=null) {

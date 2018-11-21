@@ -14,7 +14,6 @@ import android.support.v4.widget.TextViewCompat;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.TextView;
-
 import com.g.laurent.backtobike.Controllers.Activities.DisplayActivity;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.EventFriends;
@@ -22,7 +21,6 @@ import com.g.laurent.backtobike.Models.Friend;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
 import com.google.firebase.auth.FirebaseUser;
-import org.apache.commons.codec.binary.Base64;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +34,6 @@ public class UtilsApp {
     private static final String ONGOING = "ongoing";
     private static final String ACCEPTED = "accepted";
     private static final String REJECTED = "rejected";
-
-    public static boolean areCharactersAllowed(String login){
-        return Base64.isArrayByteBase64(login.getBytes());
-    }
 
     public static void resizeTextView(TextView commentView){
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(commentView, 14, 17, 1,
@@ -306,26 +300,24 @@ public class UtilsApp {
         Boolean answer = false;
 
         if(route1.getName().equals(route2.getName())){
-            if(route1.getTypeRoute().equals(route2.getTypeRoute())){
-                if(route1.getListRouteSegment().size()==route2.getListRouteSegment().size()) {
-                    // Compare routesegments
-                    for (int i = 1; i < route1.getListRouteSegment().size() + 1; i++) {
+            if(route1.getListRouteSegment().size()==route2.getListRouteSegment().size()) {
+                // Compare routesegments
+                for (int i = 1; i < route1.getListRouteSegment().size() + 1; i++) {
 
-                        int index1 = findIndexSegmentNumber(i, route1.getListRouteSegment());
-                        int index2 = findIndexSegmentNumber(i, route2.getListRouteSegment());
+                    int index1 = findIndexSegmentNumber(i, route1.getListRouteSegment());
+                    int index2 = findIndexSegmentNumber(i, route2.getListRouteSegment());
 
-                        if (index1 == index2 && index1 != -1) {
-                            if (route1.getListRouteSegment().get(index1).getLat().equals(route2.getListRouteSegment().get(index2).getLat()) &&
-                                    route1.getListRouteSegment().get(index1).getLng().equals(route2.getListRouteSegment().get(index2).getLng()))
-                                answer = true;
-                            else {
-                                answer = false;
-                                break;
-                            }
-                        } else {
+                    if (index1 == index2 && index1 != -1) {
+                        if (route1.getListRouteSegment().get(index1).getLat().equals(route2.getListRouteSegment().get(index2).getLat()) &&
+                                route1.getListRouteSegment().get(index1).getLng().equals(route2.getListRouteSegment().get(index2).getLng()))
+                            answer = true;
+                        else {
                             answer = false;
                             break;
                         }
+                    } else {
+                        answer = false;
+                        break;
                     }
                 }
             }
