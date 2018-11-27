@@ -47,8 +47,6 @@ public class Action {
 
             // Send notification to user
             NotificationUtils.configureAndSendNotification(context, friend.getId(), user.getLogin(),NotificationUtils.NEW_FRIEND_REQUEST);
-
-            Toast.makeText(context, context.getResources().getString(R.string.friend_added), Toast.LENGTH_LONG).show();
         } else {
             saveLoginsInSharedPref(sharedPref, friend.getLogin());
             Toast.makeText(context, context.getResources().getString(R.string.friend_added_later), Toast.LENGTH_LONG).show();

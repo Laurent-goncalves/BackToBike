@@ -351,8 +351,7 @@ public class TestActionClass extends AndroidTestCase {
 
             @Override
             public void onSuccess(List<BikeEvent> listBikeEvent) {
-                Assert.assertEquals(1,listBikeEvent.size());
-                Assert.assertEquals("cancelled",listBikeEvent.get(0).getStatus());
+                Assert.assertEquals(0, listBikeEvent.size());
             }
 
             @Override

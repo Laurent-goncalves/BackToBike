@@ -212,6 +212,8 @@ public class FriendsActivity extends BaseActivity implements CallbackFriendActiv
                 Action.addNewFriend(friend, UtilsApp.getUserFromFirebaseUser(sharedPref.getString(LOGIN_SHARED,null),
                         FirebaseAuth.getInstance().getCurrentUser()), userId, getApplicationContext());
 
+                Toast.makeText(getApplicationContext(), getApplicationContext().getResources().getString(R.string.friend_added), Toast.LENGTH_LONG).show();
+
                 if(friendFragment!=null)
                     friendFragment.configureViews();
                 else

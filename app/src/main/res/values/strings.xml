@@ -57,7 +57,7 @@
     <!-- FRIENDSACTIVITY -->
     <string name="image_friend">image friend</string>
     <string name="title_add_a_friend">Add a friend</string>
-    <string name="enter_a_login">Enter a login: </string>
+    <string name="enter_a_login">Create your login : </string>
     <string name="login_not_known">Login doesn\'t exists. Please check the login provided.</string>
     <string name="login_already_among_friends">This person is already among your friends.</string>
     <string name="error_check_login">An error occurred during login checking. Try again later.</string>
