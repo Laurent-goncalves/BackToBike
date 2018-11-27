@@ -73,6 +73,7 @@
     <string name="error_login_format">Error in login provided. Please check login.</string>
     <string name="friend_deleted_later">Friend will be deleted when internet connexion will be available.</string>
     <string name="error_access_data">Error to access data.</string>
+    <string name="friend_added">Friend has been added. Waiting for his answer.</string>
 
     <!-- TRACEACTIVITY -->
     <string name="add_segment_message">Please click on the map to create a new segment</string>

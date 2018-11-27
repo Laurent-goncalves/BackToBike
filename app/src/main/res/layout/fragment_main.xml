@@ -239,20 +239,34 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true">
 
-        <ImageView
-            android:id="@+id/image_panel"
+        <FrameLayout
+            android:id="@+id/layout_panel"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/panel_drawable"/>
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/image_panel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/panel_drawable"/>
+
+            <ImageView
+                android:id="@+id/arrow_panel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:src="@drawable/baseline_keyboard_arrow_down_white_18"/>
+
+        </FrameLayout>
 
         <TextView
             android:id="@+id/textview_differences"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/image_panel"
-            android:layout_alignStart="@+id/image_panel"
-            android:layout_alignBottom="@+id/image_panel"
-            android:layout_alignEnd="@+id/image_panel"
+            android:layout_alignTop="@+id/layout_panel"
+            android:layout_alignStart="@+id/layout_panel"
+            android:layout_alignBottom="@+id/layout_panel"
+            android:layout_alignEnd="@+id/layout_panel"
             android:layout_marginBottom="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginStart="10dp"

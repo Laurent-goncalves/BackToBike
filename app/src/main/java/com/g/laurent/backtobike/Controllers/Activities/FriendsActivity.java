@@ -76,6 +76,7 @@ public class FriendsActivity extends BaseActivity implements CallbackFriendActiv
     @Override
     protected void refreshActivity(){
         defineCountersAndConfigureToolbar(MENU_MY_FRIENDS);
+        configureAndShowFriendFragment();
     }
 
     // ------------------------------------------------------------------------------------------------------------

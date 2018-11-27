@@ -57,6 +57,7 @@ public class MainFragment extends Fragment {
     @BindView(R.id.panel) RelativeLayout panel;
     @BindView(R.id.middle_layout) RelativeLayout middleLayout;
     @BindView(R.id.image_panel) ImageView imagePanel;
+    @BindView(R.id.arrow_panel) ImageView arrowPanel;
     @BindView(R.id.count_friends) TextView countFriends;
     @BindView(R.id.count_invitation) TextView countInvits;
     @BindView(R.id.count_events) TextView countEvents;
@@ -136,10 +137,10 @@ public class MainFragment extends Fragment {
     View.OnClickListener onClickPanelListener = new View.OnClickListener() {
         public void onClick(View v) {
             if(panelExpanded) {
-                UtilsAnim.slideUp(panel, centralArea, buttonsLeft, buttonsRight);
+                UtilsAnim.slideUp(panel, centralArea, buttonsLeft, buttonsRight, arrowPanel,context);
                 panelExpanded=false;
             } else {
-                UtilsAnim.slideDown(panel, panelExpanded, middleLayout, centralArea, buttonsLeft, buttonsRight);
+                UtilsAnim.slideDown(panel, panelExpanded, middleLayout, centralArea, buttonsLeft, buttonsRight, arrowPanel,context);
                 panelExpanded = true;
             }
         }
@@ -320,8 +321,8 @@ public class MainFragment extends Fragment {
 
         AppDatabase.getInstance(context,userId).eventFriendsDao().deleteAllEventFriends();
         //AppDatabase.getInstance(context,userId).friendsDao().deleteAllFriends();
-        //AppDatabase.getInstance(context,userId).routeSegmentDao().deleteRouteSegment();
-        //AppDatabase.getInstance(context,userId).routesDao().deleteAllRoutes();
+        AppDatabase.getInstance(context,userId).routeSegmentDao().deleteRouteSegment();
+        AppDatabase.getInstance(context,userId).routesDao().deleteAllRoutes();
         AppDatabase.getInstance(context,userId).bikeEventDao().deleteAllBikeEvents();
 
     }

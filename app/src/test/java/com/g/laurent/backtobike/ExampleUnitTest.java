@@ -3,7 +3,6 @@ package com.g.laurent.backtobike;
 import com.g.laurent.backtobike.Models.BikeEvent;
 import com.g.laurent.backtobike.Models.Route;
 import com.g.laurent.backtobike.Models.RouteSegment;
-import com.g.laurent.backtobike.Utils.FirebaseUpdate;
 import com.g.laurent.backtobike.Utils.UtilsApp;
 import com.g.laurent.backtobike.Utils.MapTools.UtilsGoogleMaps;
 import com.g.laurent.backtobike.Utils.UtilsTime;
@@ -12,7 +11,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
 import static com.g.laurent.backtobike.Utils.MapTools.RouteHandler.EVENT_ROUTE_TYPE;
 import static com.g.laurent.backtobike.Utils.MapTools.RouteHandler.MY_ROUTE_TYPE;
 import static org.junit.Assert.assertEquals;
@@ -140,7 +138,7 @@ public class ExampleUnitTest {
         route4.setListRouteSegment(listRouteSegments4);
 
         Assert.assertTrue(UtilsApp.areRoutesEquals(route1,route4));
-        Assert.assertFalse(UtilsApp.areRoutesEquals(route1,route2));
+        Assert.assertTrue(UtilsApp.areRoutesEquals(route1,route2));
         Assert.assertFalse(UtilsApp.areRoutesEquals(route1,route3));
 
         listRouteSegments4.remove(0);
@@ -175,18 +173,6 @@ public class ExampleUnitTest {
         Assert.assertEquals(22, calendar.get(Calendar.HOUR_OF_DAY));
         Assert.assertEquals(30, calendar.get(Calendar.DAY_OF_MONTH));
     }
-
-    /*@Test
-    public void test_dateAfterNow(){
-
-        String date = UtilsTime.getTodayDate();
-        String time = "23:59";
-
-        Assert.assertTrue(UtilsTime.isEventDateAfterNow(date, time));
-
-        time = "0:20";
-        Assert.assertFalse(UtilsTime.isEventDateAfterNow(date, time));
-    }*/
 
     @Test
     public void test_id_pending_intent(){

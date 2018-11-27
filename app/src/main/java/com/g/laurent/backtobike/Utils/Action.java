@@ -48,6 +48,7 @@ public class Action {
             // Send notification to user
             NotificationUtils.configureAndSendNotification(context, friend.getId(), user.getLogin(),NotificationUtils.NEW_FRIEND_REQUEST);
 
+            Toast.makeText(context, context.getResources().getString(R.string.friend_added), Toast.LENGTH_LONG).show();
         } else {
             saveLoginsInSharedPref(sharedPref, friend.getLogin());
             Toast.makeText(context, context.getResources().getString(R.string.friend_added_later), Toast.LENGTH_LONG).show();
@@ -345,7 +346,7 @@ public class Action {
         SharedPreferences sharedPref = context.getSharedPreferences(context.getResources().getString(R.string.sharedpreferences), Context.MODE_PRIVATE);
 
         // Get route event from DB
-        Route route = RouteHandler.getRouteEvent(context, event.getId(), userId);
+        Route route = RouteHandler.getRoute(context, event.getIdRoute(), userId);
 
         // Change route idEvent in database
         route.setTypeRoute(MY_ROUTE_TYPE);
