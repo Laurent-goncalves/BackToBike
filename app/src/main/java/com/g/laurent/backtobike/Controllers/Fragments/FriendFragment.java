@@ -37,6 +37,7 @@ public class FriendFragment extends Fragment {
     private List<Friend> listFriends;
     private ArrayList<String> listFriendsSelected;
     private CallbackFriendActivity callbackFriendActivity;
+    private CallbackEventActivity callbackEventActivity;
     private FirebaseUser firebaseUser;
     private String myLogin;
     private Boolean SelectMode;
@@ -99,7 +100,7 @@ public class FriendFragment extends Fragment {
         }
 
         if(context instanceof CallbackEventActivity){
-            CallbackEventActivity callbackEventActivity = (CallbackEventActivity) context;
+            callbackEventActivity = (CallbackEventActivity) context;
             listFriendsSelected = callbackEventActivity.getInvitation().getListIdFriends();
             if(listFriendsSelected==null)
                 listFriendsSelected = new ArrayList<>();
@@ -152,6 +153,10 @@ public class FriendFragment extends Fragment {
 
         // Get list friends on Database
         listFriends = FriendsHandler.getListFriends(context, firebaseUser.getUid());
+
+        // If selection of friends for EventActivity, get the list of all friends who have accepted the user
+        if(callbackEventActivity!=null)
+            listFriends = UtilsApp.getListFriendsHaveAccepted(listFriends);
 
         // configure gridView
         if(adapter!=null){

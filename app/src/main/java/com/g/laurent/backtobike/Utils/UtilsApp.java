@@ -295,6 +295,25 @@ public class UtilsApp {
         return new Friend(user.getUid(), mylogin, user.getDisplayName(), photoUrl,REJECTED,ONGOING);
     }
 
+    public static List<Friend> getListFriendsHaveAccepted(List<Friend> listFriends){
+
+        List<Friend> newListFriends = new ArrayList<>();
+
+        if(listFriends!=null){
+            if(listFriends.size()>0){
+                for(Friend friend : listFriends){
+                    if(friend.getHasAgreed()!=null){
+                        if(friend.getHasAgreed().equals(ACCEPTED)){
+                            newListFriends.add(friend);
+                        }
+                    }
+                }
+            }
+        }
+
+        return newListFriends;
+    }
+
     public static Boolean areRoutesEquals(Route route1, Route route2){
 
         Boolean answer = false;

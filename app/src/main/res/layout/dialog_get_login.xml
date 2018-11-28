@@ -27,7 +27,7 @@
         android:layout_margin="20dp"
         android:gravity="center"
         android:layout_below="@+id/title_add_friend"
-        android:text="@string/enter_a_login"/>
+        android:text="@string/create_a_login"/>
 
     <EditText
         android:id="@+id/edittext_login"
